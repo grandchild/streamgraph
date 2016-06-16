@@ -23,3 +23,10 @@ Teile vom Streamit Boilerplate (init, push, pop) in der Definition der Nodes ver
 
 
 perl ex-mindmap
+
+Anforderungen:
+- Zeitplan!!!
+- Synronisation von Nachrichten? (Events !!) 
+- Parameter an Filter
+- Hello World
+- GUI Protoyp
