@@ -1,0 +1,25 @@
+Implitzites Join/Split
+ - nur im `splitjoin`-Konstrukt
+
+Implizite Pipelines
+ - mehrere Filter in Reihe werden im Hintergrund zu einer Pipeline
+ - 
+ 
+ 
+ 
+Streamit graphisch machen:
+	splitjoines, pipelines, filter umsetzen
+
+Abstraktionen/Vereinfachungen an:
+	splitjoines (implizit)
+	pipelines (abstrahieren)
+
+Funktionalität wiederverwendbar wrappen/gruppieren
+
+Teile vom Streamit Boilerplate (init, push, pop) in der Definition der Nodes verstecken
+	init vereinfachen (soweit wie möglich vorgeben)
+	push/pop vorgeben
+	add komplett graphisch natürlich
+
+
+perl ex-mindmap
