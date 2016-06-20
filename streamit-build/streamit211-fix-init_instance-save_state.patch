@@ -1,5 +1,5 @@
---- library/cluster/init_instance.cpp
-+++ library/cluster/init_instance.cpp (Unsaved)
+--- ./library/cluster/init_instance.cpp
++++ ./library/cluster/init_instance.cpp (Unsaved)
 @@ -217,9 +217,9 @@
  
      if (sd.type != DATA_SOCKET) continue;
@@ -13,8 +13,8 @@
      
        // connection is both in the list of 'out connections' 
        // and in the list of 'in connections'
---- library/cluster/save_state.cpp
-+++ library/cluster/save_state.cpp (Unsaved)
+--- ./library/cluster/save_state.cpp
++++ ./library/cluster/save_state.cpp (Unsaved)
 @@ -23,6 +23,7 @@
  #include <sys/stat.h>
  #include <fcntl.h>
