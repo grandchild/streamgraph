@@ -1,0 +1,25 @@
+--- library/cluster/init_instance.cpp
++++ library/cluster/init_instance.cpp (Unsaved)
+@@ -217,9 +217,9 @@
+ 
+     if (sd.type != DATA_SOCKET) continue;
+ 
+-    map<sock_dscr, bool>::iterator i = in_done.find(sd);
+-
+-    if (i != in_done.end()) {
++    map<sock_dscr, bool>::iterator it = in_done.find(sd);
++
++    if (it != in_done.end()) {
+     
+       // connection is both in the list of 'out connections' 
+       // and in the list of 'in connections'
+--- library/cluster/save_state.cpp
++++ library/cluster/save_state.cpp (Unsaved)
+@@ -23,6 +23,7 @@
+ #include <sys/stat.h>
+ #include <fcntl.h>
+ #include <stdio.h>
++#include <string.h>
+ #ifdef RHEL3
+ #include <linux/unistd.h>
+ _syscall0(pid_t,gettid)
