@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use lib "/home/jakob/dev/streamit/streamgraph/source/lib/";
+use lib "./lib/";
 
 # BEGIN {
 # 	push @INC, '../..';
