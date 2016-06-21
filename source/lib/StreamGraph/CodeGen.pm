@@ -12,7 +12,8 @@ sub generateCode {
 	my $fileName = shift;
 	my $programText = "\\*\n * Generated code from project $fileName\n *\\\n";
 	# build Node list
-	my @nodeList = push($node, StreamGraph::View::Item::successors($node));
+	my @nodeList = ();
+	push(@nodeList, $node, StreamGraph::View::Item::successors($node));
 	# first generate all filter code
 	foreach my $filterNode (@nodeList) {
 		$programText .= generateFilter($filterNode);
