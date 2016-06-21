@@ -40,7 +40,7 @@ sub generateWork {
 	my $timesPush = $data->{timesPush};
 	my $timesPeek = $data->{timesPeek};
 	if($timesPop > 0) {
-		$workText .= "pop $timesPop";
+		$workText .= " pop $timesPop";
 	}
 	if($timesPush > 0) {
 		$workText .= " push $timesPush";
@@ -82,7 +82,7 @@ sub generateFilter {
 	my $outputType = $data->{outputType};
 	my $name = $data->{name};
 	my $globalVariables = $data->{globalVariables};
-	my $filterText = "$inputType -> $outputType filter $name {\n";
+	my $filterText = "$inputType->$outputType filter $name {\n";
 	if(!($globalVariables eq "")){
 		$filterText .= "$globalVariables\n";
 	}
