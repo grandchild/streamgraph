@@ -7,467 +7,315 @@ use strict;
 use Carp;
 
 use List::Util;
-
 use Gnome2::Canvas;
-
 use POSIX qw(DBL_MAX);
-
 use Glib ':constants';
 
 use Glib::Object::Subclass
-    Gnome2::Canvas::Group::,
+	Gnome2::Canvas::Group::,
 
-    signals => {
-	'layout'            => { flags => 'run-last' },
-	'connection_adjust' => { flags => 'run-last' },
-	'hotspot_adjust'    => { flags => 'run-last' },
-    },
+	signals => {
+		'layout'            => { flags => 'run-last' },
+		'connection_adjust' => { flags => 'run-last' },
+		'hotspot_adjust'    => { flags => 'run-last' },
+	},
 
-    properties => [
-		   Glib::ParamSpec->scalar ('graph', 'graph',
-					    'The graph that this item belongs to', G_PARAM_READWRITE),
-
-		   Glib::ParamSpec->scalar ('column', 'column',
-					    'The column this item belongs to', G_PARAM_READWRITE),
-
-		   Glib::ParamSpec->scalar ('border', 'border',
-					    'The border and containing content', G_PARAM_READWRITE),
-
-		   Glib::ParamSpec->boolean ('visible', 'visible', 'Indicates whether the item is visible',
-					     TRUE, G_PARAM_READWRITE),
-
-		   Glib::ParamSpec->double ('x', 'x', 'Upper left X coord',
-					    -(DBL_MAX), DBL_MAX, 0.0, G_PARAM_READWRITE),
-
-		   Glib::ParamSpec->double ('y', 'y', 'Upper left y coord',
-					    -(DBL_MAX), DBL_MAX, 0.0, G_PARAM_READWRITE),
-
-		   Glib::ParamSpec->double ('height', 'height', 'Height of map item',
-					    0.0, DBL_MAX, 25.0, G_PARAM_READWRITE),
-
-		   Glib::ParamSpec->double ('width', 'width', 'Width of map item',
-					    0.0, DBL_MAX, 300.0, G_PARAM_READWRITE),
-		   ]
-    ; 
+	properties => [
+		Glib::ParamSpec->scalar ('graph', 'graph',
+					'The graph that this item belongs to', G_PARAM_READWRITE),
+		Glib::ParamSpec->scalar ('column', 'column',
+					'The column this item belongs to', G_PARAM_READWRITE),
+		Glib::ParamSpec->scalar ('border', 'border',
+					'The border and containing content', G_PARAM_READWRITE),
+		Glib::ParamSpec->boolean ('visible', 'visible', 'Indicates whether the item is visible',
+					 TRUE, G_PARAM_READWRITE),
+		Glib::ParamSpec->double ('x', 'x', 'Upper left X coord',
+					-(DBL_MAX), DBL_MAX, 0.0, G_PARAM_READWRITE),
+		Glib::ParamSpec->double ('y', 'y', 'Upper left y coord',
+					-(DBL_MAX), DBL_MAX, 0.0, G_PARAM_READWRITE),
+		Glib::ParamSpec->double ('height', 'height', 'Height of map item',
+					0.0, DBL_MAX, 25.0, G_PARAM_READWRITE),
+		Glib::ParamSpec->double ('width', 'width', 'Width of map item',
+					0.0, DBL_MAX, 300.0, G_PARAM_READWRITE),
+		];
 
 
-sub INIT_INSTANCE
-{
-    my $self = shift(@_);
-
-    $self->{graph}       = undef;
-
-    $self->{column}      = undef;
-
-    $self->{border}      = undef;
-
-    $self->{hotspots}    = {};
-
-    $self->{visible}     = TRUE;
-
-    $self->{date_time}   = undef;
+sub INIT_INSTANCE {
+	my $self = shift(@_);
+	$self->{graph}       = undef;
+	$self->{column}      = undef;
+	$self->{border}      = undef;
+	$self->{hotspots}    = {};
+	$self->{visible}     = TRUE;
+	$self->{date_time}   = undef;
+	$self->{data}        = undef;
 }
 
 
-sub SET_PROPERTY
-{
-    my ($self, $pspec, $newval) = @_;
-
-    my $param_name = $pspec->get_name;
+sub SET_PROPERTY {
+	my ($self, $pspec, $newval) = @_;
+	my $param_name = $pspec->get_name;
 
 #    print "Item, SET_PROPERTY: name: $param_name value: $newval\n";
 
-
-    if ($param_name eq 'graph')
-    {
-	$self->{graph} = $newval;
-
-	my @predecessors = $self->{graph}->predecessors($self);
-
-	foreach my $predecessor_item (@predecessors)
-	{
-	    $predecessor_item->signal_emit('hotspot_adjust');
-	}
-    }
-
-
-    if ($param_name eq 'border')
-    {
-	if (!$newval->isa('StreamGraph::View::Border'))
-	{
-	    print "Item, border: $newval\n";
-	    croak "Unexpected border. Must be 'StreamGraph::View::Border' type.\n";
+	if ($param_name eq 'graph') {
+		$self->{graph} = $newval;
+		my @predecessors = $self->{graph}->predecessors($self);
+		foreach my $predecessor_item (@predecessors) {
+			$predecessor_item->signal_emit('hotspot_adjust');
+		}
 	}
 
-	$newval->reparent($self);
 
-	my $content = $newval->get('content');
+	if ($param_name eq 'border') {
+		if (!$newval->isa('StreamGraph::View::Border'))
+		{
+			print "Item, border: $newval\n";
+			croak "Unexpected border. Must be 'StreamGraph::View::Border' type.\n";
+		}
+		$newval->reparent($self);
+		my $content = $newval->get('content');
+		croak ("Cannot set border, no content defined.\n") if (!defined $content);
 
-	croak ("Cannot set border, no content defined.\n") if (!defined $content);
+		$content->reparent($self);
+		if (defined $self->{border}) {
+			my ($x, $y, $width, $height) = $self->{border}->get(qw(x y width height));
+			$newval->set(x=>$x, y=>$y, width=>$width, height=>$height);
+			$self->{border}->get('content')->destroy();
+			$self->{border}->destroy();
+		}
 
-	$content->reparent($self);
-
-	if (defined $self->{border})
-	{
-	    my ($x, $y, $width, $height) = $self->{border}->get(qw(x y width height));
-
-	    $newval->set(x=>$x, y=>$y, width=>$width, height=>$height);
-
-	    $self->{border}->get('content')->destroy();
-
-	    $self->{border}->destroy();
+		$self->{border} = $newval;
+		$self->set(width=>$newval->get('width'), height=>$newval->get('height'));
 	}
 
-	$self->{border} = $newval;
 
-	$self->set(width=>$newval->get('width'), height=>$newval->get('height'));
-    }
+	if ($param_name eq 'column') {
+		if (!$newval->isa('StreamGraph::View::Layout::Column')) {
+			croak "Unexpected column value.\nYou may only assign a " .
+			  "'StreamGraph::View::Layout::Column as a column.\n";
+		}
 
-
-    if ($param_name eq 'column')
-    {
-	if (!$newval->isa('StreamGraph::View::Layout::Column'))
-	{
-	    croak "Unexpected column value.\nYou may only assign a " .
-		  "'StreamGraph::View::Layout::Column as a column.\n";
+		$self->{column} = $newval;
 	}
 
-	$self->{column} = $newval;
-    }
 
-
-    if ($param_name eq 'visible')
-    {
-	$self->{visible} = $newval;
-
-	if ($newval)
-	{
-	    $self->show();
-	}
-	else
-	{
-	    $self->hide();
+	if ($param_name eq 'visible') {
+		$self->{visible} = $newval;
+		if ($newval) {
+			$self->show();
+		} else {
+			$self->hide();
+		}
+		$self->signal_emit('connection_adjust');
 	}
 
-	$self->signal_emit('connection_adjust');
-    }
-
-
-    if ($param_name eq 'x')
-    {
-	$self->{x} = $newval;
-
-	if (defined $self->{border})
-	{
-	    $self->{border}->set(x=>$newval);
-
-	    $self->signal_emit('hotspot_adjust');
-
-	    $self->signal_emit('connection_adjust');
+	if ($param_name eq 'x') {
+		$self->{x} = $newval;
+		if (defined $self->{border}) {
+			$self->{border}->set(x=>$newval);
+			$self->signal_emit('hotspot_adjust');
+			$self->signal_emit('connection_adjust');
+		}
+		return;
 	}
 
-	return;
-    }
-
-            
-    if ($param_name eq 'y')
-    {
-	$self->{y} = $newval;
-
-	if (defined $self->{border})
-	{
-	    $self->{border}->set(y=>$newval);
-
-	    $self->signal_emit('hotspot_adjust');
-
-	    $self->signal_emit('connection_adjust');
+			
+	if ($param_name eq 'y') {
+		$self->{y} = $newval;
+		if (defined $self->{border}) {
+			$self->{border}->set(y=>$newval);
+			$self->signal_emit('hotspot_adjust');
+			$self->signal_emit('connection_adjust');
+		}
+		return;
 	}
 
-	return;
-    }            
-
-
-    if ($param_name eq 'height')
-    {
-	$self->{height} = $newval;
-
-	if (defined $self->{border})
-	{
-	    $self->{border}->set(height=>$newval);
-
-	    $self->signal_emit('hotspot_adjust');
-
-	    $self->signal_emit('connection_adjust');
+	if ($param_name eq 'height') {
+		$self->{height} = $newval;
+		if (defined $self->{border}) {
+			$self->{border}->set(height=>$newval);
+			$self->signal_emit('hotspot_adjust');
+			$self->signal_emit('connection_adjust');
+		}
+		return;
 	}
 
-	return;
-    }
-
-    if ($param_name eq 'width')
-    {
-	$self->{width} = $newval;
-
-	if (defined $self->{border})
-	{
-	    $self->{border}->set(width=>$newval);
-
-	    $self->signal_emit('hotspot_adjust');
-
-	    $self->signal_emit('connection_adjust');
+	if ($param_name eq 'width') {
+		$self->{width} = $newval;
+		if (defined $self->{border}) {
+			$self->{border}->set(width=>$newval);
+			$self->signal_emit('hotspot_adjust');
+			$self->signal_emit('connection_adjust');
+		}
+		return;
 	}
-
-	return;
-    }
 }
 
 
 # $item->add_hotspot
-
-sub add_hotspot
-{
-    my ($self, $hotspot_type, $hotspot) = @_;
-
-    $self->{hotspots}{$hotspot_type} = $hotspot;
+sub add_hotspot {
+	my ($self, $hotspot_type, $hotspot) = @_;
+	$self->{hotspots}{$hotspot_type} = $hotspot;
 }
 
 
 # $item->get_column_no();
-
-sub get_column_no
-{
-    my $self = shift(@_);
-
-    my $column = $self->{column};
-
-    if (!defined $column)
-    {
-	croak "Attempt to get column_no on undefined column.\n";
-    }
-
-    return $column->get('column_no');
+sub get_column_no {
+	my $self = shift(@_);
+	my $column = $self->{column};
+	if (!defined $column) {
+		croak "Attempt to get column_no on undefined column.\n";
+	}
+	return $column->get('column_no');
 }
 
 
 # $item->get_connection_point('left');
-
-sub get_connection_point
-{
-    my ($self, $side) = @_;
-
-    return $self->{border}->get_connection_point($side);
+sub get_connection_point {
+	my ($self, $side) = @_;
+	return $self->{border}->get_connection_point($side);
 }
 
 
 # my ($top, $left, $bottom, $right) = $item->get_insets();
-
-sub get_insets
-{
-    my $self = shift(@_);
-
-    return $self->{border}->border_insets();
+sub get_insets {
+	my $self = shift(@_);
+	return $self->{border}->border_insets();
 }
 
 
 # my $min_height = $item->get_min_height();
-
-sub get_min_height
-{
-    my $self = shift(@_);
-
-    return 0 if (!defined $self->{border});
-
-    return $self->{border}->get_min_height();
+sub get_min_height {
+	my $self = shift(@_);
+	return 0 if (!defined $self->{border});
+	return $self->{border}->get_min_height();
 }
 
 
 # my $min_width = $item->get_min_width();
-
-sub get_min_width
-{
-    my $self = shift(@_);
-
-    return 0 if (!defined $self->{border});
-
-    return $self->{border}->get_min_width();
+sub get_min_width {
+	my $self = shift(@_);
+	return 0 if (!defined $self->{border});
+	return $self->{border}->get_min_width();
 }
 
 
 # $item->get_weight();
-
-sub get_weight
-{
-    my $self = shift(@_);
-
-    return ($self->get('height') * $self->get('width'));
+sub get_weight {
+	my $self = shift(@_);
+	return ($self->get('height') * $self->get('width'));
 }
 
 
 # $item->is_visible();
-
-sub is_visible
-{
-    my $self = shift(@_);
-
-    return $self->get('visible');
+sub is_visible {
+	my $self = shift(@_);
+	return $self->get('visible');
 }
 
 
 # my @predecessors = $item->predecessors();
-
-sub predecessors
-{
-    my $self = shift(@_);
-
-    return () if (!defined $self->{graph});
-
-    return $self->{graph}->predecessors($self);
+sub predecessors {
+	my $self = shift(@_);
+	return () if (!defined $self->{graph});
+	return $self->{graph}->predecessors($self);
 }
 
 
 # my @successors = $item->successors();
 # my @successors = $item->successors('left');
+sub successors {
+	my ($self, $side) = @_;
+	return () if (!defined $self->{graph});
 
-sub successors
-{
-    my ($self, $side) = @_;
+	my @items = $self->{graph}->successors($self);
+	return () if (scalar @items == 0);
 
-    return () if (!defined $self->{graph});
+	return @items if (!defined $side);
 
-    my @items = $self->{graph}->successors($self);
+	my $column = $self->get('column');
+	return () if (!defined $column);
 
-    return () if (scalar @items == 0);
+	my $column_no = $column->get('column_no');
+	if ($side eq 'right') {
+		return grep {$_->get_column_no() >= $column_no } @items;
+	}
 
-    return @items if (!defined $side);
-
-    my $column = $self->get('column');
-
-    return () if (!defined $column);
-
-    my $column_no = $column->get('column_no');
-
-    if ($side eq 'right')
-    {
-	return grep {$_->get_column_no() >= $column_no } @items;
-    }
-
-    # $side eq 'left'
-
-    return grep {$_->get_column_no() <= $column_no } @items;
+	# $side eq 'left'
+	return grep {$_->get_column_no() <= $column_no } @items;
 }
 
 
 # resize: adjust the size of this item. This routine is needed because
 # the simple: $self->set(x=>$x1, width=>$width, height=>$height) is
 # too slow due to an excessive number of signals.
-
-sub resize
-{
-    my ($self, $side, $delta_x, $delta_y) = @_;
-
-    return if (!defined $self->{border});
-
-    $self->raise(1);
-
-    my ($x, $width, $height) = _resize($self, $side, $delta_x, $delta_y); 
-
-    $self->{x} = $x;
-
-    $self->{width} = $width;
-
-    $self->{height} = $height;
-
-    $self->{border}->set(x=>$x, width=>$width, height=>$height);
-
-    $self->signal_emit('hotspot_adjust');
-
-    $self->signal_emit('connection_adjust');
+sub resize {
+	my ($self, $side, $delta_x, $delta_y) = @_;
+	return if (!defined $self->{border});
+	$self->raise(1);
+	my ($x, $width, $height) = _resize($self, $side, $delta_x, $delta_y);
+	$self->{x} = $x;
+	$self->{width} = $width;
+	$self->{height} = $height;
+	$self->{border}->set(x=>$x, width=>$width, height=>$height);
+	$self->signal_emit('hotspot_adjust');
+	$self->signal_emit('connection_adjust');
 }
 
 
-sub _resize
-{
-    my ($self, $side, $delta_x, $delta_y) = @_;
+sub _resize {
+	my ($self, $side, $delta_x, $delta_y) = @_;
+	my $min_height = $self->{border}->get_min_height();
+	my $min_width = $self->{border}->get_min_width();
+	my ($x, $width, $height) = $self->get(qw(x width height));
+	if ($side eq 'right') {
+		my $new_width = List::Util::max($min_width, ($width + $delta_x));
+		my $new_height = List::Util::max($min_height, ($height + $delta_y));
+		return ($x, $new_width, $new_height);
+	}
 
-    my $min_height = $self->{border}->get_min_height();
-
-    my $min_width = $self->{border}->get_min_width();
-
-    my ($x, $width, $height) = $self->get(qw(x width height));
-
-    if ($side eq 'right')
-    {
-	my $new_width = List::Util::max($min_width, ($width + $delta_x));
-
+	# $side eq 'left'
+	my $new_width = List::Util::max($min_width, ($width - $delta_x));
 	my $new_height = List::Util::max($min_height, ($height + $delta_y));
-
-	return ($x, $new_width, $new_height);
-    }
-
-    # $side eq 'left'
-
-    my $new_width = List::Util::max($min_width, ($width - $delta_x));
-
-    my $new_height = List::Util::max($min_height, ($height + $delta_y));
-
-    my $new_x = ($new_width > $min_width) ? $x + $delta_x : $x;
-
-    return ($new_x, $new_width, $new_height);
+	my $new_x = ($new_width > $min_width) ? $x + $delta_x : $x;
+	return ($new_x, $new_width, $new_height);
 }
 
 
-sub toggle
-{
-    my ($self, @items) = @_;
-
-    my $number_visible = grep {$_->is_visible()} @items;
-
-    foreach my $item (@items)
-    {
-	if ($number_visible == 0)
-	{
-	    my $date_time = $item->{hide_date_time};
-
-	    $self->{graph}->traverse_DFS($item, sub { _set_visible($_[0], $date_time); });
+sub toggle {
+	my ($self, @items) = @_;
+	my $number_visible = grep {$_->is_visible()} @items;
+	foreach my $item (@items) {
+		if ($number_visible == 0) {
+			my $date_time = $item->{hide_date_time};
+			$self->{graph}->traverse_DFS($item, sub { _set_visible($_[0], $date_time); });
+		} else {
+			my $date_time = time();
+			$self->{graph}->traverse_DFS($item, sub { _set_invisible($_[0], $date_time); });
+		}
 	}
-	else
-	{
-	    my $date_time = time();
-
-	    $self->{graph}->traverse_DFS($item, sub { _set_invisible($_[0], $date_time); });
-	}
-    }
-
-    $self->signal_emit('layout');
+	$self->signal_emit('layout');
 }
 
 
-sub _set_visible
-{
-    my ($self, $date_time) = @_;
-
+sub _set_visible {
+	my ($self, $date_time) = @_;
 #    print "_set_visible, self: $self  date_time: $date_time  self date time: $self->{hide_date_time}\n";
-
-    if ((!defined $self->{hide_date_time}) || ($self->{hide_date_time} == $date_time))
-    {
-	$self->set(visible=>TRUE);
-
-	$self->{hide_date_time} = undef;
-    }
+	if ((!defined $self->{hide_date_time}) || ($self->{hide_date_time} == $date_time)) {
+		$self->set(visible=>TRUE);
+		$self->{hide_date_time} = undef;
+	}
 }
 
 
-sub _set_invisible
-{
-    my ($self, $date_time) = @_;
-
+sub _set_invisible {
+	my ($self, $date_time) = @_;
 #    print "_set_invisible, self: $self  date_time: $date_time\n";
-
-    if ($self->is_visible())
-    {
-	$self->set(visible=>FALSE);
-
-	$self->{hide_date_time} = $date_time;
-    }
+	if ($self->is_visible()) {
+		$self->set(visible=>FALSE);
+		$self->{hide_date_time} = $date_time;
+	}
 }
 
 
