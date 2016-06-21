@@ -12,6 +12,7 @@ use StreamGraph::View::HotSpot::ToggleFactory;
 use StreamGraph::View::HotSpot::GripFactory;
 use StreamGraph::View::Item;
 use StreamGraph::View::ArgUtils;
+use StreamGraph::NodeData;
 
 use List::Util;
 use Glib ':constants';
@@ -57,7 +58,7 @@ sub create_item {
 
 	args_valid(\%attributes, qw(border content text browser uri pixbuf 
 				font_desc fill_color_gdk text_color_gdk
-				outline_color_gdk hotspot_color_gdk));
+				outline_color_gdk hotspot_color_gdk data));
 	args_required(\%attributes, qw(border content));
 
 	my $border_type       = $attributes{border};
@@ -130,6 +131,10 @@ sub create_item {
 	$item->add_hotspot('lower_right',  $hotspot2);
 	$item->add_hotspot('toggle_left',  $hotspot3);
 	$item->add_hotspot('toggle_right', $hotspot4);
+	$item->set_data(defined $attributes{data} ?
+		$attributes{data} :
+		$item->set_data(StreamGraph::NodeData->new())
+	);
 
 	return $item;
 }

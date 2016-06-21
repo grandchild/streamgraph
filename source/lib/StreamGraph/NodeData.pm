@@ -29,4 +29,28 @@ has inputCount          => ( is=>"rw", default=>0 );
 has outputType          => ( is=>"rw", default=>"void" );
 has outputCount         => ( is=>"rw", default=>0 );
 
+use overload
+	fallback => 1,
+	'""' => sub {
+		my $self = shift(@_);
+		print $_ . ": " . $self->{$_}."\n" foreach qw(
+				initCode
+				workCode
+				globalVariables
+				timesPush
+				timesPop
+				timesPeek
+				joinType
+				joinMultiplicities
+				joinRRForAll
+				splitType
+				splitMultiplicities
+				splitRRForAll
+				inputType
+				inputCount
+				outputType
+				outputCount
+			)
+	};
+
 1;

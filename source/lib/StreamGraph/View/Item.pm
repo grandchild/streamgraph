@@ -160,6 +160,17 @@ sub add_hotspot {
 }
 
 
+# $item->set_data($data);
+sub set_data {
+	my ($self, $data) = @_;
+	if (!$data->isa('StreamGraph::NodeData')) {
+		print "Item, data: $data\n";
+		croak "Unexpected data. Must be 'StreamGraph::NodeData' type.\n";
+	}
+	$self->{data} = $data;
+}
+
+
 # $item->get_column_no();
 sub get_column_no {
 	my $self = shift(@_);
