@@ -8,6 +8,8 @@ use Moo;
 use warnings;
 use strict;
 
+has name                => ( is=>"rw", default=>"filter");
+
 has initCode            => ( is=>"rw", default=>"" );
 has workCode            => ( is=>"rw", default=>"" );
 has globalVariables     => ( is=>"rw", default=>"" );
@@ -34,6 +36,7 @@ use overload
 	'""' => sub {
 		my $self = shift(@_);
 		print $_ . ": " . $self->{$_}."\n" foreach qw(
+				name
 				initCode
 				workCode
 				globalVariables
