@@ -3,13 +3,13 @@ use strict;
 use StreamGraph::View::Item;
 
 
-$pipelineNumber = 0;
+$StreamGraph::CodeGen::pipelineNumber = 0;
 
 # function which generates Code out of Graph from root Node
 # gets root as 1. input parameter and filename as 2.parameter
 sub generateCode {
 	my $node = shift;
-	my $fileŃame = shift;
+	my $fileName = shift;
 	my $programText = "\\*\n * Generated code from project $fileName\n *\\\n";
 	# build Node list
 	my @nodeList = push($node, StreamGraph::View::Item::successors($node));
@@ -46,7 +46,7 @@ sub generateWork {
 		$workText .= "peek $timesPeek";
 	}
 	$workText .= "{\n";
-	$workText .= filterText;
+	$workText .= $filterText;
 	$workText .= "\n}\n";
 
 
@@ -88,7 +88,7 @@ sub generateFilter {
 	$workText .= generateFilter($filterNode->data);
 	$workText .= "}\n";
 
-	return workText;
+	return $workText;
 }
 
 
@@ -96,8 +96,8 @@ sub generateFilter {
 # gets (at the moment) no parameters
 sub getPipelineName {
 	my $text = "Pipeline";
-	$text .= "$pipelineNumber";
-	$pipelineNumber++;
+	$text .= "$StreamGraph::CodeGen::pipelineNumber";
+	$StreamGraph::CodeGen::pipelineNumber++;
 	return $text;
 }
 
@@ -108,7 +108,7 @@ sub getPipelineName {
 # returns pipeline code
 sub generatePipeline {
 	my @filterArray = shift;
-	if (!defined(@filterArray)) {
+	if (!@filterArray) {
 		return "";
 	}
 	my $arraySize = @filterArray;
@@ -123,7 +123,7 @@ sub generatePipeline {
 		my $name = $filterNode->data->name;
 		$workText .= "add $name;\n";
 	}
-	$workText .= "}\n"
+	$workText .= "}\n";
 	return $workText;
 }
 

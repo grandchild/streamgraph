@@ -13,6 +13,7 @@ use StreamGraph::View::Item;
 use StreamGraph::Node;
 use StreamGraph::NodeData;
 use StreamGraph::Util::StringLoader;
+use StreamGraph::CodeGen;
 
 print StreamGraph::Util::StringLoader::get("hey");
 
