@@ -1,4 +1,5 @@
 package StreamGraph::CodeGen;
+
 use strict;
 use StreamGraph::View::Item;
 
@@ -10,7 +11,7 @@ $StreamGraph::CodeGen::pipelineNumber = 0;
 sub generateCode {
 	my $node = shift;
 	my $fileName = shift;
-	my $programText = "\\*\n * Generated code from project $fileName\n *\\\n";
+	my $programText = "/*\n * Generated code from project $fileName\n */\n";
 	# build Node list
 	my @nodeList = ();
 	push(@nodeList, $node, StreamGraph::View::Item::successors($node));
@@ -19,10 +20,12 @@ sub generateCode {
 		$programText .= generateFilter($filterNode);
 	}
 	$programText .= generatePipeline(@nodeList);
-	# last write all code to the file
-	open(my $fh, '>', $fileName);
-	print $fh $programText;
-	close $fh; 
+	return $programText;
+	
+	### TODO: write to file in extra Util function
+	# open(my $fh, '>', $fileName);
+	# print $fh $programText;
+	# close $fh; 
 }
 
 
@@ -30,24 +33,23 @@ sub generateCode {
 # gets filter for which the work function is to be generated
 # returns String of Work function
 sub generateWork {
-	my $filter = shift;
-	my $workText = "work ";
+	my $data = shift;
+	my $workText = "work";
 	# needs finished when Datastructure is there
-	my $timesPop = $filter->timesPop;
-	my $timesPush = $filter->timesPush;
-	my $timesPeek = $filter->timesPeek;
-	my $filterText = $filter->workCode;
-	if($timesPop > 0){
-		$workText .= "pop $timesPop ";
+	my $timesPop = $data->{timesPop};
+	my $timesPush = $data->{timesPush};
+	my $timesPeek = $data->{timesPeek};
+	if($timesPop > 0) {
+		$workText .= "pop $timesPop";
 	}
-	if($timesPush > 0){
-		$workText .= "push $timesPush ";
+	if($timesPush > 0) {
+		$workText .= " push $timesPush";
 	}
 	if ($timesPeek > 0) {
-		$workText .= "peek $timesPeek";
+		$workText .= " peek $timesPeek";
 	}
-	$workText .= "{\n";
-	$workText .= $filterText;
+	$workText .= " {\n";
+	$workText .= $data->{workCode};
 	$workText .= "\n}\n";
 
 
@@ -55,8 +57,8 @@ sub generateWork {
 
 # gets NoteData objectfor which the init funktion is to be generated
 sub generateInit {
-	my $filter = shift;
-	my $initText = $filter->initCode;
+	my $data = shift;
+	my $initText = $data->{initCode};
 	my $workText = "init {\n";
 	$workText .= $initText;
 	$workText .= "\n}\n";
@@ -73,23 +75,22 @@ sub generateFilter {
 	if (!defined($filterNode)) {
 		return "";
 	}
+	my $data = $filterNode->{data};
 
 	# needs finished when Datastructure is there
-	my $inputType = $filterNode->data->inputType;
-	my $outputType = $filterNode->data->outputType;
-	my $name = $filterNode->data->name;
-	my $globalVariables = $filterNode->data->globalVariables;
-	my $workText = "$inputType";
-	$workText .= "->";
-	$workText .= "$outputType filter $name {\n";
+	my $inputType = $data->{inputType};
+	my $outputType = $data->{outputType};
+	my $name = $data->{name};
+	my $globalVariables = $data->{globalVariables};
+	my $filterText = "$inputType -> $outputType filter $name {\n";
 	if(!($globalVariables eq "")){
-		$workText .= "$globalVariables\n";
+		$filterText .= "$globalVariables\n";
 	}
-	$workText .= generateInit($filterNode->data);
-	$workText .= generateFilter($filterNode->data);
-	$workText .= "}\n";
+	$filterText .= generateInit($data);
+	$filterText .= generateWork($data);
+	$filterText .= "}\n";
 
-	return $workText;
+	return $filterText;
 }
 
 
@@ -113,19 +114,19 @@ sub generatePipeline {
 		return "";
 	}
 	my $arraySize = @filterArray;
-	my $inputType =  $filterArray[0]->data->inputType;
-	my $outputType = $filterArray[$arraySize-1]->data->outputType ;
-	my $workText = "inputType";
-	$workText .= "->";
-	$workText .= "$outputType pipeline ";
-	$workText .= getPipelineName();
-	$workText .= "{\n";
+	my $inputType =  $filterArray[0]->{data}->{inputType};
+	my $outputType = $filterArray[$arraySize-1]->{data}->{outputType} ;
+	my $pipelineText = "inputType";
+	$pipelineText .= "->";
+	$pipelineText .= "$outputType pipeline ";
+	$pipelineText .= getPipelineName();
+	$pipelineText .= "{\n";
 	foreach my $filterNode (@filterArray) {
-		my $name = $filterNode->data->name;
-		$workText .= "add $name;\n";
+		my $name = $filterNode->{data}->{name};
+		$pipelineText .= "add $name;\n";
 	}
-	$workText .= "}\n";
-	return $workText;
+	$pipelineText .= "}\n";
+	return $pipelineText;
 }
 
 1;
