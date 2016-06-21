@@ -99,7 +99,7 @@ Temporary Items
 ### Eclipse ###
 
 .metadata
-bin/
+# bin/ # don't ignore perl project bin dir
 tmp/
 *.tmp
 *.bak
