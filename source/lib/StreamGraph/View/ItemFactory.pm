@@ -10,160 +10,128 @@ use StreamGraph::View::ContentFactory;
 use StreamGraph::View::BorderFactory;
 use StreamGraph::View::HotSpot::ToggleFactory;
 use StreamGraph::View::HotSpot::GripFactory;
-
 use StreamGraph::View::Item;
-
 use StreamGraph::View::ArgUtils;
 
 use List::Util;
-
 use Glib ':constants';
 
-sub new
-{
-    my $class = shift(@_);
+sub new {
+	my $class = shift(@_);
+	my @attributes = @_;
+	my $self = {};
+	bless $self, $class;
 
-    my @attributes = @_;
+	my %attributes = @attributes;
 
-    my $self = {};
-
-    bless $self, $class;
-
-    my %attributes = @attributes;
-
-    args_valid(\%attributes, qw(view font_desc fill_color_gdk text_color_gdk
+	args_valid(\%attributes, qw(view font_desc fill_color_gdk text_color_gdk
 				outline_color_gdk hotspot_color_gdk));
+	args_required(\%attributes, qw(view));
+	args_store($self, \%attributes);
 
-    args_required(\%attributes, qw(view));
+	if (!($self->{view}->isa('StreamGraph::View'))) {
+		carp "Invalid StreamGraph::View argument.\n";
+	}
 
-    args_store($self, \%attributes);
-
-    if (!($self->{view}->isa('StreamGraph::View')))
-    {
-	carp "Invalid StreamGraph::View argument.\n";
-    }
-
-    arg_default($self, "font_desc", 
+	arg_default($self, "font_desc",
 		Gtk2::Pango::FontDescription->from_string("Ariel Normal 10"));
+	arg_default($self, "fill_color_gdk", Gtk2::Gdk::Color->parse('white'));
+	arg_default($self, "text_color_gdk", Gtk2::Gdk::Color->parse('black'));
+	arg_default($self, "outline_color_gdk", Gtk2::Gdk::Color->parse('gray'));
+	arg_default($self, "hotspot_color_gdk", Gtk2::Gdk::Color->parse('orange'));
 
-    arg_default($self, "fill_color_gdk", Gtk2::Gdk::Color->parse('white'));
+	$self->{content_factory} =
+		StreamGraph::View::ContentFactory->new(view=>$self->{view});
+	$self->{border_factory}  =
+		StreamGraph::View::BorderFactory->new(view=>$self->{view});
+	$self->{grip_factory}    = StreamGraph::View::HotSpot::GripFactory->new();
+	$self->{toggle_factory}  = StreamGraph::View::HotSpot::ToggleFactory->new();
 
-    arg_default($self, "text_color_gdk", Gtk2::Gdk::Color->parse('black'));
-
-    arg_default($self, "outline_color_gdk", Gtk2::Gdk::Color->parse('gray'));
-
-    arg_default($self, "hotspot_color_gdk", Gtk2::Gdk::Color->parse('orange'));
-
-    $self->{content_factory} =
-	StreamGraph::View::ContentFactory->new(view=>$self->{view});
-
-    $self->{border_factory}  =
-	StreamGraph::View::BorderFactory->new(view=>$self->{view});
-
-    $self->{grip_factory}    = StreamGraph::View::HotSpot::GripFactory->new();
-
-    $self->{toggle_factory}  = StreamGraph::View::HotSpot::ToggleFactory->new();
-
-    return $self;
+	return $self;
 }
 
 
-sub create_item
-{
-    my ($self, @attributes) = @_;
+sub create_item {
+	my ($self, @attributes) = @_;
+	my %attributes = @attributes;
 
-    my %attributes = @attributes;
-
-    args_valid(\%attributes, qw(border content text browser uri pixbuf 
+	args_valid(\%attributes, qw(border content text browser uri pixbuf 
 				font_desc fill_color_gdk text_color_gdk
 				outline_color_gdk hotspot_color_gdk));
+	args_required(\%attributes, qw(border content));
 
-    args_required(\%attributes, qw(border content));
+	my $border_type       = $attributes{border};
+	my $content_type      = $attributes{content};
+	my $text              = $attributes{text};
+	my $browser           = $attributes{browser};
+	my $uri               = $attributes{uri};
+	my $pixbuf            = $attributes{pixbuf};
 
-    my $border_type       = $attributes{border};
+	my $font_desc         = (defined $attributes{font_desc}) ?
+						 $attributes{font_desc} : $self->{font_desc};
+	my $fill_color_gdk    = (defined $attributes{fill_color_gdk}) ?
+						 $attributes{fill_color_gdk} : $self->{fill_color_gdk};
+	my $text_color_gdk    = (defined $attributes{text_color_gdk}) ?
+						 $attributes{text_color_gdk} : $self->{text_color_gdk};
+	my $outline_color_gdk = (defined $attributes{outline_color_gdk}) ?
+						 $attributes{outline_color_gdk} : $self->{outline_color_gdk};
+	my $hotspot_color_gdk = (defined $attributes{hotspot_color_gdk}) ?
+						 $attributes{hotspot_color_gdk} : $self->{hotspot_color_gdk};
 
-    my $content_type      = $attributes{content};
+	my $content           = $self->{content_factory}->create_content(
+							type=>$content_type, browser=>$browser,
+							text=>$text, uri=>$uri, pixbuf=>$pixbuf,
+							font_desc=>$font_desc,
+							text_color_gdk=>$text_color_gdk);
 
-    my $text              = $attributes{text};
+	my $border            = $self->{border_factory}->create_border(
+							type=>$border_type,
+							content=>$content,
+							fill_color_gdk=>$fill_color_gdk,
+							outline_color_gdk=>$outline_color_gdk);
 
-    my $browser           = $attributes{browser};
+	my $item              = Gnome2::Canvas::Item->new(
+							$self->{view}->root,
+							'StreamGraph::View::Item',
+							border=>$border,
+							x=>0, y=>0);
 
-    my $uri               = $attributes{uri};
+	my $hotspot1          = $self->{grip_factory}->create_grip(
+							item=>$item,
+							border=>$border,
+							side=>'left',
+							fill_color_gdk=>$fill_color_gdk,
+							hotspot_color_gdk=>$hotspot_color_gdk);
 
-    my $pixbuf            = $attributes{pixbuf};
+	my $hotspot2          = $self->{grip_factory}->create_grip(
+							item=>$item,
+							border=>$border,
+							side=>'right',
+							fill_color_gdk=>$fill_color_gdk,
+							hotspot_color_gdk=>$hotspot_color_gdk);
 
-    my $font_desc         = (defined $attributes{font_desc}) ?
-	                     $attributes{font_desc} : $self->{font_desc};
+	my $hotspot3          = $self->{toggle_factory}->create_toggle(
+							item=>$item,
+							border=>$border,
+							side=>'left',
+							fill_color_gdk=>$fill_color_gdk,
+							outline_color_gdk=>$outline_color_gdk,
+							hotspot_color_gdk=>$hotspot_color_gdk);
 
-    my $fill_color_gdk    = (defined $attributes{fill_color_gdk}) ?
-	                     $attributes{fill_color_gdk} : $self->{fill_color_gdk};
+	my $hotspot4          = $self->{toggle_factory}->create_toggle(
+							item=>$item,
+							border=>$border,
+							side=>'right',
+							fill_color_gdk=>$fill_color_gdk,
+							outline_color_gdk=>$outline_color_gdk,
+							hotspot_color_gdk=>$hotspot_color_gdk);
 
-    my $text_color_gdk    = (defined $attributes{text_color_gdk}) ?
-	                     $attributes{text_color_gdk} : $self->{text_color_gdk};
+	$item->add_hotspot('lower_left',   $hotspot1);
+	$item->add_hotspot('lower_right',  $hotspot2);
+	$item->add_hotspot('toggle_left',  $hotspot3);
+	$item->add_hotspot('toggle_right', $hotspot4);
 
-    my $outline_color_gdk = (defined $attributes{outline_color_gdk}) ?
-	                     $attributes{outline_color_gdk} : $self->{outline_color_gdk};
-
-    my $hotspot_color_gdk = (defined $attributes{hotspot_color_gdk}) ?
-	                     $attributes{hotspot_color_gdk} : $self->{hotspot_color_gdk};
-
-    my $content           = $self->{content_factory}->create_content(
-				      type=>$content_type, browser=>$browser,
-				      text=>$text, uri=>$uri, pixbuf=>$pixbuf,
-				      font_desc=>$font_desc,
-				      text_color_gdk=>$text_color_gdk);
-
-    my $border            = $self->{border_factory}->create_border(
-                                      type=>$border_type,
-				      content=>$content,
-				      fill_color_gdk=>$fill_color_gdk,
-				      outline_color_gdk=>$outline_color_gdk);
-
-    my $item              = Gnome2::Canvas::Item->new(
-                                      $self->{view}->root,
-				      'StreamGraph::View::Item',
-			              border=>$border,
-                                      x=>0, y=>0);
-
-    my $hotspot1          = $self->{grip_factory}->create_grip(
-				      item=>$item,
-				      border=>$border,
-				      side=>'left',
-			              fill_color_gdk=>$fill_color_gdk,
-				      hotspot_color_gdk=>$hotspot_color_gdk);
-
-    my $hotspot2          = $self->{grip_factory}->create_grip(
-				      item=>$item,
-				      border=>$border,
-				      side=>'right',
-				      fill_color_gdk=>$fill_color_gdk,
-				      hotspot_color_gdk=>$hotspot_color_gdk);
-
-    my $hotspot3          = $self->{toggle_factory}->create_toggle(
-				      item=>$item,
-				      border=>$border,
-				      side=>'left',
-				      fill_color_gdk=>$fill_color_gdk,
-				      outline_color_gdk=>$outline_color_gdk,
-				      hotspot_color_gdk=>$hotspot_color_gdk);
-
-    my $hotspot4          = $self->{toggle_factory}->create_toggle(
-				      item=>$item,
-				      border=>$border,
-				      side=>'right',
-				      fill_color_gdk=>$fill_color_gdk,
-				      outline_color_gdk=>$outline_color_gdk,
-				      hotspot_color_gdk=>$hotspot_color_gdk);
-
-    $item->add_hotspot('lower_left',   $hotspot1);  
-
-    $item->add_hotspot('lower_right',  $hotspot2);
- 
-    $item->add_hotspot('toggle_left',  $hotspot3);
-
-    $item->add_hotspot('toggle_right', $hotspot4);
-
-    return $item;
+	return $item;
 }
 
 
