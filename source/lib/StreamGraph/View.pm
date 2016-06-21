@@ -17,337 +17,241 @@ use POSIX qw(DBL_MAX);
 use Glib ':constants';
 
 use Glib::Object::Subclass
-    Gnome2::Canvas::,
-    properties => [
-		   Glib::ParamSpec->string ('connection-arrows', 'arrows',
-					    'Type of arrow to display.', 'none', G_PARAM_READWRITE),
+	Gnome2::Canvas::,
+	properties => [
+			Glib::ParamSpec->string ('connection-arrows', 'arrows',
+						'Type of arrow to display.', 'none', G_PARAM_READWRITE),
 
-		   Glib::ParamSpec->scalar ('connection-color-gdk','connection_color_gdk',
-					    'The color of the connection.', G_PARAM_READWRITE),
-	       ]
-    ; 
+			Glib::ParamSpec->scalar ('connection-color-gdk','connection_color_gdk',
+						'The color of the connection.', G_PARAM_READWRITE),
+		   ]
+	; 
 
 
-sub INIT_INSTANCE
-{
-    my $self = shift(@_);
-
-    $self->{graph} = StreamGraph::View::Graph->new();
-
-    $self->{signals} = {}; # HoH
-
-    $self->{connections} = {}; # HoA
-
-    $self->{connection_color_gdk} = Gtk2::Gdk::Color->parse('darkblue');
-
-    $self->{connection_arrows} = 'none';
-
-    return $self;
+sub INIT_INSTANCE {
+	my $self = shift(@_);
+	$self->{graph} = StreamGraph::View::Graph->new();
+	$self->{signals} = {}; # HoH
+	$self->{connections} = {}; # HoA
+	$self->{connection_color_gdk} = Gtk2::Gdk::Color->parse('darkblue');
+	$self->{connection_arrows} = 'none';
+	return $self;
 }
 
 
-sub SET_PROPERTY
-{
-    my ($self, $pspec, $newval) = @_;
-
-    my $param_name = $pspec->get_name();
-
-    if ($param_name eq 'connection_arrows')
-    {
-	if (!grep { $_ eq $newval } qw(none one-way two-way))
-	{
-	    croak "You may only set the connection arrows " .
-	          "to: 'none', 'one-way', 'two-way'.\n"
-	    }
-
-	$self->{connection_arrows} = $newval;
-
-	return;
-    }
-
-    if ($param_name eq 'connection_color_gdk')
-    {
-	if (!$newval->isa('Gtk2::Gdk::Color'))
-	{
-	    croak "You may only set the connection color to " .
-		  "a Gtk2::Gdk::Color.\n";
+sub SET_PROPERTY {
+	my ($self, $pspec, $newval) = @_;
+	my $param_name = $pspec->get_name();
+	if ($param_name eq 'connection_arrows') {
+		if (!grep { $_ eq $newval } qw(none one-way two-way)) {
+			croak "You may only set the connection arrows " .
+				 	"to: 'none', 'one-way', 'two-way'.\n"
+		}
+		$self->{connection_arrows} = $newval;
+		return;
 	}
 
-	$self->{connection_color_gdk} = $newval;
-
+	if ($param_name eq 'connection_color_gdk') {
+		if (!$newval->isa('Gtk2::Gdk::Color')) {
+			croak "You may only set the connection color to " .
+				"a Gtk2::Gdk::Color.\n";
+		}
+		$self->{connection_color_gdk} = $newval;
+		return;
+	}
+	$self->{$param_name} = $newval;
 	return;
-    }
-
-    $self->{$param_name} = $newval;
-
-    return;
 }
 
 
 # $view->add_item($item);
 # $view->add_item($predecessor_item, $item);
+sub add_item {
+	my ($self, $arg1, $arg2) = @_;
+	my $predecessor_item = (defined $arg2) ? $arg1 : undef;
+	my $item =             (defined $arg2) ? $arg2 : $arg1;
 
-sub add_item
-{
-    my ($self, $arg1, $arg2) = @_;
+	if (!$item->isa('StreamGraph::View::Item')) {
+		croak "You may only add a StreamGraph::View::Item.\n";
+	}
 
-    my $predecessor_item = (defined $arg2) ? $arg1 : undef;
+	if ((defined $predecessor_item) &&
+		(!$predecessor_item->isa('StreamGraph::View::Item'))) {
+			croak "You may only add items that have a " .
+					"StreamGraph::View::Item as predecessor.\n";
+	}
 
-    my $item =             (defined $arg2) ? $arg2 : $arg1;
+	if (!defined $self->{signals}{$item}) {
+		$self->{signals}{$item} =
+			$item->signal_connect('layout'=>sub { $self->layout(); });
+	}
 
-    if (!$item->isa('StreamGraph::View::Item'))
-    {
-	croak "You may only add a StreamGraph::View::Item.\n";
-    }
+	$item->set(graph=>$self->{graph});
 
-    if ((defined $predecessor_item) &&
-	(!$predecessor_item->isa('StreamGraph::View::Item')))
-    {
-	croak "You may only add items that have a " .
-	      "StreamGraph::View::Item as predecessor.\n";
-    }
+	if (!defined $predecessor_item) {
+		$self->{graph}->add($item);
+		return;
+	}
 
-    if (!defined $self->{signals}{$item})
-    {
-	$self->{signals}{$item} =
-	    $item->signal_connect('layout'=>sub { $self->layout(); });
-    }
-
-    $item->set(graph=>$self->{graph});
-
-    if (!defined $predecessor_item)
-    {
-	$self->{graph}->add($item);
-
-	return;
-    }
-
-    $self->{graph}->add($predecessor_item, $item);
-
-    _add_connection($self, $predecessor_item, $item);
+	$self->{graph}->add($predecessor_item, $item);
+	_add_connection($self, $predecessor_item, $item);
 }
 
 
 # $view->clear();
-
-sub clear
-{
-    my $self = shift(@_);
-
-    return if (scalar $self->{graph}->num_items() == 0);
-
-    my $root_item = $self->{graph}->get_root();
-
-    my @successors = $self->{graph}->successors($root_item);
-
-    foreach my $successor_item (@successors)
-    {
-	$self->{graph}->traverse_postorder_edge($root_item,
-		 $successor_item, sub { $self->remove_item($_[0], $_[1]); });
-    }
-
-    $self->remove_item($root_item);
+sub clear {
+	my $self = shift(@_);
+	return if (scalar $self->{graph}->num_items() == 0);
+	my $root_item = $self->{graph}->get_root();
+	my @successors = $self->{graph}->successors($root_item);
+	foreach my $successor_item (@successors) {
+		$self->{graph}->traverse_postorder_edge($root_item,
+			$successor_item, sub { $self->remove_item($_[0], $_[1]); });
+	}
+	$self->remove_item($root_item);
 }
 
 
 # $view->layout();
-
-sub layout
-{
-    my $self = shift(@_);
-
-    if (scalar $self->{graph}->num_items())
-    {
+sub layout {
+	my $self = shift(@_);
+	if (scalar $self->{graph}->num_items()) {
 	my $layout =
-	    StreamGraph::View::Layout::Balanced->new(graph=>$self->{graph});
-
-	$layout->layout();
-    }
+		StreamGraph::View::Layout::Balanced->new(graph=>$self->{graph});
+		$layout->layout();
+	}
 }
 
 
 # @predecessors = $view->predecessors($item);
-
-sub predecessors
-{
-    my ($self, $item) = @_;
-
-    if (!$item->isa('StreamGraph::View::Item'))
-    {
-	croak "You may only get the predecessors of a " .
-	      "StreamGraph::View::Item.\n";
-    }
-
-    return $self->{graph}->predecessors($item);
+sub predecessors {
+	my ($self, $item) = @_;
+	if (!$item->isa('StreamGraph::View::Item')) {
+		croak "You may only get the predecessors of a " .
+				"StreamGraph::View::Item.\n";
+	}
+	return $self->{graph}->predecessors($item);
 }
 
 
 # $view->remove_item($item);
 # $view->remove_item($predecessor_item, $item);
-
-sub remove_item
-{
-    my ($self, $arg1, $arg2) = @_;
-
-    my $predecessor_item = (defined $arg2) ? $arg1 : undef;
-
-    my $item =             (defined $arg2) ? $arg2 : $arg1;
-
-    if (!$item->isa('StreamGraph::View::Item'))
-    {
-	croak "You may only remove a StreamGraph::View::Item.\n";
-    }
-
-    if ((defined $predecessor_item) &&
-	(!$predecessor_item->isa('StreamGraph::View::Item')))
-    {
-	croak "You may only remove items that have a " .
-	      "StreamGraph::View::Item as predecessor.\n";
-    }
-
-    if (scalar $self->{graph}->successors($item))
-    {
-	croak "You must remove the successors of this item prior " .
-	      "to removing this item.\n"; 
-    }
-
-    if (defined $self->{signals}{$item})
-    {
-	$item->signal_handler_disconnect($self->{signals}{$item});
-
-	delete $self->{signals}{$item};
-    }
-
-    if (!defined $predecessor_item)
-    {
-	$self->{graph}->remove($item);
-
-	$item->destroy();
-
-	return;
-    }
-
-    $self->{graph}->remove($predecessor_item, $item);
-
-    if (exists $self->{connections}{$item})
-    {
-	_remove_connection($self, $predecessor_item, $item);
-
-	if (scalar @{$self->{connections}{$item}} == 0)
-	{
-	    delete $self->{connections}{$item};
+sub remove_item {
+	my ($self, $arg1, $arg2) = @_;
+	my $predecessor_item = (defined $arg2) ? $arg1 : undef;
+	my $item =             (defined $arg2) ? $arg2 : $arg1;
+	if (!$item->isa('StreamGraph::View::Item')) {
+		croak "You may only remove a StreamGraph::View::Item.\n";
 	}
-    }
 
-    $item->destroy();
+	if ((defined $predecessor_item) &&
+		(!$predecessor_item->isa('StreamGraph::View::Item'))) {
+			croak "You may only remove items that have a " .
+					"StreamGraph::View::Item as predecessor.\n";
+	}
+
+	if (scalar $self->{graph}->successors($item)) {
+		croak "You must remove the successors of this item prior " .
+			"to removing this item.\n"; 
+	}
+
+	if (defined $self->{signals}{$item}) {
+		$item->signal_handler_disconnect($self->{signals}{$item});
+		delete $self->{signals}{$item};
+	}
+
+	if (!defined $predecessor_item) {
+		$self->{graph}->remove($item);
+		$item->destroy();
+		return;
+	}
+
+	$self->{graph}->remove($predecessor_item, $item);
+
+	if (exists $self->{connections}{$item}) {
+		_remove_connection($self, $predecessor_item, $item);
+		if (scalar @{$self->{connections}{$item}} == 0) {
+			delete $self->{connections}{$item};
+		}
+	}
+	$item->destroy();
 }
 
 
 # $view->set_root($item);
+sub set_root {
+	my ($self, $item) = @_;
+	if (!$item->isa('StreamGraph::View::Item')) {
+		croak "You may only set the root to a StreamGraph::View::Item.\n";
+	}
 
-sub set_root
-{
-    my ($self, $item) = @_;
+	if (!$self->{graph}->has_item($item)) {
+		croak "You may only set the root to a StreamGraph::View::Item " .
+			  "that's been added to the view.\n";
+	}
 
-    if (!$item->isa('StreamGraph::View::Item'))
-    {
-	croak "You may only set the root to a StreamGraph::View::Item.\n";
-    }
-
-    if (!$self->{graph}->has_item($item))
-    {
-	croak "You may only set the root to a StreamGraph::View::Item " .
-	      "that's been added to the view.\n";
-    }
-
-    _clear_connections($self);
-
-    $self->{graph}->set_root($item);
-
-    my @successors = $self->{graph}->successors($item);
-
-    foreach my $successor_item (@successors)
-    {
-	$self->{graph}->traverse_preorder_edge($item,
-	       $successor_item, sub { _add_connection($self, $_[0], $_[1]); });
-    }
+	_clear_connections($self);
+	$self->{graph}->set_root($item);
+	my @successors = $self->{graph}->successors($item);
+	foreach my $successor_item (@successors) {
+		$self->{graph}->traverse_preorder_edge($item,
+			$successor_item, sub { _add_connection($self, $_[0], $_[1]); });
+	}
 }
 
 
 # @successors = $view->successors($item);
-
-sub successors
-{
-    my ($self, $item) = @_;
-
-    if (!$item->isa('StreamGraph::View::Item'))
-    {
-	croak "You may only get the successors of a " .
-	      "StreamGraph::View::Item.\n";
-    }
-
-    return $self->{graph}->successors($item);
-}
-
-
-sub _add_connection
-{
-    my ($self, $predecessor_item, $item) = @_;
-
-    my $connection = Gnome2::Canvas::Item->new($self->root,
-			      'StreamGraph::View::Connection',
-			      predecessor_item=>$predecessor_item,
-			      item=>$item,
-			      arrows=>$self->{connection_arrows},
-			      width_pixels=>1,
-			      outline_color_gdk=>$self->{connection_color_gdk},
-			      fill_color=>'darkblue');
-
-    push @{$self->{connections}{$item}}, $connection;
-}
-
-
-sub _clear_connections
-{
-    my $self = shift(@_);
-
-    my $root_item = $self->{graph}->get_root();
-
-    my @successors = $self->{graph}->successors($root_item);
-
-    foreach my $successor_item (@successors)
-    {
-	$self->{graph}->traverse_preorder_edge($root_item,
-	     $successor_item, sub { _remove_connection($self, $_[0], $_[1]); });
-    }
-
-    $self->{connections} = undef;
-}
-
-
-sub _remove_connection
-{
-    my ($self, $predecessor_item, $item) = @_;
-
-    my $index = 0;
-
-    my @connections = @{$self->{connections}{$item}};
-
-    foreach my $connection (@connections)
-    {
-	if ($connection->get('predecessor_item') == $predecessor_item)
-	{
-	    $connection->disconnect();
-
-	    $connection->destroy();
-
-	    last;
+sub successors {
+	my ($self, $item) = @_;
+	if (!$item->isa('StreamGraph::View::Item')) {
+		croak "You may only get the successors of a " .
+			  "StreamGraph::View::Item.\n";
 	}
+	return $self->{graph}->successors($item);
+}
 
-	$index++;
-    }
 
-    splice @{$self->{connections}{$item}}, $index, 1;
+sub _add_connection {
+	my ($self, $predecessor_item, $item) = @_;
+	my $connection = Gnome2::Canvas::Item->new(
+		$self->root,
+		'StreamGraph::View::Connection',
+		predecessor_item=>$predecessor_item,
+		item=>$item,
+		arrows=>$self->{connection_arrows},
+		width_pixels=>1,
+		outline_color_gdk=>$self->{connection_color_gdk},
+		fill_color=>'darkblue'
+	);
+	push @{$self->{connections}{$item}}, $connection;
+}
+
+
+sub _clear_connections {
+	my $self = shift(@_);
+	my $root_item = $self->{graph}->get_root();
+	my @successors = $self->{graph}->successors($root_item);
+	foreach my $successor_item (@successors) {
+	$self->{graph}->traverse_preorder_edge($root_item,
+		 $successor_item, sub { _remove_connection($self, $_[0], $_[1]); });
+	}
+	$self->{connections} = undef;
+}
+
+
+sub _remove_connection {
+	my ($self, $predecessor_item, $item) = @_;
+	my $index = 0;
+	my @connections = @{$self->{connections}{$item}};
+	foreach my $connection (@connections) {
+		if ($connection->get('predecessor_item') == $predecessor_item) {
+			$connection->disconnect();
+			$connection->destroy();
+			last;
+		}
+		$index++;
+	}
+	splice @{$self->{connections}{$item}}, $index, 1;
 }
 
 
@@ -367,11 +271,11 @@ This document describes Gtk2::Ex::StreamGraphView version 0.0.1
 
  Glib::Object
  +----Gtk2::Object
-      +----Gtk2::Widget
-           +----Gtk2::Container
-                +----Gtk2::Layout
-                     +----Gnome2::Canvas
-                          +----Gtk2::Ex::StreamGraphView
+	  +----Gtk2::Widget
+		   +----Gtk2::Container
+				+----Gtk2::Layout
+					 +----Gnome2::Canvas
+						  +----Gtk2::Ex::StreamGraphView
 
 =head1 SYNOPSIS
 
@@ -425,76 +329,76 @@ exit 0;
 
 sub _closeapp
 {
-    my $view = shift(@_);
+	my $view = shift(@_);
 
-    $view->destroy();
+	$view->destroy();
 
-    Gtk2->main_quit();
+	Gtk2->main_quit();
 
-    return 0;
+	return 0;
 }
 
 
 sub _text_item
 {
-    my ($factory, $text) = @_;
+	my ($factory, $text) = @_;
 
-    my $item = $factory->create_item(border=>'StreamGraph::View::Border::RoundedRect',
-				     content=>'StreamGraph::View::Content::EllipsisText',
-				     text=>$text,
-				     font_desc=>Gtk2::Pango::FontDescription->from_string("Ariel Italic 8"),
-				     hotspot_color_gdk=>Gtk2::Gdk::Color->parse('lightgreen'));
+	my $item = $factory->create_item(border=>'StreamGraph::View::Border::RoundedRect',
+					 content=>'StreamGraph::View::Content::EllipsisText',
+					 text=>$text,
+					 font_desc=>Gtk2::Pango::FontDescription->from_string("Ariel Italic 8"),
+					 hotspot_color_gdk=>Gtk2::Gdk::Color->parse('lightgreen'));
 
-    $item->signal_connect(event=>\&_test_handler);
+	$item->signal_connect(event=>\&_test_handler);
 
-    return $item;
+	return $item;
 }
 
 
 sub _url_item
 {
-    my ($factory, $text, $url) = @_;
+	my ($factory, $text, $url) = @_;
 
-    my $browser = '/usr/bin/firefox';
+	my $browser = '/usr/bin/firefox';
 
-    my $item = $factory->create_item(border=>'StreamGraph::View::Border::RoundedRect',
-				     content=>'StreamGraph::View::Content::Uri',
-				     text=>$text, uri=>$url, browser=>$browser,
-				     text_color_gdk=>Gtk2::Gdk::Color->parse('blue'),
-				     fill_color_gdk   =>Gtk2::Gdk::Color->parse('white'));
+	my $item = $factory->create_item(border=>'StreamGraph::View::Border::RoundedRect',
+					 content=>'StreamGraph::View::Content::Uri',
+					 text=>$text, uri=>$url, browser=>$browser,
+					 text_color_gdk=>Gtk2::Gdk::Color->parse('blue'),
+					 fill_color_gdk   =>Gtk2::Gdk::Color->parse('white'));
 
-    $item->signal_connect(event=>\&_test_handler);
+	$item->signal_connect(event=>\&_test_handler);
 
-    return $item;
+	return $item;
 }
 
 
 sub _picture_item
 {
-    my ($factory, $file) = @_;
+	my ($factory, $file) = @_;
 
-    my $pixbuf = Gtk2::Gdk::Pixbuf->new_from_file($file);
+	my $pixbuf = Gtk2::Gdk::Pixbuf->new_from_file($file);
 
-    my $item = $factory->create_item(border=>'StreamGraph::View::Border::Rectangle',
-				     content=>'StreamGraph::View::Content::Picture',
-				     pixbuf=>$pixbuf,
-				     hotspot_color_gdk=>Gtk2::Gdk::Color->parse('lightgreen'),
-				     fill_color_gdk   =>Gtk2::Gdk::Color->parse('white'));
+	my $item = $factory->create_item(border=>'StreamGraph::View::Border::Rectangle',
+					 content=>'StreamGraph::View::Content::Picture',
+					 pixbuf=>$pixbuf,
+					 hotspot_color_gdk=>Gtk2::Gdk::Color->parse('lightgreen'),
+					 fill_color_gdk   =>Gtk2::Gdk::Color->parse('white'));
 
-    $item->signal_connect(event=>\&_test_handler);
+	$item->signal_connect(event=>\&_test_handler);
 
-    return $item;
+	return $item;
 }
 
 sub _test_handler
 {
-    my ($item, $event) = @_;
+	my ($item, $event) = @_;
 
-    my $event_type = $event->type;
+	my $event_type = $event->type;
 
-    my @coords = $event->coords;
+	my @coords = $event->coords;
 
-    print "Event, type: $event_type  coords: @coords\n";
+	print "Event, type: $event_type  coords: @coords\n";
 }
 
 
