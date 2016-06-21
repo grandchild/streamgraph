@@ -1,0 +1,7 @@
+bin/streamgraph.pl
+Changes
+Makefile.PL
+MANIFEST
+README
+t/StreamGraph.t
+lib/StreamGraph.pm

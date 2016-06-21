@@ -1,0 +1,6 @@
+Revision history for Perl extension StreamGraph.
+
+0.01  Tue Jun 21 15:35:20 2016
+	- original version; created by h2xs 1.23 with options
+		-AXn StreamGraph
+
