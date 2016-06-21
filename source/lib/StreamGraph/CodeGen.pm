@@ -1,8 +1,7 @@
-#!/usr/local/bin/perl -w
+package StreamGraph::CodeGen;
 use strict;
-use Gtk2::Ex::MindMapView::Item;
+use StreamGraph::View::Item;
 
-package codeGen;
 
 $pipelineNumber = 0;
 
@@ -13,7 +12,7 @@ sub generateCode {
 	my $fileŃame = shift;
 	my $programText = "\\*\n * Generated code from project $fileName\n *\\\n";
 	# build Node list
-	my @nodeList = push($node, Gtk2::Ex::MindMapView::Item::successors($node));
+	my @nodeList = push($node, StreamGraph::View::Item::successors($node));
 	# first generate all filter code
 	foreach my $filterNode (@nodeList) {
 		$programText .= generateFilter($filterNode);
@@ -27,7 +26,7 @@ sub generateCode {
 
 
 
-# gets NodeData for which the work function is to be generated
+# gets filter for which the work function is to be generated
 # returns String of Work function
 sub generateWork {
 	my $filter = shift;
@@ -36,7 +35,7 @@ sub generateWork {
 	my $timesPop = $filter->timesPop;
 	my $timesPush = $filter->timesPush;
 	my $timesPeek = $filter->timesPeek;
-	my $filterText = $filter->filterText;
+	my $filterText = $filter->workCode;
 	if($timesPop > 0){
 		$workText .= "pop $timesPop ";
 	}
@@ -56,7 +55,7 @@ sub generateWork {
 # gets NoteData objectfor which the init funktion is to be generated
 sub generateInit {
 	my $filter = shift;
-	my $initText = $filter->initText;
+	my $initText = $filter->initCode;
 	my $workText = "init {\n";
 	$workText .= $initText;
 	$workText .= "\n}\n";
@@ -75,18 +74,18 @@ sub generateFilter {
 	}
 
 	# needs finished when Datastructure is there
-	my $inputType = $filterNode->NodeData->inputType;
-	my $outputType = $filterNode->NodeData->outputType;
-	my $name = $filterNode->NodeData->name;
-	my $globalVariables = $filterNode->NodeData->globalVariables;
+	my $inputType = $filterNode->data->inputType;
+	my $outputType = $filterNode->data->outputType;
+	my $name = $filterNode->data->name;
+	my $globalVariables = $filterNode->data->globalVariables;
 	my $workText = "$inputType";
 	$workText .= "->";
 	$workText .= "$outputType filter $name {\n";
 	if(!($globalVariables eq "")){
 		$workText .= "$globalVariables\n";
 	}
-	$workText .= generateInit($filterNode->NodeData);
-	$workText .= generateFilter($filterNode->NodeData);
+	$workText .= generateInit($filterNode->data);
+	$workText .= generateFilter($filterNode->data);
 	$workText .= "}\n";
 
 	return workText;
@@ -113,15 +112,15 @@ sub generatePipeline {
 		return "";
 	}
 	my $arraySize = @filterArray;
-	my $inputType =  $filterArray[0]->NodeData->inputType;
-	my $outputType = $filterArray[$arraySize-1]->NodeData->outputType ;
+	my $inputType =  $filterArray[0]->data->inputType;
+	my $outputType = $filterArray[$arraySize-1]->data->outputType ;
 	my $workText = "inputType";
 	$workText .= "->";
 	$workText .= "$outputType pipeline ";
 	$workText .= getPipelineName();
 	$workText .= "{\n";
 	foreach my $filterNode (@filterArray) {
-		my $name = $filterNode->NodeData->name;
+		my $name = $filterNode->data->name;
 		$workText .= "add $name;\n";
 	}
 	$workText .= "}\n"

@@ -10,6 +10,10 @@ use strict;
 
 has initCode            => ( is=>"rw", default=>"" );
 has workCode            => ( is=>"rw", default=>"" );
+has globalVariables     => ( is=>"rw", default=>"" );
+has timesPush           => ( is=>"rw", default=>"" );
+has timesPop            => ( is=>"rw", default=>"" );
+has timesPeek           => ( is=>"rw", default=>"" );
 
 has joinType            => ( is=>"rw" );
 has joinMultiplicities  => ( is=>"rw" );
