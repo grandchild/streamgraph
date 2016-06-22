@@ -2,7 +2,7 @@ package StreamGraph::CodeGen;
 
 use strict;
 use StreamGraph::View::Item;
-
+use StreamGraph::Util::File;
 
 $StreamGraph::CodeGen::pipelineNumber = 0;
 
@@ -20,12 +20,10 @@ sub generateCode {
 		$programText .= generateFilter($filterNode);
 	}
 	$programText .= generatePipeline(@nodeList);
-	return $programText;
 	
 	### TODO: write to file in extra Util function
-	# open(my $fh, '>', $fileName);
-	# print $fh $programText;
-	# close $fh; 
+	StreamGraph::Util::File::writeToFile($programText, $fileName);
+	return $programText;
 }
 
 
