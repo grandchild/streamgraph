@@ -5,26 +5,24 @@ use StreamGraph::View::Item;
 use StreamGraph::Util::File;
 
 $StreamGraph::CodeGen::pipelineNumber = 0;
+$StreamGraph::CodeGen::dividingLine = "---------------------------------------------------";
 
 # function which generates Code out of Graph from root Node
 # gets root as 1. input parameter and filename as 2.parameter
 sub generateCode {
 	my $node = shift;
 	my $fileName = shift;
-	my $programText = "/*\n * Generated code from project $fileName\n */\n";
+	my $programText = generateMultiLineCommentary("Generated code from project $fileName");
 	# build Node list
 	my @nodeList = ();
 	push(@nodeList, $node, StreamGraph::View::Item::successors($node));
 	# first generate all filter code
+	$programText .= generateMultiLineCommentary("$StreamGraph::CodeGen::dividingLine \nSection for all Filters");
 	foreach my $filterNode (@nodeList) {
 		$programText .= generateFilter($filterNode);
 	}
-	foreach my $filterNode (@nodeList) {
-		print "\nName = $filterNode->{data}->{name}\n";
-		print "Input = $filterNode->{data}->{inputType}\n";
-		print "Output = $filterNode->{data}->{outputType}\n\n";
-	}
-	$programText .= "\n/*\n * Pipelines\n */\n\n";
+
+	$programText .= generateMultiLineCommentary("$StreamGraph::CodeGen::dividingLine \nSection for all Pipelines");
 	$programText .= generatePipeline(\@nodeList);
 	
 	### TODO: write to file in extra Util function
@@ -32,16 +30,26 @@ sub generateCode {
 	return $programText;
 }
 
-sub generateCommentary {
+sub generateCommentary{
+	my $commentText = shift;
+	$commentText = "\n/* " . $commentText . " */\n";
+	return $commentText;
+}
+
+sub generateMultiLineCommentary {
 	my $commentText = shift;
 	my $commentaryText = "\n/*\n * ";
+	$commentText =~ s/\r?\n/\n * /g;
+	$commentaryText .= $commentText;
+	$commentaryText .= "\n */\n\n";
+	return $commentaryText;
 }
 
 # gets filter for which the work function is to be generated
 # returns String of Work function
 sub generateWork {
 	my $data = shift;
-	my $workText = "work";
+	my $workText = "\twork";
 	# needs finished when Datastructure is there
 	my $timesPop = $data->{timesPop};
 	my $timesPush = $data->{timesPush};
@@ -57,22 +65,24 @@ sub generateWork {
 	}
 	$workText .= " {\n";
 	my $workCode = $data->{workCode};
-	$workCode =~ s/\r?\n/\n\t/g;
-	$workText .= "\t$workCode";
-	$workText .= "\n}\n";
-
-
+	$workCode =~ s/\r?\n/\n\t\t/g;
+	$workText .= "\t\t$workCode";
+	$workText .= "\n\t}\n";
+	return $workText;
 }
 
 # gets NoteData objectfor which the init funktion is to be generated
 sub generateInit {
 	my $data = shift;
 	my $initText = $data->{initCode};
-	my $workText = "init {\n";
-	$initText =~ s/\r?\n/\n\t/g;
-	$workText .= "\t$initText";
-	$workText .= "\n}\n";
-
+	my $workText = "\tinit {";
+	if(!($initText eq "")){
+		$initText =~ s/\r?\n/\n\t\t/g;
+		$workText .= "\n\t\t$initText";
+		$workText .= "\n\t";
+	}
+	$workText .= "}\n";
+	return $workText;
 }
 
 
@@ -86,15 +96,14 @@ sub generateFilter {
 		return "";
 	}
 	my $data = $filterNode->{data};
-
-	# needs finished when Datastructure is there
 	my $inputType = $data->{inputType};
 	my $outputType = $data->{outputType};
 	my $name = $data->{name};
 	my $globalVariables = $data->{globalVariables};
-	my $filterText = "$inputType->$outputType filter $name {\n";
+	my $filterText = generateCommentary("Filter $name") . "$inputType->$outputType filter $name {\n"; 
 	if(!($globalVariables eq "")){
-		$filterText .= "$globalVariables\n";
+		$globalVariables =~ s/\r?\n/\n\t/g;
+		$filterText .= "\t$globalVariables\n";
 	}
 	$filterText .= generateInit($data);
 	$filterText .= generateWork($data);
