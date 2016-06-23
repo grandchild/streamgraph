@@ -19,6 +19,11 @@ sub generateCode {
 	foreach my $filterNode (@nodeList) {
 		$programText .= generateFilter($filterNode);
 	}
+	foreach my $filterNode (@nodeList) {
+		print "\nName = $filterNode->{data}->{name}\n";
+		print "Input = $filterNode->{data}->{inputType}\n";
+		print "Output = $filterNode->{data}->{outputType}\n\n";
+	}
 	$programText .= generatePipeline(@nodeList);
 	
 	### TODO: write to file in extra Util function
@@ -113,15 +118,17 @@ sub generatePipeline {
 	}
 	my $arraySize = @filterArray;
 	my $inputType =  $filterArray[0]->{data}->{inputType};
-	my $outputType = $filterArray[$arraySize-1]->{data}->{outputType} ;
-	my $pipelineText = "inputType";
+	print "$inputType";
+	my $outputType = $filterArray[$arraySize-1]->{data}->{outputType};
+	print "$outputType";
+	my $pipelineText = "$inputType";
 	$pipelineText .= "->";
 	$pipelineText .= "$outputType pipeline ";
 	$pipelineText .= getPipelineName();
 	$pipelineText .= "{\n";
 	foreach my $filterNode (@filterArray) {
 		my $name = $filterNode->{data}->{name};
-		$pipelineText .= "add $name;\n";
+		$pipelineText .= "\t add $name;\n";
 	}
 	$pipelineText .= "}\n";
 	return $pipelineText;
