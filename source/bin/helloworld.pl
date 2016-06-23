@@ -11,6 +11,7 @@ use StreamGraph::View;
 use StreamGraph::View::ItemFactory;
 use StreamGraph::NodeData;
 use StreamGraph::CodeGen;
+use StreamGraph::Util::PropertyWindow;
 
 my $window   = Gtk2::Window->new();
 my $uimanager;
@@ -91,108 +92,14 @@ sub _test_handler {
 	my $event_type = $event->type;
 	my @coords = $event->coords;
 	# print "Event, type: $event_type  coords: @coords\n";
-	
+
 	if ($event_type eq 'button-release' && $event->button == 3) {
 		$factory->{focus_item} = $item;
 		$menu_edit->popup (undef, undef, undef, undef, $event->button, $event->time);
 		return;
 	} elsif ($event_type eq 'button-release' && $event->button == 1) {
-	
-		my $itemData = $item->{data};
-
-		my $dialog = Gtk2::Dialog->new(
-			'Edit',
-			undef,
-			[qw/modal destroy-with-parent/],
-		);
-
-		my $dbox = $dialog->vbox;
-
-		my $nb = Gtk2::Notebook->new;
-		$nb->set_scrollable (TRUE);
-		$nb->popup_enable;
-
-		# JOIN TAB
-		my $joinTab = Gtk2::VBox->new(FALSE,0);
-		$nb->append_page($joinTab,Gtk2::Label->new("Join"));
-
-		# JOIN TYPE COMBO BOX
-		my $joinCBhbox = Gtk2::HBox->new(FALSE,0);
-		my $joinCB = Gtk2::ComboBox->new_text;
-		$joinCB->set_title("Type");
-		$joinCB->append_text('Round Robin');
-		$joinCB->append_text('Default');
-		$joinCB->set_active(0);
-		$joinCBhbox->pack_start(Gtk2::Label->new("Type: "),FALSE,FALSE,0);
-		$joinCBhbox->pack_start($joinCB,FALSE,FALSE,0);
-		$joinTab->pack_start($joinCBhbox,FALSE,FALSE,0);
-
-		# JOIN UNIFY SLICE COUNTS CHECK BOX
-		my $joinCheck = Gtk2::CheckButton->new("Unify slice counts");
-		$joinTab->pack_start($joinCheck,FALSE,FALSE,0);
-
-		# FILTER TAB
-		my $filterTab = Gtk2::VBox->new(FALSE,0);
-		$nb->append_page($filterTab,Gtk2::Label->new("Filter"));
-
-		# FILTER INIT TEXTVIEW
-		my $filterInitLabel = Gtk2::Label->new("Init");
-		$filterInitLabel->set_alignment(0, 0);
-		$filterTab->pack_start($filterInitLabel,FALSE,FALSE,0);
-		my $filterInitView = Gtk2::TextView->new();
-		my $filterInitBuffer = $filterInitView->get_buffer();
-		$filterInitBuffer->set_text($itemData->{initCode});
-		$filterInitBuffer->signal_connect(changed => sub{ 
-			$itemData->{initCode} = $filterInitBuffer->get_text(
-				$filterInitBuffer->get_start_iter, 
-				$filterInitBuffer->get_end_iter, 
-				TRUE
-			); });
-		$filterTab->pack_start($filterInitView,FALSE,FALSE,0);
-
-		$filterTab->pack_start(Gtk2::HSeparator->new(),FALSE,FALSE,0); # SEPARATOR
-
-		# FILTER WORK TEXTVIEW
-		my $filterWorkLabel = Gtk2::Label->new("Work");
-		$filterWorkLabel->set_alignment(0, 0);
-		$filterTab->pack_start($filterWorkLabel,FALSE,FALSE,0);
-		my $filterWorkView = Gtk2::TextView->new();
-		my $filterWorkBuffer = $filterWorkView->get_buffer();
-		$filterWorkBuffer->set_text($itemData->{workCode});
-		$filterWorkBuffer->signal_connect(changed => sub{ 
-			$itemData->{workCode} = $filterWorkBuffer->get_text(
-				$filterWorkBuffer->get_start_iter, 
-				$filterWorkBuffer->get_end_iter, 
-				TRUE
-			); });
-		$filterTab->pack_start($filterWorkView,FALSE,FALSE,0);
-
-		# FILTER INPUT ENTRY
-		my $filterInhbox = Gtk2::HBox->new(FALSE,0);
-		$filterInhbox->pack_start(Gtk2::Label->new("Input: "),FALSE,FALSE,0);
-		my $filteInE = Gtk2::Entry->new();
-		$filterInhbox->pack_start($filteInE,FALSE,FALSE,0);
-		$filterTab->pack_start($filterInhbox,FALSE,FALSE,0);
-
-		# FILTER INPUT ENTRY
-		my $filterOuthbox = Gtk2::HBox->new(FALSE,0);
-		$filterOuthbox->pack_start(Gtk2::Label->new("Output: "),FALSE,FALSE,0);
-		my $filteOutE = Gtk2::Entry->new();
-		$filterOuthbox->pack_start($filteOutE,FALSE,FALSE,0);
-		$filterTab->pack_start($filterOuthbox,FALSE,FALSE,0);
-
-		# FILTER SPLIT
-		my $splitTab = Gtk2::VBox->new(FALSE,0);
-		$nb->append_page($splitTab,Gtk2::Label->new("Split"));
-
-		my $sentry = Gtk2::Entry->new();
-		$splitTab->pack_start($sentry,FALSE,FALSE,0);
-
-		$dbox->add($nb);
-		$dbox->show_all();
-		$window->signal_connect('delete-event'=>sub { $dialog->destroy(); });
-		$dialog->show();
-	} 
+		StreamGraph::Util::PropertyWindow::show($item->{data});
+	}
 }
 
 sub addFilter {
@@ -206,7 +113,7 @@ sub addFilter {
 		inputCount=>1,
 		timesPop=>1
 		));
-  $view->add_item($factory->{focus_item}, $item);
+  $view->add_item($item);
   $view->layout();
 }
 
