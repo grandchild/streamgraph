@@ -52,7 +52,9 @@ sub generateWork {
 		$workText .= " peek $timesPeek";
 	}
 	$workText .= " {\n";
-	$workText .= $data->{workCode};
+	my $workCode = $data->{workCode};
+	$workCode =~ s/\r?\n/\n\t/g;
+	$workText .= "\t$workCode";
 	$workText .= "\n}\n";
 
 
@@ -63,7 +65,8 @@ sub generateInit {
 	my $data = shift;
 	my $initText = $data->{initCode};
 	my $workText = "init {\n";
-	$workText .= $initText;
+	$initText =~ s/\r?\n/\n\t/g;
+	$workText .= "\t$initText";
 	$workText .= "\n}\n";
 
 }
