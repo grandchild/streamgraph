@@ -4,6 +4,7 @@ use strict;
 use Gtk2 '-init';
 use Glib qw/TRUE FALSE/;
 use Gnome2::Canvas;
+use Time::HiRes qw(gettimeofday);
 
 use lib "./lib/";
 
@@ -98,7 +99,9 @@ sub _test_handler {
 		$menu_edit->popup (undef, undef, undef, undef, $event->button, $event->time);
 		return;
 	} elsif ($event_type eq 'button-release' && $event->button == 1) {
-		StreamGraph::Util::PropertyWindow::show($item->{data});
+		if (!defined $item->{clickTiem}) { $item->{clickTiem} = int (gettimeofday * 10); return;}
+		StreamGraph::Util::PropertyWindow::show($item->{data}) if int (gettimeofday * 10) - $item->{clickTiem} < 5;
+		$item->{clickTiem} = int (gettimeofday * 10);
 	}
 }
 
