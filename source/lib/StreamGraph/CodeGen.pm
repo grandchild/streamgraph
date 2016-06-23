@@ -24,14 +24,18 @@ sub generateCode {
 		print "Input = $filterNode->{data}->{inputType}\n";
 		print "Output = $filterNode->{data}->{outputType}\n\n";
 	}
-	$programText .= generatePipeline(@nodeList);
+	$programText .= "\n/*\n * Pipelines\n */\n\n";
+	$programText .= generatePipeline(\@nodeList);
 	
 	### TODO: write to file in extra Util function
 	StreamGraph::Util::File::writeToFile($programText, $fileName);
 	return $programText;
 }
 
-
+sub generateCommentary {
+	my $commentText = shift;
+	my $commentaryText = "\n/*\n * ";
+}
 
 # gets filter for which the work function is to be generated
 # returns String of Work function
@@ -115,15 +119,14 @@ sub getPipelineName {
 # gets list/array of Nodes to be included in the pipeline
 # returns pipeline code
 sub generatePipeline {
-	my @filterArray = shift;
+	my $filterPointer = shift;
+	my @filterArray = @{$filterPointer};
 	if (!@filterArray) {
 		return "";
 	}
 	my $arraySize = @filterArray;
 	my $inputType =  $filterArray[0]->{data}->{inputType};
-	print "$inputType";
 	my $outputType = $filterArray[$arraySize-1]->{data}->{outputType};
-	print "$outputType";
 	my $pipelineText = "$inputType";
 	$pipelineText .= "->";
 	$pipelineText .= "$outputType pipeline ";
