@@ -1,4 +1,4 @@
-package StreamGraph::Util::StringLoader;
+package StreamGraph::Util::ConfigLoader;
 
 use lib qw(..);
 
