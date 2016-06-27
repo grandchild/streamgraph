@@ -13,285 +13,201 @@ use POSIX qw(DBL_MAX);
 
 use Glib ':constants';
 use Glib::Object::Subclass
-    Gnome2::Canvas::Bpath::,
-    properties => [
-		   Glib::ParamSpec->string ('arrows', 'arrow-type',
-					    'Type of arrow to display', 'none', G_PARAM_READWRITE),
+	Gnome2::Canvas::Bpath::, properties => [
+	Glib::ParamSpec->string(
+		'arrows',                   'arrow-type',
+		'Type of arrow to display', 'none',
+		G_PARAM_READWRITE
+	),
 
-		   Glib::ParamSpec->scalar ('predecessor_item', 'predecessor_item',
-					    'Predecessor view item', G_PARAM_READWRITE),
+	Glib::ParamSpec->scalar(
+		'predecessor_item',      'predecessor_item',
+		'Predecessor view item', G_PARAM_READWRITE
+	),
 
-		   Glib::ParamSpec->scalar ('item', 'item_item',
-					    'Item view_item', G_PARAM_READWRITE),
-		   ]
-    ; 
+	Glib::ParamSpec->scalar(
+		'item', 'item_item', 'Item view_item',
+		G_PARAM_READWRITE
+	),
+	];
 
-
-sub INIT_INSTANCE
-{
-    my $self = shift(@_);
-
-    $self->{x1} = 0;
-
-    $self->{y1} = 0;
-
-    $self->{x2} = 0;
-
-    $self->{y2} = 0;
-
-    $self->{predecessor_item} = undef;
-
-    $self->{predecessor_signal_id}  = 0;
-
-    $self->{item}              = undef;
-
-    $self->{item_signal_id}    = 0;
+sub INIT_INSTANCE {
+	my $self = shift(@_);
+	$self->{x1} = 0;
+	$self->{y1} = 0;
+	$self->{x2} = 0;
+	$self->{y2} = 0;
+	$self->{predecessor_item} = undef;
+	$self->{predecessor_signal_id} = 0;
+	$self->{item} = undef;
+	$self->{item_signal_id} = 0;
 }
 
-
-sub SET_PROPERTY
-{
-    my ($self, $pspec, $newval) = @_;
-
-    my $param_name = $pspec->get_name();
-
-    if ($param_name eq 'predecessor_item')
-    {
-	if ((defined $self->{predecessor_item}) && ($self->{predecessor_item} != $newval))
-	{
-	    $self->{predecessor_item}->signal_handler_disconnect($self->{predecessor_signal_id});
+sub SET_PROPERTY {
+	my ( $self, $pspec, $newval ) = @_;
+	my $param_name = $pspec->get_name();
+	if ($param_name eq 'predecessor_item') {
+		if (( defined $self->{predecessor_item} )
+			&& ( $self->{predecessor_item} != $newval )) {
+				$self->{predecessor_item}
+					->signal_handler_disconnect( $self->{predecessor_signal_id} );
+		}
+		
+		$self->{predecessor_item} = $newval;
+		$self->{predecessor_signal_id}
+			= $newval->signal_connect( 'connection_adjust' =>
+				sub { _predecessor_connection( $self, @_ ); } );
 	}
 
-	$self->{predecessor_item} = $newval;
-
-	$self->{predecessor_signal_id} =
-	    $newval->signal_connect('connection_adjust'=>
-				    sub { _predecessor_connection($self, @_); });
-    }
-
-    if ($param_name eq 'item')
-    {
-	if ((defined $self->{item}) && ($self->{item} != $newval))
-	{
-	    $self->{item}->signal_handler_disconnect($self->{item_signal_id});
+	if ($param_name eq 'item') {
+		if (( defined $self->{item} ) && ( $self->{item} != $newval )) {
+			$self->{item}
+				->signal_handler_disconnect( $self->{item_signal_id} );
+		}
+		$self->{item} = $newval;
+		$self->{item_signal_id} = $newval->signal_connect(
+			'connection_adjust' => sub { _item_connection( $self, @_ ); } );
 	}
 
-	$self->{item} = $newval;
+	$self->{$param_name} = $newval;
+	# print "Connection, SET_PROPERTY, name: $param_name  value: $newval\n";
+	if ((defined $self->{predecessor_item}) && (defined $self->{item})) {
+		_set_connection_path($self);
+	}
+}
 
-	$self->{item_signal_id} = 
-	    $newval->signal_connect('connection_adjust'=>
-				    sub { _item_connection($self, @_); });
-    }
+sub connect {
+	my $self = shift(@_);
+	$self->{predecessor_signal_id}
+		= $self->{predecessor_item}->signal_connect(
+		'connection_adjust' => sub { _predecessor_connection( $self, @_ ); }
+		);
+	$self->{item_signal_id} = $self->{item}->signal_connect(
+		'connection_adjust' => sub { _item_connection( $self, @_ ); } );
+}
 
-    $self->{$param_name} = $newval;
+sub disconnect {
+	my $self = shift(@_);
+	$self->{predecessor_item}
+		->signal_handler_disconnect( $self->{predecessor_signal_id} );
+	$self->{item}->signal_handler_disconnect( $self->{item_signal_id} );
+}
 
-#    print "Connection, SET_PROPERTY, name: $param_name  value: $newval\n";
+sub _direction {
+	my ( $predecessor_item, $item ) = @_;
+	my $predecessor_column = $predecessor_item->get('column');
+	my $predecessor_column_no
+		= ( defined $predecessor_column )
+		? $predecessor_column->get('column_no')
+		: 0;
+	my $column = $item->get('column');
+	my $item_column_no = ( defined $column ) ? $column->get('column_no') : 0;
+	
+	if ($predecessor_column_no > $item_column_no) {
+		return ( 'left', 'left' );
+	}
+	
+	if ($predecessor_column_no < $item_column_no) {
+		return ( 'right', 'right' );
+	}
+	
+	if ($predecessor_column_no >= 0) {
+		return ( 'right', 'left' );
+	}
+	
+	return ( 'left', 'right' );
+}
 
-    if ((defined $self->{predecessor_item}) && (defined $self->{item}))
-    {
+sub _item_connection {
+	my $self = shift(@_);
+	my $direction = (
+		_direction($self->get('predecessor_item'), $self->get('item'))
+	)[1];
+
+	my $side = ( $direction eq 'right' ) ? 'left' : 'right';
+	my ( $x2, $y2 ) = $self->get('item')->get_connection_point($side);
+	my @successors = $self->get('item')->successors($side);
+	my $offset
+		= ( $side eq 'left' )
+		? -3
+		: 3;    # FIXME: UGH should be radius of toggle.
+	$self->{x2} = ( scalar @successors > 0 ) ? $x2 + $offset : $x2;
+	$self->{y2} = $y2;
 	_set_connection_path($self);
-    }
 }
 
-
-sub connect
-{
-    my $self = shift(@_);
-
-    $self->{predecessor_signal_id} = 
-	$self->{predecessor_item}->signal_connect('connection_adjust'=>
- 				     sub { _predecessor_connection($self, @_); });
-    $self->{item_signal_id} = 
-	$self->{item}->signal_connect('connection_adjust'=>
-				      sub { _item_connection($self, @_); });
+sub _predecessor_connection {
+	my $self = shift(@_);
+	my $direction = (
+		_direction($self->get('predecessor_item'), $self->get('item'))
+	)[0];
+	my ($x1, $y1) = $self->get('predecessor_item')->get_connection_point($direction);
+	my @successors = $self->get('predecessor_item')->successors($direction);
+	my $offset
+		= ( $direction eq 'left' )
+		? -3
+		: 3;    # FIXME: UGH should be radius of toggle.
+	$self->{x1} = ( scalar @successors > 0 ) ? $x1 + $offset : $x1;
+	$self->{y1} = $y1;
+	_set_connection_path($self);
 }
 
+sub _bpath {
+	my $self = shift(@_);
+	my $x1 = $self->{x1};
+	my $y1 = $self->{y1};
+	my $x2 = $self->{x2};
+	my $y2 = $self->{y2};
+	my ( $predecessor_direction, $item_direction )
+		= _direction( $self->get('predecessor_item'), $self->get('item') );
+	my $c = List::Util::max( 25, abs( ( ( $x2 - $x1 ) / 2 ) ) );
+	my $a = ( $predecessor_direction eq 'right' ) ? $x1 + $c : $x1 - $c;
+	my $b = ( $item_direction eq 'right' ) ? $x2 - $c : $x2 + $c;
+	my @p = ( $x1, $y1, $a, $y1, $b, $y2, $x2, $y2 );
+	my $pathdef = Gnome2::Canvas::PathDef->new();
+	$pathdef->moveto( $p[0], $p[1] );
+	$pathdef->curveto( $p[2], $p[3], $p[4], $p[5], $p[6], $p[7] );
+	return $pathdef if ($self->get('arrows') eq 'none' );
+	my $h = 4 * $self->get('width-pixels');    # Height of arrow head.
+	my $v = $h / 2;
+	if ($item_direction eq 'right') {
+		@p = ( $x2 - $h, $y2 + $v, $x2 - $h, $y2 - $v, $x2, $y2 );
+	} else {
+		@p = ( $x2 + $h, $y2 + $v, $x2 + $h, $y2 - $v, $x2, $y2 );
+	}
 
-sub disconnect
-{
-    my $self = shift(@_);
-
-    $self->{predecessor_item}->signal_handler_disconnect($self->{predecessor_signal_id});
-
-    $self->{item}->signal_handler_disconnect($self->{item_signal_id});
+	$pathdef->lineto( $p[0], $p[1] );
+	$pathdef->lineto( $p[2], $p[3] );
+	$pathdef->lineto( $p[4], $p[5] );
+	return $pathdef if ($self->get('arrows') eq 'one-way' );
+	
+	my $o = 3;    # offset.
+	$h = $h + $o;
+	$pathdef->moveto( $x1, $y1 );
+	if ($item_direction eq 'left') {
+		@p = ( $x1 - $h, $y1 + $v, $x1 - $h, $y1 - $v, $x1, $y1 );
+	} else {
+		@p = ( $x1 + $h, $y1 + $v, $x1 + $h, $y1 - $v, $x1, $y1 );
+	}
+	$pathdef->lineto( $p[0], $p[1] );
+	$pathdef->lineto( $p[2], $p[3] );
+	$pathdef->lineto( $p[4], $p[5] );
+	return $pathdef;
 }
 
-
-sub _direction
-{
-    my ($predecessor_item, $item) = @_;
-
-    my $predecessor_column = $predecessor_item->get('column');
-
-    my $predecessor_column_no =
-	(defined $predecessor_column) ? $predecessor_column->get('column_no') : 0;
-
-    my $column = $item->get('column');
-
-    my $item_column_no   = (defined $column) ? $column->get('column_no') : 0;
-
-    if ($predecessor_column_no > $item_column_no)
-    {
-	return ('left', 'left');
-    }
-
-    if ($predecessor_column_no < $item_column_no)
-    {
-	return ('right', 'right');
-    }
-
-    if ($predecessor_column_no >= 0)
-    {
-	return ('right', 'left');
-    }
-
-    return ('left', 'right');
+sub _set_connection_path {
+	my $self = shift(@_);
+	$self->set_path_def( _bpath($self) );
+	if ($self->get('item')->is_visible()
+			&& $self->get('predecessor_item')->is_visible()) {
+		$self->show();
+		$self->lower_to_bottom();
+	} else {
+		$self->hide();
+	}
 }
 
-
-sub _item_connection
-{
-    my $self = shift(@_);
-
-    my $direction = (_direction($self->get('predecessor_item'), $self->get('item')))[1];
-
-    my $side = ($direction eq 'right') ? 'left' : 'right';
-
-    my ($x2, $y2) = $self->get('item')->get_connection_point($side);
-
-    my @successors = $self->get('item')->successors($side);
-
-    my $offset = ($side eq 'left') ? -3 : 3; # FIXME: UGH should be radius of toggle.
-
-    $self->{x2} = (scalar @successors > 0) ? $x2 + $offset : $x2;
-
-    $self->{y2} = $y2;
-
-    _set_connection_path($self);
-}
-
-
-sub _predecessor_connection
-{
-    my $self = shift(@_);
-
-    my $direction = (_direction($self->get('predecessor_item'), $self->get('item')))[0];
-
-    my ($x1, $y1) = $self->get('predecessor_item')->get_connection_point($direction);
-
-    my @successors = $self->get('predecessor_item')->successors($direction);
-
-    my $offset = ($direction eq 'left') ? -3 : 3; # FIXME: UGH should be radius of toggle.
-
-    $self->{x1} = (scalar @successors > 0) ? $x1 + $offset : $x1;
-
-    $self->{y1} = $y1;
-
-    _set_connection_path($self);
-}
-
-
-sub _bpath
-{
-    my $self = shift(@_);
-
-    my $x1 = $self->{x1};
-
-    my $y1 = $self->{y1};
-
-    my $x2 = $self->{x2};
-
-    my $y2 = $self->{y2};
-
-    my ($predecessor_direction, $item_direction) =
-	_direction($self->get('predecessor_item'), $self->get('item'));
-
-    my $c = List::Util::max(25, abs((($x2 - $x1) / 2)));
-
-    my $a = ($predecessor_direction eq 'right') ? $x1 + $c : $x1 - $c;
-
-    my $b = ($item_direction eq 'right') ? $x2 - $c : $x2 + $c;
-
-    my @p = ($x1, $y1, $a, $y1, $b, $y2, $x2, $y2);
-
-    my $pathdef = Gnome2::Canvas::PathDef->new();
-
-    $pathdef->moveto  ($p[0],  $p[1]);
-
-    $pathdef->curveto ($p[2],  $p[3],  $p[4],  $p[5],  $p[6],  $p[7]);
-
-
-    return $pathdef if ($self->get('arrows') eq 'none');
-
-
-    my $h = 4 * $self->get('width-pixels'); # Height of arrow head.
-
-    my $v = $h / 2; 
-
-    if ($item_direction eq 'right')
-    {
-	@p = ($x2-$h,$y2+$v, $x2-$h,$y2-$v, $x2,$y2);
-    }
-    else
-    {
-	@p = ($x2+$h,$y2+$v, $x2+$h,$y2-$v, $x2,$y2);
-    }
-
-    $pathdef->lineto ($p[0], $p[1]);
-
-    $pathdef->lineto ($p[2], $p[3]);
-
-    $pathdef->lineto ($p[4], $p[5]);
-
-    return $pathdef if ($self->get('arrows') eq 'one-way');
-
-
-    my $o = 3; # offset.
-
-    $h = $h + $o;
-
-    $pathdef->moveto  ($x1, $y1);
-
-    if ($item_direction eq 'left')
-    {
-	@p = ($x1-$h,$y1+$v, $x1-$h,$y1-$v, $x1,$y1);
-    }
-    else
-    {
-	@p = ($x1+$h,$y1+$v, $x1+$h,$y1-$v, $x1,$y1);
-    }
-
-    $pathdef->lineto ($p[0], $p[1]);
-
-    $pathdef->lineto ($p[2], $p[3]);
-
-    $pathdef->lineto ($p[4], $p[5]);
-
-    return $pathdef;
-}
-
-
-sub _set_connection_path
-{
-    my $self = shift(@_);
-
-    $self->set_path_def(_bpath($self));
-
-    if ($self->get('item')->is_visible() && $self->get('predecessor_item')->is_visible())
-    {
-	$self->show();
-
-	$self->lower_to_bottom();
-    }
-    else
-    {
-	$self->hide();
-    }
-}
-
-
-
-1; # Magic true value required at end of module
+1;    # Magic true value required at end of module
 __END__
 
 =head1 NAME
@@ -307,10 +223,10 @@ This document describes StreamGraph::View::Connection version 0.0.1
 
  Glib::Object
  +----Gtk2::Object
-      +----Gnome2::Canvas::Item
-           +----Gnome2::Canvas::Shape
-                +----Gnome2::Canvas::Bpath
-                     +----StreamGraph::View::Connection
+	  +----Gnome2::Canvas::Item
+		   +----Gnome2::Canvas::Shape
+				+----Gnome2::Canvas::Bpath
+					 +----StreamGraph::View::Connection
 
 =head1 SYNOPSIS
 
