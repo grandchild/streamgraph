@@ -8,8 +8,9 @@ use Moo;
 use JSON qw();
 use Data::Dump qw(dump);
 
+my $defaultConfig = "{\n\t\"streamit_home\": \"\",\n\t\"strc\": \"strc\"\n}";
 
-has configFile => ( is=>"ro", default=>"config.json" );
+has configFile => ( is=>"ro", default=>"streamgraph.conf" );
 has config     => ( is=>"rw" );
 
 sub loadConfig {
@@ -17,7 +18,8 @@ sub loadConfig {
 	my $filename = $self->{configFile};
 	my $json_text = do {
 		open(my $json_fh, "<:encoding(UTF-8)", $filename)
-			or die("Can't open \$filename\": $!\n");
+			or $self->createNewConfig()
+			or die("Can't open or create \$filename\": $!\n");
 		local $/;
 		<$json_fh>
 	};
@@ -27,16 +29,23 @@ sub loadConfig {
 
 sub get {
 	my ($self, $key) = @_;
-	if(!$self->{config}) {
+	if(!defined($self->{config})) {
 		$self->loadConfig;
 	}
 	if(defined($self->{config}) &&
-			defined($self->{config}->{strings}) &&
-			defined($self->{config}->{strings}->{$key})) {
-		return $self->{config}->{strings}->{$key};
+			defined($self->{config}->{$key})) {
+		return $self->{config}->{$key};
 	} else {
 		return "";
 	}
+}
+
+sub createNewConfig {
+	my $self = shift(@_);
+	my $filename = $self->{configFile};
+	open(my $fh, ">:encoding(UTF-8)", $filename);
+	local $/;
+	print $fh $defaultConfig;
 }
 
 1;

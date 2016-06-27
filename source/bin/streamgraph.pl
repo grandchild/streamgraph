@@ -15,7 +15,7 @@ use StreamGraph::NodeData;
 use StreamGraph::Util::ConfigLoader;
 use StreamGraph::CodeGen;
 
-print StreamGraph::Util::ConfigLoader::get("hey");
+print StreamGraph::Util::ConfigLoader->new->get("hey");
 
 my $item = new StreamGraph::View::Item();
 print $item->predecessors;
