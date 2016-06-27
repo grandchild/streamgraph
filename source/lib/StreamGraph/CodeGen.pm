@@ -26,7 +26,7 @@ sub generateCode {
 	$programText .= generatePipeline(\@nodeList);
 	
 	### TODO: write to file in extra Util function
-	StreamGraph::Util::File::writeToFile($programText, $fileName);
+	StreamGraph::Util::File::writeStreamitSource($programText, $fileName);
 	return $programText;
 }
 

@@ -1,5 +1,5 @@
 package StreamGraph::Util;
 
-use StreamGraph::Util::StringLoader;
+use StreamGraph::Util::ConfigLoader;
 
 1;
