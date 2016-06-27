@@ -16,8 +16,8 @@ sub loadConfig {
 	my $self = shift(@_);
 	my $filename = $self->{configFile};
 	my $json_text = do {
+		$self->createNewConfig() if not -e $filename;
 		open(my $json_fh, "<:encoding(UTF-8)", $filename)
-			or $self->createNewConfig()
 			or die("Can't open or create \$filename\": $!\n");
 		local $/;
 		<$json_fh>
