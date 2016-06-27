@@ -71,7 +71,7 @@ sub generateWork {
 	return $workText;
 }
 
-# gets NoteData object for which the init funktion is to be generated
+# gets NodeData object for which the init function is to be generated
 sub generateInit {
 	my $data = shift;
 	my $initText = $data->{initCode};
