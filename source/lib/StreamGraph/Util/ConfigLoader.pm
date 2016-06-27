@@ -6,7 +6,6 @@ use warnings;
 use strict;
 use Moo;
 use JSON qw();
-use Data::Dump qw(dump);
 
 my $defaultConfig = "{\n\t\"streamit_home\": \"\",\n\t\"strc\": \"strc\"\n}";
 
