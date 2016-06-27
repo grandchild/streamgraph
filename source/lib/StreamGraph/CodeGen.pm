@@ -100,7 +100,21 @@ sub generateFilter {
 	my $outputType = $data->{outputType};
 	my $name = $data->{name};
 	my $globalVariables = $data->{globalVariables};
-	my $filterText = generateCommentary("Filter $name") . "$inputType->$outputType filter $name {\n"; 
+	my @parameters;
+	my $nmbParameters = @parameters;
+	my $filterText = generateCommentary("Filter $name") . "$inputType->$outputType filter $name";
+	if(!@parameters || nmbParameters == 0){
+		return "";
+	} else {
+		$filterText.="(";
+		foreach my $parameter (@parameters) {
+			my $parameterType;
+			my $parameterName;
+			$filterText;
+		}
+	}
+
+	$filterText .= " {\n"; 
 	if(!($globalVariables eq "")){
 		$globalVariables =~ s/\r?\n/\n\t/g;
 		$filterText .= "\t$globalVariables\n";
