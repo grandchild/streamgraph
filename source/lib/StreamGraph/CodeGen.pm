@@ -40,8 +40,7 @@ sub generateMultiLineCommentary {
 	my $commentText = shift;
 	my $commentaryText = "\n/*\n * ";
 	$commentText =~ s/\r?\n/\n * /g;
-	$commentaryText .= $commentText;
-	$commentaryText .= "\n */\n\n";
+	$commentaryText .= $commentText . "\n */\n\n";
 	return $commentaryText;
 }
 
@@ -66,8 +65,7 @@ sub generateWork {
 	$workText .= " {\n";
 	my $workCode = $data->{workCode};
 	$workCode =~ s/\r?\n/\n\t\t/g;
-	$workText .= "\t\t$workCode";
-	$workText .= "\n\t}\n";
+	$workText .= "\t\t$workCode" . "\n\t}\n";
 	return $workText;
 }
 
@@ -78,8 +76,7 @@ sub generateInit {
 	my $workText = "\tinit {";
 	if(!($initText eq "")){
 		$initText =~ s/\r?\n/\n\t\t/g;
-		$workText .= "\n\t\t$initText";
-		$workText .= "\n\t";
+		$workText .= "\n\t\t$initText" . "\n\t";
 	}
 	$workText .= "}\n";
 	return $workText;
