@@ -7,8 +7,6 @@ use strict;
 use Carp;
 
 use Graph::Directed;
-
-
 # $graph = StreamGraph::View::Graph->new();
 
 sub new {
@@ -35,6 +33,24 @@ sub add {
 	$self->{graph}->add_edge($predecessor_item, $item);
 }
 
+# $graph->connect($item1, $item2);
+sub connect {
+	my ($self, $item1, $item2) = @_;
+	if ((!defined $item1) or (!defined $item2)) {
+		croak "You must specify two items to connect.\n";
+	}
+	$self->add($item1) if (!$self->has_item($item1));
+	$self->add($item2) if (!$self->has_item($item2));
+	if ($item1->outputType ne $item2->inputType) {
+		croak "Output type " . $item1->outputType .
+				" does not match input type" . $item2->inputType . ".\n";
+	}
+	if (!($item1->isa("StreamGraph::Model::Filter") and $item2->isa("StreamGraph::Model::Filter"))
+			and !($item1->isa("StreamGraph::Model::Parameter") and $item2->isa("StreamGraph::Model::Filter"))) {
+		croak "You cannot connect these types of items: " . ref($item1) . " and " . ref($item2) . ".\n";
+	}
+	$self->{graph}->add_edge($item1, $item2);
+}
 
 # $root = $graph->get_root();
 sub get_root {
@@ -49,6 +65,17 @@ sub has_item {
 	return $self->{graph}->has_vertex($item);
 }
 
+sub get_items {
+	my $self = shift(@_);
+	my @items = $self->{graph}->vertices();
+	return @items;
+}
+
+sub get_connections {
+	my $self = shift(@_);
+	my @edges = $self->{graph}->edges();
+	return @edges;
+}
 
 # $num_items = $graph->num_items();
 sub num_items {

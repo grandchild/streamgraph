@@ -1,14 +1,10 @@
-package StreamGraph::NodeData;
+package StreamGraph::Model::Filter;
 
-#use Gtk2::Ex::MindMapView::Item;
-
-
-
-use Moo;
 use warnings;
 use strict;
 
-has name                => ( is=>"rw", default=>"filter");
+use Moo;
+extends "StreamGraph::Model::Node";
 
 has initCode            => ( is=>"rw", default=>"" );
 has workCode            => ( is=>"rw", default=>"" );
@@ -31,29 +27,26 @@ has inputCount          => ( is=>"rw", default=>0 );
 has outputType          => ( is=>"rw", default=>"void" );
 has outputCount         => ( is=>"rw", default=>0 );
 
-use overload
-	fallback => 1,
-	'""' => sub {
-		my $self = shift(@_);
-		print $_ . ": " . $self->{$_}."\n" foreach qw(
-				name
-				initCode
-				workCode
-				globalVariables
-				timesPush
-				timesPop
-				timesPeek
-				joinType
-				joinMultiplicities
-				joinRRForAll
-				splitType
-				splitMultiplicities
-				splitRRForAll
-				inputType
-				inputCount
-				outputType
-				outputCount
-			)
-	};
+has saveMembers         => ( is=>"ro", default=>sub{[qw(
+	name
+	x
+	y
+	initCode
+	workCode
+	globalVariables
+	timesPush
+	timesPop
+	timesPeek
+	joinType
+	joinMultiplicities
+	joinRRForAll
+	splitType
+	splitMultiplicities
+	splitRRForAll
+	inputType
+	inputCount
+	outputType
+	outputCount
+)]});
 
 1;

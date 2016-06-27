@@ -12,7 +12,7 @@ use StreamGraph::View::HotSpot::ToggleFactory;
 use StreamGraph::View::HotSpot::GripFactory;
 use StreamGraph::View::Item;
 use StreamGraph::View::ArgUtils;
-use StreamGraph::NodeData;
+use StreamGraph::Model::Node;
 
 use List::Util;
 use Glib ':constants';
@@ -133,7 +133,8 @@ sub create_item {
 	$item->add_hotspot('toggle_right', $hotspot4);
 	$item->set_data(defined $attributes{data} ?
 		$attributes{data} :
-		$item->set_data(StreamGraph::NodeData->new())
+		$item->set_data(StreamGraph::Model::NodeFactory->new
+				->createNode(type=>"StreamGraph::Model::Filter"))
 	);
 
 	return $item;

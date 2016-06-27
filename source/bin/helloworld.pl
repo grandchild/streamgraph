@@ -10,7 +10,7 @@ use lib "./lib/";
 
 use StreamGraph::View;
 use StreamGraph::View::ItemFactory;
-use StreamGraph::NodeData;
+use StreamGraph::Model::NodeFactory;
 use StreamGraph::CodeGen;
 use StreamGraph::Util::PropertyWindow;
 
@@ -21,6 +21,7 @@ my $menu = create_menu();
 my $scroller = Gtk2::ScrolledWindow->new();
 my $view     = StreamGraph::View->new(aa=>1);
 my $factory  = StreamGraph::View::ItemFactory->new(view=>$view);
+my $nodeFactory = StreamGraph::Model::NodeFactory->new();
 
 $view->set_scroll_region(-50,-90,100,100);
 $scroller->add($view);
@@ -30,8 +31,9 @@ $window->set_type_hint('dialog');
 $window->add($menu);
 $menu->add($scroller);
 
-my $item1 = _text_item($factory, "IntGenerator",
-	StreamGraph::NodeData->new(
+my $item1 = _text_item($factory,
+	$nodeFactory->createNode(
+		type=>"StreamGraph::Model::Filter",
 		name=>"IntGenerator",
 		globalVariables=>"int x;",
 		initCode=>"x = 0;",
@@ -41,8 +43,9 @@ my $item1 = _text_item($factory, "IntGenerator",
 		outputCount=>1
 		));
 $view->add_item($item1);
-my $item2 = _text_item($factory, "Printer",
-	StreamGraph::NodeData->new(
+my $item2 = _text_item($factory,
+	$nodeFactory->createNode(
+		type=>"StreamGraph::Model::Filter",
 		name=>"Printer",
 		workCode=>"println(pop());",
 		inputType=>"int",
@@ -72,10 +75,10 @@ sub _closeapp {
 
 
 sub _text_item {
-	my ($factory, $text, $data) = @_;
+	my ($factory, $data) = @_;
 	my $item = $factory->create_item(border=>'StreamGraph::View::Border::RoundedRect',
 					content=>'StreamGraph::View::Content::EllipsisText',
-					text=>$text,
+					text=>$data->name,
 					font_desc=>Gtk2::Pango::FontDescription->from_string("Ariel Italic 8"),
 					hotspot_color_gdk=>Gtk2::Gdk::Color->parse('lightgreen'),
 					# outline_color_gdk=>Gtk2::Gdk::Color->parse('blue'),
@@ -108,8 +111,9 @@ sub _test_handler {
 sub addFilter {
   my @successors = $view->successors($factory->{focus_item});
   if (scalar @successors > 0) { return; }
-  my $item = _text_item($factory, "Printer",
-	StreamGraph::NodeData->new(
+  my $item = _text_item($factory,
+	$nodeFactory->createNode(
+		type=>"StreamGraph::Model::Filter",
 		name=>"Filter",
 		workCode=>"println(pop());",
 		inputType=>"int",

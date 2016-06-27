@@ -163,9 +163,9 @@ sub add_hotspot {
 # $item->set_data($data);
 sub set_data {
 	my ($self, $data) = @_;
-	if (!$data->isa('StreamGraph::NodeData')) {
+	if (!$data->isa('StreamGraph::Model::Node')) {
 		print "Item, data: $data\n";
-		croak "Unexpected data. Must be 'StreamGraph::NodeData' type.\n";
+		croak "Unexpected data. Must be 'StreamGraph::Model::Node' type.\n";
 	}
 	$self->{data} = $data;
 }
