@@ -4,8 +4,8 @@ use strict;
 use StreamGraph::View::Item;
 use StreamGraph::Util::File;
 
-$StreamGraph::CodeGen::pipelineNumber = 0;
-$StreamGraph::CodeGen::dividingLine = "---------------------------------------------------";
+my $pipelineNumber = 0;
+my $dividingLine = "---------------------------------------------------";
 
 # function which generates Code out of Graph from root Node
 # gets root as 1. input parameter and filename as 2.parameter
@@ -17,12 +17,12 @@ sub generateCode {
 	my @nodeList = ();
 	push(@nodeList, $node, StreamGraph::View::Item::successors($node));
 	# first generate all filter code
-	$programText .= generateMultiLineCommentary("$StreamGraph::CodeGen::dividingLine \nSection for all Filters");
+	$programText .= generateMultiLineCommentary("$dividingLine \nSection for all Filters");
 	foreach my $filterNode (@nodeList) {
 		$programText .= generateFilter($filterNode);
 	}
 
-	$programText .= generateMultiLineCommentary("$StreamGraph::CodeGen::dividingLine \nSection for all Pipelines");
+	$programText .= generateMultiLineCommentary("$dividingLine \nSection for all Pipelines");
 	$programText .= generatePipeline(\@nodeList);
 	
 	### TODO: write to file in extra Util function
@@ -156,8 +156,8 @@ sub generateFilter {
 # gets (at the moment) no parameters
 sub getPipelineName {
 	my $text = "Pipeline";
-	$text .= "$StreamGraph::CodeGen::pipelineNumber";
-	$StreamGraph::CodeGen::pipelineNumber++;
+	$text .= "$pipelineNumber";
+	$pipelineNumber++;
 	return $text;
 }
 
