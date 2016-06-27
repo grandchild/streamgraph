@@ -71,7 +71,7 @@ sub generateWork {
 	return $workText;
 }
 
-# gets NoteData objectfor which the init funktion is to be generated
+# gets NoteData object for which the init funktion is to be generated
 sub generateInit {
 	my $data = shift;
 	my $initText = $data->{initCode};
@@ -85,7 +85,43 @@ sub generateInit {
 	return $workText;
 }
 
-
+# gets list of parameters, flag if types should be included and flag if brackets should be inluded; both is assumed as standard; 
+# returns parameter string
+sub generateParameters {
+	my $parameterPointer = shift;
+	my $typeFlag = shift;
+	if (!$typeFlag || $typeFlag != 0) {
+		$typeFlag = 1;
+	}
+	my $bracketFlag = shift;
+	if (!$bracketFlag || $bracketFlag != 0) {
+		$bracketFlag = 1;
+	}
+	my @parameters = @{$parameterPointer};
+	my $nmbParameters = @parameters;
+	my $workText = ""; 	
+	if(@parameters && $nmbParameters != 0){
+		if($bracketFlag == 1){
+			$workText .= "(";
+		}
+		foreach my $parameter (@parameters) {
+			$nmbParameters--;
+			my $parameterType;
+			my $parameterName;
+			if($typeFlag == 1){
+				$workText .= "$parameterType";
+			}
+			$workText .= "$parameterName";
+			if($nmbParameters != 0){
+				$workText .= ", ";
+			}
+		}
+		if ($bracketFlag == 1) {
+			$workText .= ")";
+		}
+	}
+	return $workText;
+}
 
 
 # gets Node as 1.parameter
@@ -100,20 +136,9 @@ sub generateFilter {
 	my $outputType = $data->{outputType};
 	my $name = $data->{name};
 	my $globalVariables = $data->{globalVariables};
-	my @parameters;
-	my $nmbParameters = @parameters;
 	my $filterText = generateCommentary("Filter $name") . "$inputType->$outputType filter $name";
-	if(!@parameters || nmbParameters == 0){
-		return "";
-	} else {
-		$filterText.="(";
-		foreach my $parameter (@parameters) {
-			my $parameterType;
-			my $parameterName;
-			$filterText;
-		}
-	}
-
+	my @parameters;
+	$filterText .= generateParameters(\@parameters);
 	$filterText .= " {\n"; 
 	if(!($globalVariables eq "")){
 		$globalVariables =~ s/\r?\n/\n\t/g;
@@ -150,17 +175,28 @@ sub generatePipeline {
 	my $arraySize = @filterArray;
 	my $inputType =  $filterArray[0]->{data}->{inputType};
 	my $outputType = $filterArray[$arraySize-1]->{data}->{outputType};
-	my $pipelineText = "$inputType";
-	$pipelineText .= "->";
-	$pipelineText .= "$outputType pipeline ";
-	$pipelineText .= getPipelineName();
-	$pipelineText .= "{\n";
+	my $pipelineHeader = "$inputType" . "->" . "$outputType pipeline " . getPipelineName() . "(";
+	# only generate so far because parameters need to be added  
+	my $pipelineFilters = "{\n";
+	my $pipelineParameters =  "";
+	my $alreadyAddedAtLeastOneParameterFlag = 0;
 	foreach my $filterNode (@filterArray) {
 		my $name = $filterNode->{data}->{name};
-		$pipelineText .= "\t add $name;\n";
+		my @filterParameters;
+		$pipelineFilters .= "\t add $name" . generateParameters(\@filterParameters, 0, 1) . ";\n";
+		my $generatedParameters = generateParameters(\@filterParameters, 1, 0);
+		if($generatedParameters ne ""){
+			if($alreadyAddedAtLeastOneParameterFlag == 0){
+				$pipelineParameters .= $generatedParameters;
+			} else {
+				$pipelineParameters .= ", " . $generatedParameters ;
+			}
+			$alreadyAddedAtLeastOneParameterFlag = 1;
+		}
 	}
-	$pipelineText .= "}\n";
-	return $pipelineText;
+	$pipelineFilters .= "}\n";
+	$pipelineHeader .= $pipelineParameters . ")";
+	return $pipelineHeader . $pipelineFilters;
 }
 
 1;
