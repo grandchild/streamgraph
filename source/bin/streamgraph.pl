@@ -12,10 +12,10 @@ use lib "./lib/";
 use StreamGraph::View::Item;
 use StreamGraph::Node;
 use StreamGraph::NodeData;
-use StreamGraph::Util::StringLoader;
+use StreamGraph::Util::ConfigLoader;
 use StreamGraph::CodeGen;
 
-print StreamGraph::Util::StringLoader::get("hey");
+print StreamGraph::Util::ConfigLoader::get("hey");
 
 my $item = new StreamGraph::View::Item();
 print $item->predecessors;
