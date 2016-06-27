@@ -10,270 +10,175 @@ use List::Util;
 
 use Glib ':constants';
 
-use constant SLACK_MANY_ITEMS=>1.0;
-use constant SLACK_FEW_ITEMS=>1.25;
+use constant SLACK_MANY_ITEMS => 1.0;
+use constant SLACK_FEW_ITEMS  => 1.25;
 
 use StreamGraph::View::Layout::Group;
 use StreamGraph::View::Layout::Column;
 
 use base 'StreamGraph::View::Layout::Group';
 
-sub new
-{
-    my $class = shift(@_);
+sub new {
+	my $class = shift(@_);
+	my $self = $class->SUPER::new(@_);
+	if ( !defined $self->{graph} ) {
+		croak "You must pass a StreamGraph::View::Graph as argument.\n";
+	}
 
-    my $self = $class->SUPER::new(@_);
-
-    if (!defined $self->{graph})
-    {
-	croak "You must pass a StreamGraph::View::Graph as argument.\n";
-    }
-
-    $self->{lhs_weight} = 0;  # Weight of left hand side of tree.
-
-    $self->{rhs_weight} = 0;  # Weight of right hand side of tree.
-
-    $self->{columns}    = {}; # Hash of columns.
-
-    $self->{item_count} = 0;  # A count of the number of items in the graph.
-
-    $self->{allocated}  = {}; # List of items that have been allocated.
-
-    my $root = $self->{graph}->get_root();
-
-    $self->{graph}->traverse_BFS($root, sub { _allocate($self, $_[0]); });
-
-    return $self;
+	$self->{lhs_weight} = 0;    # Weight of left hand side of tree.
+	$self->{rhs_weight} = 0;    # Weight of right hand side of tree.
+	$self->{columns} = {};      # Hash of columns.
+	$self->{item_count} = 0;    # A count of the number of items in the graph.
+	$self->{allocated} = {};    # List of items that have been allocated.
+	my $root = $self->{graph}->get_root();
+	$self->{graph}->traverse_BFS( $root, sub { _allocate( $self, $_[0] ); } );
+	return $self;
 }
-
 
 # $layout->layout()
+sub layout {
+	my $self = shift(@_);
+	my $lhs_offset = 0;    # Offset of columns on left hand side of tree.
+	my $rhs_offset = 0;    # Offset of columns on right hand side of tree.
+	my @columns = values( %{ $self->{columns} } );
+	my @sorted_columns
+		= sort { abs( $a->get('column_no') ) <=> abs( $b->get('column_no') ) }
+		@columns;
 
-sub layout
-{
-    my $self = shift(@_);
+	foreach my $column (@sorted_columns) {
+		my $column_no = $column->get('column_no');
+		my $width = $column->get('width') + $self->get_horizontal_padding();
+		$column->set( y => ( -0.5 * $column->get('height') ) );
+		if ( $column_no > 0 ) {
+			$column->set( x => $rhs_offset );
+			$rhs_offset += $width;
+		}
 
-    my $lhs_offset = 0;  # Offset of columns on left hand side of tree.
+		if ( $column_no < 0 ) {
+			$lhs_offset -= $width;
+			$column->set( x => $lhs_offset );
+		}
 
-    my $rhs_offset = 0;  # Offset of columns on right hand side of tree.
+		if ( $column_no == 0 ) {
+			$rhs_offset = $width / 2;
+			$lhs_offset = -( $width - $rhs_offset );
+			$column->set( x => $lhs_offset );
+		}
+		$column->layout();
+	}
+}
 
-    my @columns = values (%{$self->{columns}});
+sub _allocate {
+	my ( $self, $item ) = @_;
+	my @predecessors = $self->{graph}->predecessors($item);
+	my $num_predecessors = scalar(@predecessors);
+	# print "Balanced, _allocate, item: $item  num_predecessors: $num_predecessors\n";
 
-    my @sorted_columns = sort { abs($a->get('column_no')) <=> abs($b->get('column_no')) } @columns;
-
-    foreach my $column (@sorted_columns)
-    {
-	my $column_no = $column->get('column_no');
-
-	my $width = $column->get('width') + $self->get_horizontal_padding();
-
-	$column->set(y=>(-0.5 * $column->get('height')));
-
-	if ($column_no > 0)
-	{
-	    $column->set(x=>$rhs_offset);
-
-	    $rhs_offset += $width;
+	if ( $num_predecessors == 0 ) { # we're the root item.
+		_add( $self, undef, $item, 0 );
+		return;
 	}
 
-	if ($column_no < 0)
-	{
-	    $lhs_offset -= $width;
-
-	    $column->set(x=>$lhs_offset);
+	if ( $num_predecessors == 1 ) { # single predecessor.
+		my $column_no = _next_column_no( $self, $predecessors[0], $item );
+		_add( $self, $predecessors[0], $item, $column_no );
+		return;
 	}
 
-	if ($column_no == 0)
-	{
-	    $rhs_offset = $width / 2;
-
-	    $lhs_offset = -($width - $rhs_offset);
-
-	    $column->set(x=>$lhs_offset);
+	# Multiple predecessors.
+	my @visible_predecessors = grep { $_->is_visible(); } @predecessors;
+	if ( scalar @visible_predecessors == 0 ) { # FIXME: dubious.
+		_add( $self, $predecessors[0], $item, 0 );
+		return;
 	}
 
-	$column->layout();
-    }
+	if ( scalar @visible_predecessors == 1 ) {
+		my $column_no = _next_column_no( $self, $visible_predecessors[0], $item );
+		_add( $self, $visible_predecessors[0], $item, $column_no );
+		return;
+	}
+
+	# Multiple visible predecessors.
+	my @column_nos = map { $_->get_column_no(); } @visible_predecessors;
+	if ( _all_same(@column_nos) ) {
+		my $column_no = _next_column_no( $self, $visible_predecessors[0], $item );
+		_add( $self, $visible_predecessors[0], $item, $column_no );
+		return;
+	}
+
+	# "Average" column number.
+	my $total = List::Util::sum(@column_nos);
+	my $column_no = int( $total / ( scalar @visible_predecessors ) );
+	_add( $self, $visible_predecessors[0], $item, $column_no );
 }
 
-
-sub _allocate
-{
-    my ($self, $item) = @_;
-
-    my @predecessors = $self->{graph}->predecessors($item);
-
-    my $num_predecessors = scalar (@predecessors);
-
-#    print "Balanced, _allocate, item: $item  num_predecessors: $num_predecessors\n";
-
-    if ($num_predecessors == 0) # we're the root item.
-    {
-	_add($self, undef, $item, 0);
-
-	return;
-    }
-
-    if ($num_predecessors == 1) # single predecessor.
-    {
-	my $column_no = _next_column_no($self, $predecessors[0], $item);
-
-	_add($self, $predecessors[0], $item, $column_no);
-
-	return;
-    }
-
-    # Multiple predecessors.
-
-    my @visible_predecessors = grep { $_->is_visible(); } @predecessors;
-
-    if (scalar @visible_predecessors == 0) # FIXME: dubious.
-    {
-	_add($self, $predecessors[0], $item, 0);
-
-	return;
-    }
-
-    if (scalar @visible_predecessors == 1)
-    {
-	my $column_no = _next_column_no($self, $visible_predecessors[0], $item);
-
-	_add($self, $visible_predecessors[0], $item, $column_no);
-
-	return;
-    }
-
-    # Multiple visible predecessors.
-
-    my @column_nos = map { $_->get_column_no(); } @visible_predecessors;
-
-    if (_all_same(@column_nos))
-    {
-	my $column_no = _next_column_no($self, $visible_predecessors[0], $item);
-
-	_add($self, $visible_predecessors[0], $item, $column_no);
-
-	return;
-    }
-
-    # "Average" column number.
-
-    my $total = List::Util::sum(@column_nos);
-
-    my $column_no = int($total / (scalar @visible_predecessors));
-
-    _add($self, $visible_predecessors[0], $item, $column_no);
+sub _all_same {
+	my $first = shift(@_);
+	foreach my $next (@_) {
+		return FALSE if ( $next != $first );
+	}
+	return TRUE;
 }
 
+sub _add {
+	my ( $self, $predecessor_item, $item, $column_no ) = @_;
+	return if ( exists $self->{allocated}{$item} );
+	my $column = $self->{columns}{$column_no};
+	if ( !defined $column ) {
+		$column = StreamGraph::View::Layout::Column->new(
+			column_no => $column_no );
+		$self->{columns}{$column_no} = $column;
+	}
 
-sub _all_same
-{
-    my $first = shift(@_);
-
-    foreach my $next (@_)
-    {
-	return FALSE if ($next != $first);
-    }
-
-    return TRUE;
+	$item->set( column => $column );
+	$column->add( $predecessor_item, $item );
+	$self->{allocated}{$item} = 1;
+	my @columns = values( %{ $self->{columns} } );
+	$self->set( height => _balanced_height( $self, \@columns ) );
+	$self->set( width => _balanced_width( $self, \@columns ) );
+	$self->{item_count}++;
 }
 
-
-sub _add
-{
-    my ($self, $predecessor_item, $item, $column_no) = @_;
-
-    return if (exists $self->{allocated}{$item});
-
-    my $column = $self->{columns}{$column_no};
-
-    if (!defined $column)
-    {
-	$column = StreamGraph::View::Layout::Column->new(column_no=>$column_no);
-
-	$self->{columns}{$column_no} = $column;
-    }
-
-    $item->set(column=>$column);
-
-    $column->add($predecessor_item, $item);
-
-    $self->{allocated}{$item} = 1;
-
-    my @columns = values (%{$self->{columns}});
-
-    $self->set(height=>_balanced_height($self, \@columns));
-
-    $self->set(width=>_balanced_width($self, \@columns));
-
-    $self->{item_count}++;
+sub _balanced_height {
+	my ( $self, $columns_ref ) = @_;
+	my @columns = @$columns_ref;
+	return 0 if ( scalar @columns == 0 );
+	return List::Util::max( map { $_->get('height'); } @columns );
 }
 
-
-sub _balanced_height
-{
-    my ($self, $columns_ref) = @_;
-
-    my @columns = @$columns_ref;
-
-    return 0 if (scalar @columns == 0);
-
-    return List::Util::max( map { $_->get('height'); } @columns );
+sub _balanced_width {
+	my ( $self, $columns_ref ) = @_;
+	my @columns = @$columns_ref;
+	return 0 if ( scalar @columns == 0 );
+	return List::Util::sum( map { $_->get('width'); } @columns );
 }
 
-
-sub _balanced_width
-{
-    my ($self, $columns_ref) = @_;
-
-    my @columns = @$columns_ref;
-
-    return 0 if (scalar @columns == 0);
-
-    return List::Util::sum( map { $_->get('width'); } @columns );
+sub _next_column_no {
+	my ( $self, $predecessor_item, $item ) = @_;
+	my $column_no = $predecessor_item->get_column_no();
+	return ( $column_no + 1 ) if ( $column_no > 0 );
+	return ( $column_no - 1 ) if ( $column_no < 0 );
+	if ( $self->{rhs_weight} > ( $self->{lhs_weight} * _slack($self) ) ) {
+		$self->{graph}->traverse_DFS( $item,
+			sub { $self->{lhs_weight} += $_[0]->get_weight(); } );
+		return -1;
+	}
+	$self->{graph}->traverse_DFS( $item,
+		sub { $self->{rhs_weight} += $_[0]->get_weight(); } );
+	return 1;
 }
-
-
-sub _next_column_no
-{   
-    my ($self, $predecessor_item, $item) = @_;
-
-    my $column_no = $predecessor_item->get_column_no();
-
-    return ($column_no + 1) if ($column_no > 0);
-
-    return ($column_no - 1) if ($column_no < 0);
-
-    if ($self->{rhs_weight} > ($self->{lhs_weight} * _slack($self)))
-    {
-	$self->{graph}->traverse_DFS($item, sub { $self->{lhs_weight} += $_[0]->get_weight(); });
-
-	return -1;
-    }
-
-    $self->{graph}->traverse_DFS($item, sub { $self->{rhs_weight} += $_[0]->get_weight(); });
-
-    return 1;
-}
-
 
 # _slack: Make rebalancing less "touchy" when the number of items is
 # small.
-
-sub _slack
-{
-    my $self = shift(@_);
-
-    if ($self->{item_count} < 10)
-    {
-	return SLACK_FEW_ITEMS; # > 1
-    }
-
-    return SLACK_MANY_ITEMS; # 1
+sub _slack {
+	my $self = shift(@_);
+	if ( $self->{item_count} < 10 ) {
+		return SLACK_FEW_ITEMS;    # > 1
+	}
+	return SLACK_MANY_ITEMS;       # 1
 }
 
-
-1; # Magic true value required at end of module
+1;    # Magic true value required at end of module
 __END__
 
 =head1 NAME
