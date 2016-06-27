@@ -3,6 +3,7 @@ package StreamGraph::CodeGen;
 use strict;
 use StreamGraph::View::Item;
 use StreamGraph::Util::File;
+use StreamGraph::Util::List;
 
 my $pipelineNumber = 0;
 my $dividingLine = "---------------------------------------------------";
@@ -82,9 +83,11 @@ sub generateInit {
 	return $workText;
 }
 
-# gets list of parameters, flag if types should be included and flag if brackets should be inluded; both is assumed as standard; 
-# returns parameter string
+# gets list of parameters, flag if types should be included, flag if brackets should be inluded
+# and flag if  a List should be returned; both is assumed as standard; 
+# returns parameter string or List if flag is set
 sub generateParameters {
+	# initialization
 	my $parameterPointer = shift;
 	my $typeFlag = shift;
 	if (!$typeFlag || $typeFlag != 0) {
@@ -94,30 +97,41 @@ sub generateParameters {
 	if (!$bracketFlag || $bracketFlag != 0) {
 		$bracketFlag = 1;
 	}
+	my $listFlag = shift;
+	if (!$listFlag || $listFlag != 1) {
+		$listFlag = 0;
+	}
 	my @parameters = @{$parameterPointer};
 	my $nmbParameters = @parameters;
-	my $workText = ""; 	
+	my $workText = "";
+	my @parameterList = ();
+
+	# working 	
 	if(@parameters && $nmbParameters != 0){
-		if($bracketFlag == 1){
-			$workText .= "(";
-		}
 		foreach my $parameter (@parameters) {
+			my $parametertText = "";
 			$nmbParameters--;
 			my $parameterType;
 			my $parameterName;
+			# check if Type should be included
 			if($typeFlag == 1){
-				$workText .= "$parameterType";
+				$parametertText .= "$parameterType ";
 			}
-			$workText .= "$parameterName";
+			$parametertText .= "$parameterName";
+			push(@parameterList, $parametertText);
 			if($nmbParameters != 0){
 				$workText .= ", ";
 			}
 		}
 		if ($bracketFlag == 1) {
-			$workText .= ")";
+			$workText ="(" . $workText . ")";
 		}
 	}
-	return $workText;
+	if ($listFlag == 1) {
+		return \@parameterList;
+	} else {
+		return $workText;
+	}
 }
 
 
@@ -175,24 +189,27 @@ sub generatePipeline {
 	my $pipelineHeader = "$inputType" . "->" . "$outputType pipeline " . getPipelineName() . "(";
 	# only generate so far because parameters need to be added  
 	my $pipelineFilters = "{\n";
-	my $pipelineParameters =  "";
+	my @pipelineParameters = ();
 	my $alreadyAddedAtLeastOneParameterFlag = 0;
 	foreach my $filterNode (@filterArray) {
 		my $name = $filterNode->{data}->{name};
 		my @filterParameters;
 		$pipelineFilters .= "\t add $name" . generateParameters(\@filterParameters, 0, 1) . ";\n";
-		my $generatedParameters = generateParameters(\@filterParameters, 1, 0);
-		if($generatedParameters ne ""){
-			if($alreadyAddedAtLeastOneParameterFlag == 0){
-				$pipelineParameters .= $generatedParameters;
-			} else {
-				$pipelineParameters .= ", " . $generatedParameters ;
-			}
-			$alreadyAddedAtLeastOneParameterFlag = 1;
+		my @generatedParameters = @{generateParameters(\@filterParameters, 1, 0, 1)};
+		if(@generatedParameters != 0){
+			# merge without duplicates
+			push(@pipelineParameters, @generatedParameters);
+			@pipelineParameters = StreamGraph::Util::List::unique(@pipelineParameters);
+			#if($alreadyAddedAtLeastOneParameterFlag == 0){
+			#	$pipelineParameters .= $generatedParameters;
+			#} else {
+			#	$pipelineParameters .= ", " . $generatedParameters ;
+			#}
+			#$alreadyAddedAtLeastOneParameterFlag = 1;
 		}
 	}
 	$pipelineFilters .= "}\n";
-	$pipelineHeader .= $pipelineParameters . ")";
+	$pipelineHeader .= join(", ", @pipelineParameters) . ")";
 	return $pipelineHeader . $pipelineFilters;
 }
 
