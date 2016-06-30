@@ -5,13 +5,19 @@ use Gtk2 '-init';
 use Glib qw/TRUE FALSE/;
 
 sub show {
-	my ($itemData) = @_;
+	my ($item,$window) = @_;
+
+	my $itemData = $item->{data};
+
+	if (defined $itemData->{dialog}) { return; }
 
 	my $dialog = Gtk2::Dialog->new(
-		'Edit',
-		undef,
-		[qw/modal destroy-with-parent/],
+		'Property Window',
+		$window,
+		[qw/destroy-with-parent/],
 	);
+
+	$itemData->{dialog} = $dialog;
 
 	my $dbox = $dialog->vbox;
 
@@ -20,7 +26,7 @@ sub show {
 	$filterNameHbox->pack_start(Gtk2::Label->new("Name: "),FALSE,FALSE,0);
 	my $filterNameE = Gtk2::Entry->new();
 	$filterNameE->set_text($itemData->{name});
-	$filterNameE->signal_connect(changed => sub{	$itemData->{name} = $filterNameE->get_text(); });
+	$filterNameE->signal_connect(changed => sub{	$itemData->{name} = $filterNameE->get_text(); $item->{border}->{content}->set(text => $filterNameE->get_text()) });
 	$filterNameHbox->pack_start($filterNameE,FALSE,FALSE,0);
 	$dbox->pack_start($filterNameHbox,FALSE,FALSE,0);
 
@@ -206,7 +212,7 @@ sub show {
 
 	$dbox->add($nb);
 	$dbox->show_all();
-	$dialog->signal_connect('delete-event'=>sub { $dialog->destroy(); });
+	$dialog->signal_connect('delete-event'=>sub { undef $itemData->{dialog}; $dialog->destroy(); });
 	$dialog->show();
 }
 

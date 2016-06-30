@@ -90,32 +90,11 @@ sub disconnect {
 	my $self = shift(@_);
 	$self->{predecessor_item}
 		->signal_handler_disconnect( $self->{predecessor_signal_id} );
-	$self->{item}->signal_handler_disconnect( $self->{item_signal_id} );
+    $self->{item}->signal_handler_disconnect( $self->{item_signal_id} ) if defined $self->{item};
 }
 
 sub _direction {
-	my ( $predecessor_item, $item ) = @_;
-	my $predecessor_column = $predecessor_item->get('column');
-	my $predecessor_column_no
-		= ( defined $predecessor_column )
-		? $predecessor_column->get('column_no')
-		: 0;
-	my $column = $item->get('column');
-	my $item_column_no = ( defined $column ) ? $column->get('column_no') : 0;
-	
-	if ($predecessor_column_no > $item_column_no) {
-		return ( 'left', 'left' );
-	}
-	
-	if ($predecessor_column_no < $item_column_no) {
-		return ( 'right', 'right' );
-	}
-	
-	if ($predecessor_column_no >= 0) {
-		return ( 'right', 'left' );
-	}
-	
-	return ( 'left', 'right' );
+    return ('right', 'right');
 }
 
 sub _item_connection {
@@ -198,13 +177,8 @@ sub _bpath {
 sub _set_connection_path {
 	my $self = shift(@_);
 	$self->set_path_def( _bpath($self) );
-	if ($self->get('item')->is_visible()
-			&& $self->get('predecessor_item')->is_visible()) {
-		$self->show();
-		$self->lower_to_bottom();
-	} else {
-		$self->hide();
-	}
+	$self->show();
+	$self->lower_to_bottom();
 }
 
 1;    # Magic true value required at end of module
@@ -243,7 +217,7 @@ The StreamGraph::View::Connection is an observer. It registers
 with the view items so that it may be notified when a view item's
 state changes.
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 Properties
 

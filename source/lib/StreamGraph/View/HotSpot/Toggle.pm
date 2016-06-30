@@ -7,42 +7,55 @@ use strict;
 use Carp;
 
 use Glib ':constants';
-
+use Time::HiRes qw(gettimeofday);
 use Gnome2::Canvas;
-
+use StreamGraph::View::Connection;
 use base 'StreamGraph::View::HotSpot';
 
 
 # $self->hotspot_adjust_event_handler($item);
 
-sub hotspot_adjust_event_handler
-{
+sub hotspot_adjust_event_handler {
     my ($self, $item) = @_;
-
-    $self->set(enabled=>FALSE);
-
-    my @items = $self->{item}->successors($self->{side});
-
-    if (scalar @items > 0)
-    {
-	$self->set(enabled=>TRUE);
-    }
 }
 
+sub hotspot_motion_notify {
+  my ($self, $item, $event) = @_;
+  if (defined $self->{connection}) {
+    my @coords = $event->coords;
+    $self->{connection}->{x2} = shift @coords;
+    $self->{connection}->{y2} = shift @coords;
+    $self->{connection}->_predecessor_connection();
+  }
+}
+
+sub hotspot_enter_notify {
+  my ($self, $item, $event) = @_;
+}
 
 # $self->hotspot_button_release($item, $event);
-
-sub hotspot_button_release
-{
-    my ($self, $item, $event) = @_;
-
-    my @items = $self->{item}->successors($self->{side});
-
-    return if (scalar @items == 0);
-
-    $self->{item}->toggle(@items);
+sub hotspot_button_release {
+  my ($self, $item, $event) = @_;
+  $item->{view}->{tooglePress} = $item;
+  $item->{connectTime} = int (gettimeofday * 100);
+  $self->{connection}->disconnect();
+  $self->{connection}->destroy();
+  undef $self->{connection};
 }
 
+sub hotspot_button_press {
+  my ($self, $item, $event) = @_;
+  # print $self . "  :  " . $event->type . "\n";
+  $self->{connection} = Gnome2::Canvas::Item->new(
+		$item->{view}->root,
+		'StreamGraph::View::Connection',
+		predecessor_item=>$item,
+		arrows=>$item->{view}->{connection_arrows},
+		width_pixels=>1,
+		outline_color_gdk=>$item->{view}->{connection_color_gdk},
+		fill_color=>'darkblue'
+	);
+}
 
 1; # Magic true value required at end of module
 __END__
@@ -63,14 +76,14 @@ This document describes StreamGraph::View::HotSpot::Toggle version 0.0.1
 
 use base 'StreamGraph::View::HotSpot::Toggle';
 
-  
+
 =head1 DESCRIPTION
 
 The StreamGraph::View::HotSpot::Toggle defines toggle type
 hotspots. This kind of hot spot is used to expand and collapse
 StreamGraph::View::Items.
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 Properties
 

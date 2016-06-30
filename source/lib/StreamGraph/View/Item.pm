@@ -66,7 +66,6 @@ sub SET_PROPERTY {
 		}
 	}
 
-
 	if ($param_name eq 'border') {
 		if (!$newval->isa('StreamGraph::View::Border'))
 		{
@@ -99,7 +98,6 @@ sub SET_PROPERTY {
 		$self->{column} = $newval;
 	}
 
-
 	if ($param_name eq 'visible') {
 		$self->{visible} = $newval;
 		if ($newval) {
@@ -120,7 +118,7 @@ sub SET_PROPERTY {
 		return;
 	}
 
-			
+
 	if ($param_name eq 'y') {
 		$self->{y} = $newval;
 		if (defined $self->{border}) {
@@ -170,6 +168,11 @@ sub set_data {
 	$self->{data} = $data;
 }
 
+# $item->set_view($view);
+sub set_view {
+	my ($self, $view) = @_;
+	$self->{view} = $view;
+}
 
 # $item->get_column_no();
 sub get_column_no {
@@ -329,7 +332,6 @@ sub _set_invisible {
 	}
 }
 
-
 1; # Magic true value required at end of module
 __END__
 
@@ -362,7 +364,7 @@ is displayed in the mind map. They may be created using
 StreamGraph::View::ItemFactory and may be placed into
 StreamGraph::View.
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 Properties
 

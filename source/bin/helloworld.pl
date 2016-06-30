@@ -14,12 +14,15 @@ use StreamGraph::Model::NodeFactory;
 use StreamGraph::CodeGen;
 use StreamGraph::Util::PropertyWindow;
 
-my $window   = Gtk2::Window->new();
+my $window   = Gtk2::Window->new('toplevel');
+$window->signal_connect('button-release-event',\&_window_handler);
 my $uimanager;
 my $menu_edit;
+my $menu_filter;
 my $menu = create_menu();
 my $scroller = Gtk2::ScrolledWindow->new();
 my $view     = StreamGraph::View->new(aa=>1);
+$view->set(connection_arrows=>'one-way');
 my $factory  = StreamGraph::View::ItemFactory->new(view=>$view);
 my $nodeFactory = StreamGraph::Model::NodeFactory->new();
 
@@ -52,13 +55,14 @@ my $item2 = _text_item($factory,
 		inputCount=>1,
 		timesPop=>1
 		));
-$view->add_item($item1, $item2);
+$view->add_item($item2);
+
+$view->connect($item1,$item2);
 
 print $item1->{data};
 print "\n----------------\n\n";
 print StreamGraph::CodeGen::generateCode($item1, "");
 
-$view->layout();
 $window->show_all();
 
 Gtk2->main();
@@ -95,22 +99,57 @@ sub _test_handler {
 	# print "item: $item  event: $event\n";
 	my $event_type = $event->type;
 	my @coords = $event->coords;
-	# print "Event, type: $event_type  coords: @coords\n";
+	# print $item . "Event, type: $event_type  coords: @coords\n";
 
-	if ($event_type eq 'button-release' && $event->button == 3) {
-		$factory->{focus_item} = $item;
-		$menu_edit->popup (undef, undef, undef, undef, $event->button, $event->time);
-		return;
+	if ($event_type eq 'button-press' && $event->button == 1) {
+		my @coords_prime = $item->w2i(@coords); # cursor position.
+		$item->{x_prime} = $coords_prime[0];
+		$item->{y_prime} = $coords_prime[1];
+	} elsif ($event_type eq 'motion-notify') {
+		unless (defined $item->{y_prime}) {return;}
+		my @coords_prime = $item->w2i(@coords); # cursor position.
+		$item->{x_move} = $coords_prime[0];
+		$item->{y_move} = $coords_prime[1];
+		my ($item_x, $item_y) = $item->get(qw(x y));
+		$item->set(x=>($item_x + ($item->{x_move}- $item->{x_prime}) ));
+		$item->set(y=>($item_y + ($item->{y_move}- $item->{y_prime}) ));
+		$item->{x_prime} = $item->{x_move};
+		$item->{y_prime} = $item->{y_move};
+	}	elsif ($event_type eq 'button-release' && $event->button == 3) {
+		$view->{focusItem} = $item;
+		$view->{popup} = 1;
+		$menu_filter->popup (undef, undef, undef, undef, $event->button, $event->time);
 	} elsif ($event_type eq 'button-release' && $event->button == 1) {
-		if (!defined $item->{clickTiem}) { $item->{clickTiem} = int (gettimeofday * 10); return;}
-		StreamGraph::Util::PropertyWindow::show($item->{data}) if int (gettimeofday * 10) - $item->{clickTiem} < 5;
-		$item->{clickTiem} = int (gettimeofday * 10);
+		undef $item->{x_prime};
+		undef $item->{y_prime};
+		if (!defined $item->{clickTime}) { $item->{clickTime} = int (gettimeofday * 10); return;}
+		StreamGraph::Util::PropertyWindow::show($item,$window) if int (gettimeofday * 10) - $item->{clickTime} < 5;
+		$item->{clickTime} = int (gettimeofday * 10);
+	} elsif ($event_type eq 'enter-notify') {
+		if (defined $item->{view}->{tooglePress}) {
+			my $titem = $item->{view}->{tooglePress};
+			if ($item->{view}->{tooglePress} ne $item && int (gettimeofday * 100) == $titem->{connectTime}) {
+				$item->{view}->connect($titem, $item);
+			}
+			undef $item->{view}->{tooglePress};
+		}
 	}
 }
 
+sub _window_handler {
+    my ($item, $event) = @_;
+    my $event_type = $event->type;
+    my @coords = $event->coords;
+		if ($view->{popup}) {
+			$view->{popup} = 0;
+			return;
+		}
+		if ($event->button == 3) {
+			$menu_edit->popup(undef, undef, undef, undef, $event->button, 0);
+		}
+}
+
 sub addFilter {
-  my @successors = $view->successors($factory->{focus_item});
-  if (scalar @successors > 0) { return; }
   my $item = _text_item($factory,
 	$nodeFactory->createNode(
 		type=>"StreamGraph::Model::Filter",
@@ -121,7 +160,21 @@ sub addFilter {
 		timesPop=>1
 		));
   $view->add_item($item);
-  $view->layout();
+}
+
+sub addParameter {
+	my $item = $factory->create_item(border=>'StreamGraph::View::Border::Rectangle',
+					content=>'StreamGraph::View::Content::EllipsisText',
+					text=>"Parameter",
+					font_desc=>Gtk2::Pango::FontDescription->from_string("Ariel Italic 8"),
+					hotspot_color_gdk=>Gtk2::Gdk::Color->parse('lightgreen'),
+					# outline_color_gdk=>Gtk2::Gdk::Color->parse('blue'),
+					fill_color_gdk   =>Gtk2::Gdk::Color->parse('white'),
+					);
+
+	$item->signal_connect(event=>\&_test_handler);
+	$view->add_item($item);
+	return $item;
 }
 
 sub delFilter {
@@ -147,10 +200,10 @@ sub create_menu {
 		[ "Quit", 'gtk-quit', undef,  "<control>Q", undef, undef ],
 		[ "Close", 'gtk-close', undef,  "<shift>W", undef, undef ],
 		[ "EditMenu",'gtk-edit'],
-		[ "NewT", 'gtk-new', undef,  undef, undef, \&addFilter ],
-		[ "Delete", 'gtk-delete', undef, undef, undef, \&delFilter ],
-		[ "HelpMenu",'gtk-help'],
-		[ "Info", 'gtk-info', undef,  undef, undef, undef ],
+		[ "NewF", undef, 'Neuer Filter', undef, undef, \&addFilter ],
+		[ "NewP", undef, 'Neuer Parameter', undef, undef, \&addParameter ],
+		[ "FilterMenu", undef, "_Filter"],
+		[ "DelF",'gtk-delete', undef, undef, undef, \&delFilter ],
 	);
 	$uimanager = Gtk2::UIManager->new;
 	my $accelgroup = $uimanager->get_accel_group;
@@ -169,15 +222,14 @@ sub create_menu {
 				<menuitem action='Save'/>
 				<menuitem action='SaveAs'/>
 				<separator/>
-
 				<menuitem action='Quit'/>
 			</menu>
 			<menu action='EditMenu'>
-				<menuitem action='NewT'/>
-				<menuitem action='Delete'/>
+				<menuitem action='NewF'/>
+				<menuitem action='NewP'/>
 			</menu>
-			<menu action='HelpMenu'>
-				<menuitem action='Info'/>
+			<menu action='FilterMenu'>
+				<menuitem action='DelF'/>
 			</menu>
 		</menubar>
 	</ui>"
@@ -185,6 +237,7 @@ sub create_menu {
 
 	my $menubar = $uimanager->get_widget('/MenuBar');
 	$menu_edit = $uimanager->get_widget('/MenuBar/EditMenu')->get_submenu;
+	$menu_filter = $uimanager->get_widget('/MenuBar/FilterMenu')->get_submenu;
 	$vbox->pack_start($menubar,FALSE,FALSE,0);
 
 	$vbox->show_all();

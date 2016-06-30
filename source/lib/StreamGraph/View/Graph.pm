@@ -18,36 +18,30 @@ sub new {
 	return $self;
 }
 
-
 # $graph->add($item);
-# $graph->add($predecessor_item, $item);
-sub add {
-	my ($self, $predecessor_item, $item) = @_;
-	if (!defined $item) {
-		$self->{graph}->add_vertex($predecessor_item);
-		if (!defined $self->{root}) {
-			$self->{root} = $predecessor_item;
-		}
-		return;
+sub add_vertex {
+	my ($self, $item) = @_;
+	$self->{graph}->add_vertex($item);
+	if (!defined $self->{root}) {
+		$self->{root} = $item;
 	}
-	$self->{graph}->add_edge($predecessor_item, $item);
 }
 
-# $graph->connect($item1, $item2);
-sub connect {
+# $graph->add($predecessor_item,$item);
+sub add_edge {
 	my ($self, $item1, $item2) = @_;
 	if ((!defined $item1) or (!defined $item2)) {
 		croak "You must specify two items to connect.\n";
 	}
 	$self->add($item1) if (!$self->has_item($item1));
 	$self->add($item2) if (!$self->has_item($item2));
-	if ($item1->outputType ne $item2->inputType) {
+	if ($item1->{data}->outputType ne $item2->{data}->inputType) {
 		croak "Output type " . $item1->outputType .
-				" does not match input type" . $item2->inputType . ".\n";
+				" does not match input type" . $item2->{data}->inputType . ".\n";
 	}
-	if (!($item1->isa("StreamGraph::Model::Filter") and $item2->isa("StreamGraph::Model::Filter"))
-			and !($item1->isa("StreamGraph::Model::Parameter") and $item2->isa("StreamGraph::Model::Filter"))) {
-		croak "You cannot connect these types of items: " . ref($item1) . " and " . ref($item2) . ".\n";
+	if (!($item1->{data}->isa("StreamGraph::Model::Filter") and $item2->{data}->isa("StreamGraph::Model::Filter"))
+			and !($item1->{data}->isa("StreamGraph::Model::Parameter") and $item2->{data}->isa("StreamGraph::Model::Filter"))) {
+		croak "You cannot connect these types of items: " . ref($item1->{data}) . " and " . ref($item2->{data}) . ".\n";
 	}
 	$self->{graph}->add_edge($item1, $item2);
 }
@@ -100,7 +94,7 @@ sub remove {
 	my @successors = $graph->successors($item);
 	if (scalar @successors > 0) {
 		croak "You must remove the successors of this item " .
-				"prior to removing this item.\n"; 
+				"prior to removing this item.\n";
 	}
 
 	if (!defined $item) {
@@ -193,7 +187,7 @@ sub _set_root {
 	foreach my $successor_item (@successors) {
 		next if ((defined $verboten_item) && ($successor_item == $verboten_item));
 		$self->traverse_preorder_edge($item, $successor_item,
-				 sub { $new_graph->add_edge($_[0], $_[1]); }); 
+				 sub { $new_graph->add_edge($_[0], $_[1]); });
 	}
 	my @predecessors = $self->{graph}->predecessors($item);
 	foreach my $predecessor_item (@predecessors) {
@@ -237,7 +231,7 @@ This is internal to StreamGraph::View. It's a wrapper around
 Jarkko Heitaniemi's nice Graph module. This module is instantiated by
 StreamGraph::View.
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =over
 
@@ -330,7 +324,7 @@ traversal routines.
 The C<add()> method may only be used to set the root when the first
 StreamGraph::View::Item is added to the graph.
 
-=item C<You must remove the successors of this item prior to removing this item.> 
+=item C<You must remove the successors of this item prior to removing this item.>
 
 The C<remove()> method will only remove items that have no successor
 items.
