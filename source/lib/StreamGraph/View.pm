@@ -144,7 +144,7 @@ sub remove_item {
 	for my $successor (@successors) {
 		my @connections = @{$self->{connections}{$successor}};
 		foreach my $connection (@connections) {
-			if ($connection->get('item') == $successor) {
+			if ($connection->get('predecessor_item') == $item) {
 				$connection->disconnect();
 				$connection->destroy();
 				last;
