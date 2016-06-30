@@ -172,14 +172,22 @@ sub addFilter {
 }
 
 sub addParameter {
+	my $data = $nodeFactory->createNode(
+			type=>"StreamGraph::Model::Parameter",
+			name=>"Parameter",
+			outputType=>"int",
+		);
+
 	my $item = $factory->create_item(border=>'StreamGraph::View::Border::Rectangle',
 					content=>'StreamGraph::View::Content::EllipsisText',
-					text=>"Parameter",
+					text=>$data->name,
 					font_desc=>Gtk2::Pango::FontDescription->from_string("Ariel Italic 8"),
 					hotspot_color_gdk=>Gtk2::Gdk::Color->parse('lightgreen'),
 					# outline_color_gdk=>Gtk2::Gdk::Color->parse('blue'),
 					fill_color_gdk   =>Gtk2::Gdk::Color->parse('white'),
-					);
+					data=>$data);
+
+	print "_text_item, item: $item\n";
 
 	$item->signal_connect(event=>\&_test_handler);
 	$view->add_item($item);

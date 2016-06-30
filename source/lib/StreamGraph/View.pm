@@ -141,7 +141,6 @@ sub remove_item {
 	}
 	# remove connections with successors
 	my @successors = $self->{graph}->successors($item);
-	print (scalar @successors) . "\n";
 	for my $successor (@successors) {
 		my @connections = @{$self->{connections}{$successor}};
 		foreach my $connection (@connections) {

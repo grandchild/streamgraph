@@ -7,18 +7,63 @@ use Glib qw/TRUE FALSE/;
 sub show {
 	my ($item,$window) = @_;
 
-	my $itemData = $item->{data};
-
-	if (defined $itemData->{dialog}) { return; }
-
+	if (defined $item->{dialog}) { return; }
 	my $dialog = Gtk2::Dialog->new(
 		'Property Window',
 		$window,
 		[qw/destroy-with-parent/],
 	);
+	$item->{dialog} = $dialog;
 
-	$itemData->{dialog} = $dialog;
+	if ($item->{data}->isa("StreamGraph::Model::Filter")) {
+		show_filter($item,$dialog);
+	} if ($item->{data}->isa("StreamGraph::Model::Parameter")) {
+		show_parameter($item,$dialog);
+	}
+}
 
+sub show_parameter {
+	my ($item,$dialog) = @_;
+
+	my $itemData = $item->{data};
+	my $dbox = $dialog->vbox;
+
+	# PARAMETER NAME ENTRY
+	my $filterNameHbox = Gtk2::HBox->new(FALSE,0);
+	$filterNameHbox->pack_start(Gtk2::Label->new("Name: "),FALSE,FALSE,0);
+	my $filterNameE = Gtk2::Entry->new();
+	$filterNameE->set_text($itemData->{name});
+	$filterNameE->signal_connect(changed => sub{	$itemData->{name} = $filterNameE->get_text(); $item->{border}->{content}->set(text => $filterNameE->get_text()); });
+	$filterNameHbox->pack_start($filterNameE,FALSE,FALSE,0);
+	$dbox->pack_start($filterNameHbox,FALSE,FALSE,0);
+
+	# PARAMETER TYPE ENTRY
+	my $filterTypeHbox = Gtk2::HBox->new(FALSE,0);
+	$filterTypeHbox->pack_start(Gtk2::Label->new("Type: "),FALSE,FALSE,0);
+	my $filterTypeE = Gtk2::Entry->new();
+	$filterTypeE->set_text($itemData->{outputType});
+	$filterTypeE->signal_connect(changed => sub{	$itemData->{outputType} = $filterTypeE->get_text();  });
+	$filterTypeHbox->pack_start($filterTypeE,FALSE,FALSE,0);
+	$dbox->pack_start($filterTypeHbox,FALSE,FALSE,0);
+
+	# PARAMETER VALUE ENTRY
+	my $filterValueHbox = Gtk2::HBox->new(FALSE,0);
+	$filterValueHbox->pack_start(Gtk2::Label->new("Value: "),FALSE,FALSE,0);
+	my $filterValueE = Gtk2::Entry->new();
+	$filterValueE->set_text($itemData->{value});
+	$filterValueE->signal_connect(changed => sub{	$itemData->{value} = $filterValueE->get_text();  });
+	$filterValueHbox->pack_start($filterValueE,FALSE,FALSE,0);
+	$dbox->pack_start($filterValueHbox,FALSE,FALSE,0);
+
+	$dbox->show_all();
+	$dialog->signal_connect('delete-event'=>sub { undef $item->{dialog}; $dialog->destroy(); });
+	$dialog->show();
+}
+
+sub show_filter {
+	my ($item,$dialog) = @_;
+
+	my $itemData = $item->{data};
 	my $dbox = $dialog->vbox;
 
 	# FILTER NAME ENTRY
@@ -85,7 +130,8 @@ sub show {
 			$filterGlobVarBuffer->get_start_iter,
 			$filterGlobVarBuffer->get_end_iter,
 			TRUE
-		); });
+		);
+	});
 	$filterTab->pack_start($filterGlobVarView,FALSE,FALSE,0);
 
 	$filterTab->pack_start(Gtk2::HSeparator->new(),FALSE,TRUE,10); # SEPARATOR
@@ -102,7 +148,8 @@ sub show {
 			$filterInitBuffer->get_start_iter,
 			$filterInitBuffer->get_end_iter,
 			TRUE
-		); });
+		);
+	});
 	$filterTab->pack_start($filterInitView,FALSE,FALSE,0);
 
 	$filterTab->pack_start(Gtk2::HSeparator->new(),FALSE,TRUE,10); # SEPARATOR
@@ -148,7 +195,8 @@ sub show {
 			$filterWorkBuffer->get_start_iter,
 			$filterWorkBuffer->get_end_iter,
 			TRUE
-		); });
+		);
+	});
 	$filterTab->pack_start($filterWorkView,FALSE,FALSE,0);
 
 	$filterTab->pack_start(Gtk2::HSeparator->new(),FALSE,TRUE,10); # SEPARATOR
@@ -183,22 +231,22 @@ sub show {
 	$splitCB->append_text('Duplicate');
 	$splitCB->append_text('Void');
 	if ($itemData->{splitType} eq 'roundrobbin') {
-	  $splitCB->set_active(0);
+		$splitCB->set_active(0);
 	} elsif ($itemData->{splitType} eq 'Duplicate') {
-	  $splitCB->set_active(1);
+	$splitCB->set_active(1);
 	} elsif ($itemData->{splitType} eq 'Void') {
-	  $splitCB->set_active(2);
+		$splitCB->set_active(2);
 	} else {
-	  $splitCB->set_active(0);
+		$splitCB->set_active(0);
 	}
 	$splitCB->signal_connect(changed => sub{
-	  if ($splitCB->get_active_text eq 'Round Robbin') {
-	    $itemData->{splitType} = "roundrobbin";
-	  } elsif ($splitCB->get_active_text eq 'Duplicate') {
-	    $itemData->{splitType} = "duplicate";
-	  } elsif ($splitCB->get_active_text eq 'Void') {
-	    $itemData->{splitType} = "void";
-	  }
+		if ($splitCB->get_active_text eq 'Round Robbin') {
+			$itemData->{splitType} = "roundrobbin";
+		} elsif ($splitCB->get_active_text eq 'Duplicate') {
+			$itemData->{splitType} = "duplicate";
+		} elsif ($splitCB->get_active_text eq 'Void') {
+			$itemData->{splitType} = "void";
+		}
 	});
 	$splitCBhbox->pack_start(Gtk2::Label->new("Type: "),FALSE,FALSE,0);
 	$splitCBhbox->pack_start($splitCB,FALSE,FALSE,0);
@@ -212,7 +260,7 @@ sub show {
 
 	$dbox->add($nb);
 	$dbox->show_all();
-	$dialog->signal_connect('delete-event'=>sub { undef $itemData->{dialog}; $dialog->destroy(); });
+	$dialog->signal_connect('delete-event'=>sub { undef $item->{dialog}; $dialog->destroy(); });
 	$dialog->show();
 }
 
