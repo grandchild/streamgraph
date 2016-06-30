@@ -1,4 +1,5 @@
 streamgraph.conf
+*.str
 
 
 # Created by https://www.gitignore.io/api/java,linux,windows,osx,c++,eclipse,intellij
