@@ -81,7 +81,7 @@ sub add_item {
 
 	$item->set(graph=>$self->{graph});
 	$item->set_view($self);
-
+	$self->{connections}{$item} = [];
 	$self->{graph}->add_vertex($item);
 	$item->signal_emit('hotspot_adjust');
 }
@@ -125,46 +125,36 @@ sub predecessors {
 
 
 # $view->remove_item($item);
-# $view->remove_item($predecessor_item, $item);
 sub remove_item {
-	my ($self, $arg1, $arg2) = @_;
-	my $predecessor_item = (defined $arg2) ? $arg1 : undef;
-	my $item =             (defined $arg2) ? $arg2 : $arg1;
+	my ($self, $item) = @_;
 	if (!$item->isa('StreamGraph::View::Item')) {
 		croak "You may only remove a StreamGraph::View::Item.\n";
 	}
-
-	if ((defined $predecessor_item) &&
-		(!$predecessor_item->isa('StreamGraph::View::Item'))) {
-			croak "You may only remove items that have a " .
-					"StreamGraph::View::Item as predecessor.\n";
+	if (!defined $item || !$self->{graph}->has_item($item)) {
+		croak "Iitem not defined\n";
 	}
-
-	if (scalar $self->{graph}->successors($item)) {
-		croak "You must remove the successors of this item prior " .
-			"to removing this item.\n";
+	# remove connections with predecessors
+	my @connections = @{$self->{connections}{$item}};
+	foreach my $connection (@connections) {
+		$connection->disconnect();
+		$connection->destroy();
 	}
-
-	if (defined $self->{signals}{$item}) {
-		$item->signal_handler_disconnect($self->{signals}{$item});
-		delete $self->{signals}{$item};
-	}
-
-	if (!defined $predecessor_item) {
-		$self->{graph}->remove($item);
-		$item->destroy();
-		return;
-	}
-
-	$self->{graph}->remove($predecessor_item, $item);
-
-	if (exists $self->{connections}{$item}) {
-		_remove_connection($self, $predecessor_item, $item);
-		if (scalar @{$self->{connections}{$item}} == 0) {
-			delete $self->{connections}{$item};
+	# remove connections with successors
+	my @successors = $self->{graph}->successors($item);
+	print (scalar @successors) . "\n";
+	for my $successor (@successors) {
+		my @connections = @{$self->{connections}{$successor}};
+		foreach my $connection (@connections) {
+			if ($connection->get('item') == $successor) {
+				$connection->disconnect();
+				$connection->destroy();
+				last;
+			}
 		}
 	}
+	$self->{graph}->remove_vertex($item);
 	$item->destroy();
+	print $self->{graph} . "\n";
 }
 
 

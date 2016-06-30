@@ -86,33 +86,19 @@ sub predecessors {
 }
 
 
-# $graph->remove($item);
-# $graph->remove($predecessor_item, $item);
-sub remove {
-	my ($self, $predecessor_item, $item) = @_;
-	my $graph = $self->{graph};
-	my @successors = $graph->successors($item);
-	if (scalar @successors > 0) {
-		croak "You must remove the successors of this item " .
-				"prior to removing this item.\n";
+# $graph->remove_vertex($item);
+sub remove_vertex {
+	my ($self, $item) = @_;
+	my @successors = $self->{graph}->successors($item);
+	my @predecessors = $self->{graph}->predecessors($item);
+	for my $successor (@successors) {
+		$self->{graph}->delete_edge($successor, $item);
+	}
+	for my $predecessor (@predecessors) {
+		$self->{graph}->delete_edge($predecessor, $item);
 	}
 
-	if (!defined $item) {
-		if ($predecessor_item != $self->{root}) {
-			croak "You must pass in both the predecessor and " .
-					"the item you wish to remove.\n";
-		}
-
-		$graph->delete_vertex($predecessor_item);
-		$self->{root} = undef;
-		return;
-	}
-
-	$graph->delete_edge($predecessor_item, $item);
-	my @predecessors = $graph->predecessors($item);
-	if (scalar @predecessors == 0) {
-		$graph->delete_vertex($item);
-	}
+	$self->{graph}->delete_vertex($item);
 }
 
 

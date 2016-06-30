@@ -187,16 +187,9 @@ sub addParameter {
 }
 
 sub delFilter {
-  my @predecessors = $view->predecessors($factory->{focus_item});
-  if (scalar @predecessors == 0) {
-    $view->remove_item($factory->{focus_item});
-  } else {
-    foreach my $predecessor_item (@predecessors) {
-      $view->remove_item($predecessor_item, $factory->{focus_item});
-    }
-  }
-  $view->layout();
+	$view->remove_item($view->{focusItem});
 }
+
 
 sub create_menu {
 	my $vbox = Gtk2::VBox->new(FALSE,5);
