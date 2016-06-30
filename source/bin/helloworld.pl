@@ -108,14 +108,10 @@ sub _test_handler {
 		$item->{y_prime} = $coords_prime[1];
 	} elsif ($event_type eq 'motion-notify') {
 		unless (defined $item->{y_prime}) {return;}
-		my @coords_prime = $item->w2i(@coords); # cursor position.
-		$item->{x_move} = $coords_prime[0];
-		$item->{y_move} = $coords_prime[1];
-		my ($item_x, $item_y) = $item->get(qw(x y));
-		$item->set(x=>($item_x + ($item->{x_move}- $item->{x_prime}) ));
-		$item->set(y=>($item_y + ($item->{y_move}- $item->{y_prime}) ));
-		$item->{x_prime} = $item->{x_move};
-		$item->{y_prime} = $item->{y_move};
+		$item->set(x=>($item->get('x') + (@coords[0] - $item->{x_prime}) ));
+		$item->set(y=>($item->get('y') + (@coords[1] - $item->{y_prime}) ));
+		$item->{x_prime} = @coords[0];
+		$item->{y_prime} = @coords[1];
 	}	elsif ($event_type eq 'button-release' && $event->button == 3) {
 		$view->{focusItem} = $item;
 		$view->{popup} = 1;
@@ -154,6 +150,9 @@ sub _window_handler {
 			return;
 		}
 		if ($event->button == 3) {
+			my @coords = $event->coords;
+			$view->{menuCoordX} =  $coords[0];
+			$view->{menuCoordY} =  $coords[1];
 			$menu_edit->popup(undef, undef, undef, undef, $event->button, 0);
 		}
 }
@@ -169,6 +168,9 @@ sub addFilter {
 		timesPop=>1
 		));
   $view->add_item($item);
+	my ($width, $height) = $window->get_size();
+	$item->set(x=> ($view->{menuCoordX} - $width/2) );
+	$item->set(y=> ($view->{menuCoordY} - $height/2) );
 }
 
 sub addParameter {
@@ -191,7 +193,9 @@ sub addParameter {
 
 	$item->signal_connect(event=>\&_test_handler);
 	$view->add_item($item);
-	return $item;
+	my ($width, $height) = $window->get_size();
+	$item->set(x=> ($view->{menuCoordX} - $width/2) );
+	$item->set(y=> ($view->{menuCoordY} - $height/2) );
 }
 
 sub delFilter {
