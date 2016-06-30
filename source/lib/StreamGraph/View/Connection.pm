@@ -24,7 +24,7 @@ use Glib::Object::Subclass
 		   Glib::ParamSpec->scalar ('item', 'item_item',
 					    'Item view_item', G_PARAM_READWRITE),
 		   ]
-    ; 
+    ;
 
 
 sub INIT_INSTANCE
@@ -78,7 +78,7 @@ sub SET_PROPERTY
 
 	$self->{item} = $newval;
 
-	$self->{item_signal_id} = 
+	$self->{item_signal_id} =
 	    $newval->signal_connect('connection_adjust'=>
 				    sub { _item_connection($self, @_); });
     }
@@ -98,10 +98,10 @@ sub connect
 {
     my $self = shift(@_);
 
-    $self->{predecessor_signal_id} = 
+    $self->{predecessor_signal_id} =
 	$self->{predecessor_item}->signal_connect('connection_adjust'=>
  				     sub { _predecessor_connection($self, @_); });
-    $self->{item_signal_id} = 
+    $self->{item_signal_id} =
 	$self->{item}->signal_connect('connection_adjust'=>
 				      sub { _item_connection($self, @_); });
 }
@@ -113,13 +113,15 @@ sub disconnect
 
     $self->{predecessor_item}->signal_handler_disconnect($self->{predecessor_signal_id});
 
-    $self->{item}->signal_handler_disconnect($self->{item_signal_id});
+    $self->{item}->signal_handler_disconnect($self->{item_signal_id}) if defined $self->{item};
 }
 
 
 sub _direction
 {
     my ($predecessor_item, $item) = @_;
+
+    return ('right', 'right');
 
     my $predecessor_column = $predecessor_item->get('column');
 
@@ -226,7 +228,7 @@ sub _bpath
 
     my $h = 4 * $self->get('width-pixels'); # Height of arrow head.
 
-    my $v = $h / 2; 
+    my $v = $h / 2;
 
     if ($item_direction eq 'right')
     {
@@ -277,16 +279,16 @@ sub _set_connection_path
 
     $self->set_path_def(_bpath($self));
 
-    if ($self->get('item')->is_visible() && $self->get('predecessor_item')->is_visible())
-    {
+    # if ($self->get('item')->is_visible() && $self->get('predecessor_item')->is_visible())
+    # {
 	$self->show();
 
 	$self->lower_to_bottom();
-    }
-    else
-    {
-	$self->hide();
-    }
+    # }
+    # else
+    # {
+	# $self->hide();
+    # }
 }
 
 
@@ -327,7 +329,7 @@ The StreamGraph::View::Connection is an observer. It registers
 with the view items so that it may be notified when a view item's
 state changes.
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 Properties
 

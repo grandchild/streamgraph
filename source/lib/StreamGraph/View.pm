@@ -25,7 +25,7 @@ use Glib::Object::Subclass
 			Glib::ParamSpec->scalar ('connection-color-gdk','connection_color_gdk',
 						'The color of the connection.', G_PARAM_READWRITE),
 		   ]
-	; 
+	;
 
 
 sub INIT_INSTANCE {
@@ -67,34 +67,23 @@ sub SET_PROPERTY {
 # $view->add_item($item);
 # $view->add_item($predecessor_item, $item);
 sub add_item {
-	my ($self, $arg1, $arg2) = @_;
-	my $predecessor_item = (defined $arg2) ? $arg1 : undef;
-	my $item =             (defined $arg2) ? $arg2 : $arg1;
+	my ($self, $item) = @_;
 
 	if (!$item->isa('StreamGraph::View::Item')) {
 		croak "You may only add a StreamGraph::View::Item.\n";
 	}
 
-	if ((defined $predecessor_item) &&
-		(!$predecessor_item->isa('StreamGraph::View::Item'))) {
-			croak "You may only add items that have a " .
-					"StreamGraph::View::Item as predecessor.\n";
+	if ($self->{graph}->has_item($item)) {
+		croak "Item already exists in graph";
 	}
 
-	if (!defined $self->{signals}{$item}) {
-		$self->{signals}{$item} =
-			$item->signal_connect('layout'=>sub { $self->layout(); });
-	}
+	$self->{signals}{$item} =	$item->signal_connect('layout'=>sub { $self->layout(); });
 
 	$item->set(graph=>$self->{graph});
+	$item->set_view($self);
 
-	if (!defined $predecessor_item) {
-		$self->{graph}->add($item);
-		return;
-	}
-
-	$self->{graph}->add($predecessor_item, $item);
-	_add_connection($self, $predecessor_item, $item);
+	$self->{graph}->add_vertex($item);
+	$item->signal_emit('hotspot_adjust');
 }
 
 
@@ -115,6 +104,7 @@ sub clear {
 # $view->layout();
 sub layout {
 	my $self = shift(@_);
+	print "AGSGJ\n";
 	if (scalar $self->{graph}->num_items()) {
 	my $layout =
 		StreamGraph::View::Layout::Balanced->new(graph=>$self->{graph});
@@ -152,7 +142,7 @@ sub remove_item {
 
 	if (scalar $self->{graph}->successors($item)) {
 		croak "You must remove the successors of this item prior " .
-			"to removing this item.\n"; 
+			"to removing this item.\n";
 	}
 
 	if (defined $self->{signals}{$item}) {
@@ -211,7 +201,7 @@ sub successors {
 }
 
 
-sub _add_connection {
+sub connect {
 	my ($self, $predecessor_item, $item) = @_;
 	my $connection = Gnome2::Canvas::Item->new(
 		$self->root,
@@ -224,6 +214,9 @@ sub _add_connection {
 		fill_color=>'darkblue'
 	);
 	push @{$self->{connections}{$item}}, $connection;
+	$self->{graph}->add_vertex($predecessor_item,$item);
+	$item->signal_emit('connection_adjust');
+	$predecessor_item->signal_emit('connection_adjust');
 }
 
 
@@ -440,7 +433,7 @@ StreamGraph::View::Content::Picture - Displays a picture in a pixbuf.
 StreamGraph::View::Content::Uri - Displays a URI.
 
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 Properties
 
@@ -448,7 +441,7 @@ StreamGraph::View::Content::Uri - Displays a URI.
 
 =item 'aa' (boolean : readable / writable /construct-only)
 
-The antialiasing mode of the canvas. 
+The antialiasing mode of the canvas.
 
 =item 'connection_color_gdk' (Gtk2::Gdk::Color : readable / writable)
 
@@ -572,7 +565,7 @@ be from to the Gtk2::Ex::StreamGraphView are of type
 StreamGraph::View::Item.
 
 
-=item C<You may only remove items that have a StreamGraph::View::Item 
+=item C<You may only remove items that have a StreamGraph::View::Item
 as predecessor>
 
 You attempted to remove an item that does not have a
@@ -619,7 +612,7 @@ connection arrow type.
 =back
 
 
-=head1 CONFIGURATION AND ENVIRONMENT 
+=head1 CONFIGURATION AND ENVIRONMENT
 
 Gtk2::Ex::StreamGraphView requires no configuration files or environment
 variables.

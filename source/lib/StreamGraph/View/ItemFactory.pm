@@ -56,7 +56,7 @@ sub create_item {
 	my ($self, @attributes) = @_;
 	my %attributes = @attributes;
 
-	args_valid(\%attributes, qw(border content text browser uri pixbuf 
+	args_valid(\%attributes, qw(border content text browser uri pixbuf
 				font_desc fill_color_gdk text_color_gdk
 				outline_color_gdk hotspot_color_gdk data));
 	args_required(\%attributes, qw(border content));
@@ -97,19 +97,19 @@ sub create_item {
 							border=>$border,
 							x=>0, y=>0);
 
-	my $hotspot1          = $self->{grip_factory}->create_grip(
-							item=>$item,
-							border=>$border,
-							side=>'left',
-							fill_color_gdk=>$fill_color_gdk,
-							hotspot_color_gdk=>$hotspot_color_gdk);
+	# my $hotspot1          = $self->{grip_factory}->create_grip(
+	# 						item=>$item,
+	# 						border=>$border,
+	# 						side=>'left',
+	# 						fill_color_gdk=>$fill_color_gdk,
+	# 						hotspot_color_gdk=>$hotspot_color_gdk);
 
-	my $hotspot2          = $self->{grip_factory}->create_grip(
-							item=>$item,
-							border=>$border,
-							side=>'right',
-							fill_color_gdk=>$fill_color_gdk,
-							hotspot_color_gdk=>$hotspot_color_gdk);
+	# my $hotspot2          = $self->{grip_factory}->create_grip(
+	# 						item=>$item,
+	# 						border=>$border,
+	# 						side=>'right',
+	# 						fill_color_gdk=>$fill_color_gdk,
+	# 						hotspot_color_gdk=>$hotspot_color_gdk);
 
 	my $hotspot3          = $self->{toggle_factory}->create_toggle(
 							item=>$item,
@@ -127,8 +127,8 @@ sub create_item {
 							outline_color_gdk=>$outline_color_gdk,
 							hotspot_color_gdk=>$hotspot_color_gdk);
 
-	$item->add_hotspot('lower_left',   $hotspot1);
-	$item->add_hotspot('lower_right',  $hotspot2);
+	# $item->add_hotspot('lower_left',   $hotspot1);
+	# $item->add_hotspot('lower_right',  $hotspot2);
 	$item->add_hotspot('toggle_left',  $hotspot3);
 	$item->add_hotspot('toggle_right', $hotspot4);
 	$item->set_data(defined $attributes{data} ?
@@ -156,7 +156,7 @@ This document describes StreamGraph::View::ItemFactory version 0.0.1
 =head1 SYNOPSIS
 
 use StreamGraph::View::ItemFactory;
-  
+
 =head1 DESCRIPTION
 
 This factory make StreamGraph::View::Items of various kinds. Four
@@ -180,7 +180,7 @@ StreamGraph::View::Content::Picture - Displays a picture in a pixbuf.
 StreamGraph::View::Content::Uri - Displays a URI.
 
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 Properties
 

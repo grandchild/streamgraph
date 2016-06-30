@@ -82,7 +82,7 @@ sub create_toggle
 		       hotspot_color_gdk=>$hotspot_color_gdk,
 		       outline_color_gdk=>$outline_color_gdk,
 		       fill_color_gdk=>$fill_color_gdk,
-		       enabled=>FALSE);
+		       enabled=>TRUE);
     }
 
     if ($border->isa('StreamGraph::View::Border::RoundedRect'))
@@ -92,7 +92,7 @@ sub create_toggle
 		       hotspot_color_gdk=>$hotspot_color_gdk,
 		       outline_color_gdk=>$outline_color_gdk,
 		       fill_color_gdk=>$fill_color_gdk,
-		       enabled=>FALSE);
+		       enabled=>TRUE);
     }
 
 
@@ -103,7 +103,7 @@ sub create_toggle
 		       hotspot_color_gdk=>$hotspot_color_gdk,
 		       outline_color_gdk=>$outline_color_gdk,
 		       fill_color_gdk=>$fill_color_gdk,
-		       enabled=>FALSE);
+		       enabled=>TRUE);
     }
 
     croak "Cannot make toggle. Unexpected border: $border\n";
