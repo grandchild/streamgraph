@@ -1,6 +1,7 @@
 package StreamGraph::CodeGen;
 
 use strict;
+use Data::Dump qw(dump);
 use StreamGraph::View::Item;
 use StreamGraph::Util::File;
 use StreamGraph::Util::List;
@@ -16,10 +17,13 @@ sub generateCode {
 	my $programText = generateMultiLineCommentary("Generated code from project $fileName");
 	# build Node list
 	my @nodeList = ();
-	push(@nodeList, $node, StreamGraph::View::Item::all_successors($node));
+	push(@nodeList, StreamGraph::View::Item::all_successors($node));
+	@nodeList = StreamGraph::Util::List::unique(@nodeList);
+	@nodeList = @{StreamGraph::Util::List::filterNodesForType(\@nodeList, "StreamGraph::Model::Filter")};
 	# first generate all filter code
 	$programText .= generateSectionCommentary("Section for all Filters");
 	foreach my $filterNode (@nodeList) {
+		print "generating Filter for $filterNode->{data}->name\n";
 		$programText .= generateFilter($filterNode);
 	}
 
@@ -90,22 +94,23 @@ sub generateInit {
 	return $workText;
 }
 
-# gets list of parameters, flag if types should be included, flag if brackets should be inluded
+# gets list of parameters(type is item), flag if types should be included, flag if brackets should be inluded
 # and flag if  a List should be returned; both is assumed as standard; 
 # returns parameter string or List if flag is set
+# list/string generateParameters(item* parameterPointer, bool typeFlag, bool bracketFlag, bool listFlag);
 sub generateParameters {
 	# initialization
 	my $parameterPointer = shift;
 	my $typeFlag = shift;
-	if (!$typeFlag || $typeFlag != 0) {
+	if (!defined($typeFlag) || $typeFlag != 0) {
 		$typeFlag = 1;
 	}
 	my $bracketFlag = shift;
-	if (!$bracketFlag || $bracketFlag != 0) {
+	if (!defined($bracketFlag) || $bracketFlag != 0) {
 		$bracketFlag = 1;
 	}
 	my $listFlag = shift;
-	if (!$listFlag || $listFlag != 1) {
+	if (!defined($listFlag) || $listFlag != 1) {
 		$listFlag = 0;
 	}
 	my @parameters = @{$parameterPointer};
@@ -118,13 +123,14 @@ sub generateParameters {
 		foreach my $parameter (@parameters) {
 			my $parameterText = "";
 			$nmbParameters--;
-			my $parameterName;
+			my $parameterName = $parameter->{data}->name;
 			# check if Type should be included
 			if($typeFlag == 1){
-				my $parameterType;
+				my $parameterType = $parameter->{data}->outputType;
 				$parameterText .= "$parameterType ";
 			}
 			$parameterText .= "$parameterName";
+			$workText .= $parameterText;
 			push(@parameterList, $parameterText);
 			if($nmbParameters != 0){
 				$workText .= ", ";
@@ -146,8 +152,12 @@ sub generateParameters {
 # returns "" if filter is not defined and Filtertext if defined
 sub generateFilter {
 	my $filterNode = shift;
-	if (!( defined($filterNode) ) || !( $filterNode->{data}->isa("StreamGraph::Model::Filter") ) ) {
-		print "$filterNode is either not defined or not a Filter\n";
+	if (!( defined($filterNode))  ) {
+		print "$filterNode is not defined \n";
+		return "";
+	}
+	if(!( $filterNode->{data}->isa("StreamGraph::Model::Filter") )){
+		print "filterNode->data is not a Filter\n";
 		return "";
 	}
 	my $data = $filterNode->{data};
@@ -156,7 +166,8 @@ sub generateFilter {
 	my $name = $data->{name};
 	my $globalVariables = $data->{globalVariables};
 	my $filterText = generateCommentary("Filter $name") . "$inputType->$outputType filter $name";
-	my @parameters;
+	my @predecessors = StreamGraph::View::Item::predecessors($filterNode);
+	my @parameters = @{StreamGraph::Util::List::filterNodesForType(\@predecessors, "StreamGraph::Model::Parameter")};
 	$filterText .= generateParameters(\@parameters);
 	$filterText .= " {\n"; 
 	if(!($globalVariables eq "")){
@@ -204,7 +215,8 @@ sub generatePipeline {
 		if($filterNode->{data}->isa("StreamGraph::Model::Filter")){
 			my $name = $filterNode->{data}->{name};
 			# get Parameters of Filter
-			my @filterParameters;
+			my @predecessors = StreamGraph::View::Item::predecessors($filterNode);
+			my @filterParameters = @{StreamGraph::Util::List::filterNodesForType(\@predecessors, "StreamGraph::Model::Parameter")};
 			$pipelineFilters .= "\t add $name" . generateParameters(\@filterParameters, 0, 1) . ";\n";
 			my @generatedParameters = @{generateParameters(\@filterParameters, 1, 0, 1)};
 			if(@generatedParameters != 0){

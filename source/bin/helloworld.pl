@@ -57,10 +57,12 @@ my $item2 = _text_item($factory,
 		timesPop=>1
 		));
 $view->add_item($item2);
-
+my $item3 = addParameter();
+my $item4 = addParameter();
 $view->connect($item1,$item2);
-
-print $item1->{data};
+$view->connect($item3,$item2);
+$view->connect($item4,$item2);
+print $item1->{data};	
 print "\n----------------\n\n";
 print StreamGraph::CodeGen::generateCode($item1, "");
 
