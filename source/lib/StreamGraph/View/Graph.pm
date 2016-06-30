@@ -37,7 +37,7 @@ sub add_edge {
 	$self->add($item2) if (!$self->has_item($item2));
 	if ($item1->{data}->outputType ne $item2->{data}->inputType) {
 		croak "Output type " . $item1->{data}->outputType .
-				" does not match input type" . $item2->{data}->inputType . ".\n";
+				" does not match input type " . $item2->{data}->inputType . ".\n";
 	}
 	if (!($item1->{data}->isa("StreamGraph::Model::Filter") and $item2->{data}->isa("StreamGraph::Model::Filter"))
 			and !($item1->{data}->isa("StreamGraph::Model::Parameter") and $item2->{data}->isa("StreamGraph::Model::Filter"))) {
