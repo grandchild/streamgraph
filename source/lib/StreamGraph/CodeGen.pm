@@ -146,8 +146,8 @@ sub generateParameters {
 # returns "" if filter is not defined and Filtertext if defined
 sub generateFilter {
 	my $filterNode = shift;
-	if (!( defined($filterNode) ) || !( filterNode->isa("StreamGraph::Model::Filter") ) ) {
-		print "$filterNode is either not defined or not a Filter";
+	if (!( defined($filterNode) ) || !( $filterNode->{data}->isa("StreamGraph::Model::Filter") ) ) {
+		print "$filterNode is either not defined or not a Filter\n";
 		return "";
 	}
 	my $data = $filterNode->{data};
@@ -201,7 +201,7 @@ sub generatePipeline {
 	my $alreadyAddedAtLeastOneParameterFlag = 0;
 	foreach my $filterNode (@filterArray) {
 		# only add if element is Filter
-		if($filterNode->isa("StreamGraph::Model::Filter")){
+		if($filterNode->{data}->isa("StreamGraph::Model::Filter")){
 			my $name = $filterNode->{data}->{name};
 			# get Parameters of Filter
 			my @filterParameters;
