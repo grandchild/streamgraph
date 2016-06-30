@@ -122,6 +122,12 @@ sub successors {
 	return $self->{graph}->successors($item);
 }
 
+# @all_successors = $graph->all_successors($item);
+sub all_successors {
+	my ($self, $item) = @_;
+	return $self->{graph}->all_successors($item);
+}
+
 
 # $graph->set_root($item);
 sub set_root {

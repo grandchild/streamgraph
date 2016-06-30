@@ -260,6 +260,29 @@ sub successors {
 	return grep {$_->get_column_no() <= $column_no } @items;
 }
 
+# my @all_successors = $item->all_successors();
+# my @all_successors = $item->all_successors('left');
+sub all_successors {
+	my ($self, $side) = @_;
+	return () if (!defined $self->{graph});
+
+	my @items = $self->{graph}->all_successors($self);
+	return () if (scalar @items == 0);
+
+	return @items if (!defined $side);
+
+	my $column = $self->get('column');
+	return () if (!defined $column);
+
+	my $column_no = $column->get('column_no');
+	if ($side eq 'right') {
+		return grep {$_->get_column_no() >= $column_no } @items;
+	}
+
+	# $side eq 'left'
+	return grep {$_->get_column_no() <= $column_no } @items;
+}
+
 
 # resize: adjust the size of this item. This routine is needed because
 # the simple: $self->set(x=>$x1, width=>$width, height=>$height) is

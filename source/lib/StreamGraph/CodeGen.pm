@@ -9,21 +9,21 @@ my $pipelineNumber = 0;
 my $dividingLine = "---------------------------------------------------";
 
 # function which generates Code out of Graph from root Node
-# gets root as 1. input parameter and filename as 2.parameter
+# gets root (Item) as 1. input parameter and filename as 2.parameter
 sub generateCode {
 	my $node = shift;
 	my $fileName = shift;
 	my $programText = generateMultiLineCommentary("Generated code from project $fileName");
 	# build Node list
 	my @nodeList = ();
-	push(@nodeList, $node, StreamGraph::View::Item::successors($node));
+	push(@nodeList, $node, StreamGraph::View::Item::all_successors($node));
 	# first generate all filter code
-	$programText .= generateMultiLineCommentary("$dividingLine \nSection for all Filters");
+	$programText .= generateSectionCommentary("Section for all Filters");
 	foreach my $filterNode (@nodeList) {
 		$programText .= generateFilter($filterNode);
 	}
 
-	$programText .= generateMultiLineCommentary("$dividingLine \nSection for all Pipelines");
+	$programText .= generateSectionCommentary("Section for all Pipelines");
 	$programText .= generatePipeline(\@nodeList);
 	
 	### TODO: write to file in extra Util function
@@ -42,6 +42,13 @@ sub generateMultiLineCommentary {
 	my $commentaryText = "\n/*\n * ";
 	$commentText =~ s/\r?\n/\n * /g;
 	$commentaryText .= $commentText . "\n */\n\n";
+	return $commentaryText;
+}
+
+sub generateSectionCommentary {
+	my $commentText = shift;
+	my $commentaryText = generateCommentary($dividingLine);
+	$commentaryText .= generateMultiLineCommentary($commentText);
 	return $commentaryText;
 }
 
@@ -106,19 +113,19 @@ sub generateParameters {
 	my $workText = "";
 	my @parameterList = ();
 
-	# working 	
+	# building parameter list/ parameter text
 	if(@parameters && $nmbParameters != 0){
 		foreach my $parameter (@parameters) {
-			my $parametertText = "";
+			my $parameterText = "";
 			$nmbParameters--;
-			my $parameterType;
 			my $parameterName;
 			# check if Type should be included
 			if($typeFlag == 1){
-				$parametertText .= "$parameterType ";
+				my $parameterType;
+				$parameterText .= "$parameterType ";
 			}
-			$parametertText .= "$parameterName";
-			push(@parameterList, $parametertText);
+			$parameterText .= "$parameterName";
+			push(@parameterList, $parameterText);
 			if($nmbParameters != 0){
 				$workText .= ", ";
 			}
@@ -139,7 +146,8 @@ sub generateParameters {
 # returns "" if filter is not defined and Filtertext if defined
 sub generateFilter {
 	my $filterNode = shift;
-	if (!defined($filterNode)) {
+	if (!( defined($filterNode) ) || !( filterNode->isa("StreamGraph::Model::Filter") ) ) {
+		print "$filterNode is either not defined or not a Filter";
 		return "";
 	}
 	my $data = $filterNode->{data};
@@ -192,22 +200,27 @@ sub generatePipeline {
 	my @pipelineParameters = ();
 	my $alreadyAddedAtLeastOneParameterFlag = 0;
 	foreach my $filterNode (@filterArray) {
-		my $name = $filterNode->{data}->{name};
-		my @filterParameters;
-		$pipelineFilters .= "\t add $name" . generateParameters(\@filterParameters, 0, 1) . ";\n";
-		my @generatedParameters = @{generateParameters(\@filterParameters, 1, 0, 1)};
-		if(@generatedParameters != 0){
-			# merge without duplicates
-			push(@pipelineParameters, @generatedParameters);
-			@pipelineParameters = StreamGraph::Util::List::unique(@pipelineParameters);
-			#if($alreadyAddedAtLeastOneParameterFlag == 0){
-			#	$pipelineParameters .= $generatedParameters;
-			#} else {
-			#	$pipelineParameters .= ", " . $generatedParameters ;
-			#}
-			#$alreadyAddedAtLeastOneParameterFlag = 1;
+		# only add if element is Filter
+		if($filterNode->isa("StreamGraph::Model::Filter")){
+			my $name = $filterNode->{data}->{name};
+			# get Parameters of Filter
+			my @filterParameters;
+			$pipelineFilters .= "\t add $name" . generateParameters(\@filterParameters, 0, 1) . ";\n";
+			my @generatedParameters = @{generateParameters(\@filterParameters, 1, 0, 1)};
+			if(@generatedParameters != 0){
+				# merge
+				push(@pipelineParameters, @generatedParameters);
+				#if($alreadyAddedAtLeastOneParameterFlag == 0){
+				#	$pipelineParameters .= $generatedParameters;
+				#} else {
+				#	$pipelineParameters .= ", " . $generatedParameters ;
+				#}
+				#$alreadyAddedAtLeastOneParameterFlag = 1;
+			}
 		}
 	}
+	# delete duplicates
+	@pipelineParameters = StreamGraph::Util::List::unique(@pipelineParameters);
 	$pipelineFilters .= "}\n";
 	$pipelineHeader .= join(", ", @pipelineParameters) . ")";
 	return $pipelineHeader . $pipelineFilters;
