@@ -35,13 +35,16 @@ sub add_edge {
 	}
 	$self->add($item1) if (!$self->has_item($item1));
 	$self->add($item2) if (!$self->has_item($item2));
-	if ($item1->{data}->outputType ne $item2->{data}->inputType) {
-		croak "Output type " . $item1->{data}->outputType .
-				" does not match input type " . $item2->{data}->inputType . ".\n";
-	}
-	if (!($item1->{data}->isa("StreamGraph::Model::Filter") and $item2->{data}->isa("StreamGraph::Model::Filter"))
-			and !($item1->{data}->isa("StreamGraph::Model::Parameter") and $item2->{data}->isa("StreamGraph::Model::Filter"))) {
-		croak "You cannot connect these types of items: " . ref($item1->{data}) . " and " . ref($item2->{data}) . ".\n";
+	if ($item1->{data}->isa("StreamGraph::Model::Filter")
+			and $item2->{data}->isa("StreamGraph::Model::Filter")) {
+		if ($item1->{data}->outputType ne $item2->{data}->inputType) {
+			croak "Output type " . $item1->{data}->outputType .
+					" does not match input type " . $item2->{data}->inputType . ".\n";
+		}
+	} elsif (!($item1->{data}->isa("StreamGraph::Model::Parameter")
+			and $item2->{data}->isa("StreamGraph::Model::Filter"))) {
+		croak "You cannot connect these types of items: " .
+			ref($item1->{data}) . " and " . ref($item2->{data}) . ".\n";
 	}
 	$self->{graph}->add_edge($item1, $item2);
 }
