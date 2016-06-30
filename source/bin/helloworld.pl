@@ -110,10 +110,10 @@ sub _test_handler {
 		$item->{y_prime} = $coords_prime[1];
 	} elsif ($event_type eq 'motion-notify') {
 		unless (defined $item->{y_prime}) {return;}
-		$item->set(x=>($item->get('x') + (@coords[0] - $item->{x_prime}) ));
-		$item->set(y=>($item->get('y') + (@coords[1] - $item->{y_prime}) ));
-		$item->{x_prime} = @coords[0];
-		$item->{y_prime} = @coords[1];
+		$item->set(x=>($item->get('x') + ($coords[0] - $item->{x_prime}) ));
+		$item->set(y=>($item->get('y') + ($coords[1] - $item->{y_prime}) ));
+		$item->{x_prime} = $coords[0];
+		$item->{y_prime} = $coords[1];
 	}	elsif ($event_type eq 'button-release' && $event->button == 3) {
 		$view->{focusItem} = $item;
 		$view->{popup} = 1;
