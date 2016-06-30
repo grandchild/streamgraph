@@ -115,6 +115,9 @@ sub SET_PROPERTY {
 			$self->signal_emit('hotspot_adjust');
 			$self->signal_emit('connection_adjust');
 		}
+		if (defined $self->{data}) {
+			$self->{data}->x($newval);
+		}
 		return;
 	}
 
@@ -125,6 +128,9 @@ sub SET_PROPERTY {
 			$self->{border}->set(y=>$newval);
 			$self->signal_emit('hotspot_adjust');
 			$self->signal_emit('connection_adjust');
+		}
+		if (defined $self->{data}) {
+			$self->{data}->y($newval);
 		}
 		return;
 	}
