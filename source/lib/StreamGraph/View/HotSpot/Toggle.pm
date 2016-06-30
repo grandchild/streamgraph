@@ -21,11 +21,11 @@ sub hotspot_adjust_event_handler {
 
 sub hotspot_motion_notify {
   my ($self, $item, $event) = @_;
-  if (defined $self->{connection}) {
+  if (defined $item->{view}->{toogleCon}) {
     my @coords = $event->coords;
-    $self->{connection}->{x2} = shift @coords;
-    $self->{connection}->{y2} = shift @coords;
-    $self->{connection}->_predecessor_connection();
+    $item->{view}->{toogleCon}->{x2} = shift @coords;
+    $item->{view}->{toogleCon}->{y2} = shift @coords;
+    $item->{view}->{toogleCon}->_predecessor_connection();
   }
 }
 
@@ -38,15 +38,15 @@ sub hotspot_button_release {
   my ($self, $item, $event) = @_;
   $item->{view}->{tooglePress} = $item;
   $item->{connectTime} = int (gettimeofday * 100);
-  $self->{connection}->disconnect();
-  $self->{connection}->destroy();
-  undef $self->{connection};
+  $item->{view}->{toogleCon}->disconnect();
+  $item->{view}->{toogleCon}->destroy();
+  undef $item->{view}->{toogleCon};
 }
 
 sub hotspot_button_press {
   my ($self, $item, $event) = @_;
   # print $self . "  :  " . $event->type . "\n";
-  $self->{connection} = Gnome2::Canvas::Item->new(
+  $item->{view}->{toogleCon} = Gnome2::Canvas::Item->new(
 		$item->{view}->root,
 		'StreamGraph::View::Connection',
 		predecessor_item=>$item,

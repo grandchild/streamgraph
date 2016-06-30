@@ -16,6 +16,7 @@ use StreamGraph::Util::PropertyWindow;
 
 my $window   = Gtk2::Window->new('toplevel');
 $window->signal_connect('button-release-event',\&_window_handler);
+$window->signal_connect('leave-notify-event',\&_window_handler);
 my $uimanager;
 my $menu_edit;
 my $menu_filter;
@@ -137,9 +138,17 @@ sub _test_handler {
 }
 
 sub _window_handler {
-    my ($item, $event) = @_;
+    my ($win, $event) = @_;
     my $event_type = $event->type;
     my @coords = $event->coords;
+		if ($event_type eq 'leave-notify') {
+			if (defined $view->{toogleCon}) {
+				$view->{toogleCon}->disconnect();
+				$view->{toogleCon}->destroy();
+				undef $view->{toogleCon};
+			}
+			return;
+		}
 		if ($view->{popup}) {
 			$view->{popup} = 0;
 			return;
