@@ -192,7 +192,7 @@ sub successors {
 
 sub connect {
 	my ($self, $predecessor_item, $item) = @_;
-	$self->{graph}->add_edge($predecessor_item,$item);
+	$self->{graph}->add_edge($predecessor_item, $item);
 	my $connection = Gnome2::Canvas::Item->new(
 		$self->root,
 		'StreamGraph::View::Connection',

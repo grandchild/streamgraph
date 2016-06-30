@@ -198,6 +198,7 @@ sub addParameter {
 	my ($width, $height) = $window->get_size();
 	$item->set(x=> ($view->{menuCoordX} - $width/2) );
 	$item->set(y=> ($view->{menuCoordY} - $height/2) );
+	return $item;
 }
 
 sub delFilter {
