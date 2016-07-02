@@ -46,6 +46,8 @@ $menu->add($scroller);
 
 loadDefaultFile();
 
+print StreamGraph::CodeGen::generateCode($view->{graph}->get_root, "");
+
 $window->show_all();
 
 Gtk2->main();
