@@ -103,6 +103,10 @@ sub disconnect {
     $self->{item}->signal_handler_disconnect( $self->{item_signal_id} ) if defined $self->{item};
 }
 
+sub update {
+	shift->_set_connection_path();
+}
+
 sub _direction {
     return ('right', 'right');
 }
@@ -188,7 +192,6 @@ sub _set_connection_path {
 	my $self = shift(@_);
 	$self->set_path_def( _bpath($self) );
 	$self->show();
-	$self->lower_to_bottom();
 }
 
 1;    # Magic true value required at end of module

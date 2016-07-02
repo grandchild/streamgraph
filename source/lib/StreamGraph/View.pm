@@ -228,8 +228,16 @@ sub connect {
 	push @{$self->{connections}{$item}}, $connection;
 	$item->signal_emit('connection_adjust');
 	$predecessor_item->signal_emit('connection_adjust');
+	$self->_update_connection_depths;
 }
 
+sub _update_connection_depths {
+	my ($self) = @_;
+	my @connections;
+	push(@connections, @{$self->{connections}{$_}}) for keys(%{$self->{connections}});
+	map { $_->lower_to_bottom if ($_->get("type") eq "data"); } @connections;
+	map { $_->lower_to_bottom if ($_->get("type") eq "parameter"); } @connections;
+}
 
 sub _clear_connections {
 	my $self = shift(@_);
