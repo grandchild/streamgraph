@@ -1,0 +1,96 @@
+--- Streamit Graph File
+---
+nodes:
+  - data:
+      name: Printer
+      id: HgqVkg
+      x: 138
+      y: -28
+      initCode: ''
+      workCode: println(pop());
+      globalVariables: ''
+      timesPush: 0
+      timesPop: 1
+      timesPeek: 0
+      joinType: rr
+      joinMultiplicities: 0
+      joinRRForAll: 1
+      splitType: duplicate
+      splitMultiplicities: 0
+      splitRRForAll: 1
+      inputType: int
+      inputCount: 1
+      outputType: void
+      outputCount: 0
+    type: StreamGraph::Model::Filter
+  - data:
+      name: Parameter
+      id: jMQ6Fg
+      x: -13
+      y: -103
+      outputType: int
+      value: 0
+    type: StreamGraph::Model::Parameter
+  - data:
+      name: IntGenerator
+      id: X1nHnQ
+      x: -142
+      y: -27
+      initCode: x = 0;
+      workCode: push(x++);
+      globalVariables: int x;
+      timesPush: 1
+      timesPop: 0
+      timesPeek: 0
+      joinType: rr
+      joinMultiplicities: 0
+      joinRRForAll: 1
+      splitType: duplicate
+      splitMultiplicities: 0
+      splitRRForAll: 1
+      inputType: void
+      inputCount: 0
+      outputType: int
+      outputCount: 1
+    type: StreamGraph::Model::Filter
+  - data:
+      name: Ident
+      id: VivtMQ
+      x: -31
+      y: 21
+      initCode: ''
+      workCode: push(pop());
+      globalVariables: ''
+      timesPush: 1
+      timesPop: 1
+      timesPeek: 0
+      joinType: rr
+      joinMultiplicities: 0
+      joinRRForAll: 1
+      splitType: duplicate
+      splitMultiplicities: 0
+      splitRRForAll: 1
+      inputType: int
+      inputCount: 1
+      outputType: int
+      outputCount: 1
+    type: StreamGraph::Model::Filter
+  - data:
+      name: Parameter
+      id: Y/WZxw
+      x: -30
+      y: 75
+      outputType: int
+      value: 0
+    type: StreamGraph::Model::Parameter
+connections:
+  - from: jMQ6Fg
+    to: HgqVkg
+  - from: Y/WZxw
+    to: HgqVkg
+  - from: X1nHnQ
+    to: HgqVkg
+  - from: VivtMQ
+    to: HgqVkg
+  - from: X1nHnQ
+    to: VivtMQ
