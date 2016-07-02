@@ -4,12 +4,11 @@ use strict;
 
 
 sub _write {
-	my $writeString = shift;
-	my $fileName = shift;
-	if(!defined($fileName) || $fileName eq ""){
-		$fileName = "a";
+	my ($writeString, $filename) = @_;
+	if(!defined($filename) || $filename eq ""){
+		$filename = "a";
 	}
-	open(my $fh, '>', $fileName);
+	open(my $fh, '>', $filename);
 	print $fh $writeString;
 	close $fh;
 }
@@ -21,12 +20,11 @@ sub writeFile {
 
 # $file->writeStreamitSource($string, "filename");
 sub writeStreamitSource {
-	my $writeString = shift;
-	my $fileName = shift;
-	if(!(substr($fileName, -4, 4) eq ".str")){
-		$fileName .= ".str";
+	my ($writeString, $filename) = @_;
+	if(!(substr($filename, -4, 4) eq ".str")){
+		$filename .= ".str";
 	}
-	_write($writeString, $fileName);
+	_write($writeString, $filename);
 }
 
 # $file->writeConfig($string, "filename");
