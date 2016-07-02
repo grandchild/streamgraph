@@ -97,7 +97,9 @@ sub clear {
 		$self->{graph}->traverse_postorder_edge($root_item,
 			$successor_item, sub { $self->remove_item($_[0], $_[1]); });
 	}
-	$self->remove_item($root_item);
+	foreach my $item ($self->{graph}->get_items) {
+		$self->remove_item($item);
+	}
 }
 
 
