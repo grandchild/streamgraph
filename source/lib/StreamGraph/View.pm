@@ -153,7 +153,6 @@ sub remove_item {
 	}
 	$self->{graph}->remove_vertex($item);
 	$item->destroy();
-	print $self->{graph} . "\n";
 }
 
 
