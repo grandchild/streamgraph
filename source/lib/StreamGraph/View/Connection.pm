@@ -29,6 +29,11 @@ use Glib::Object::Subclass
 		'item', 'item_item', 'Item view_item',
 		G_PARAM_READWRITE
 	),
+
+	Glib::ParamSpec->scalar(
+		'type', 'type', 'Connection type',
+		G_PARAM_READWRITE
+	),
 	];
 
 sub INIT_INSTANCE {
@@ -41,6 +46,7 @@ sub INIT_INSTANCE {
 	$self->{predecessor_signal_id} = 0;
 	$self->{item} = undef;
 	$self->{item_signal_id} = 0;
+	$self->{type} = 'default';
 }
 
 sub SET_PROPERTY {
@@ -67,6 +73,10 @@ sub SET_PROPERTY {
 		$self->{item} = $newval;
 		$self->{item_signal_id} = $newval->signal_connect(
 			'connection_adjust' => sub { _item_connection( $self, @_ ); } );
+	}
+
+	if ($param_name eq 'type') {
+		$self->{type} = $newval;
 	}
 
 	$self->{$param_name} = $newval;

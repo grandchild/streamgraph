@@ -22,8 +22,8 @@ use Glib::Object::Subclass
 			Glib::ParamSpec->string ('connection-arrows', 'arrows',
 						'Type of arrow to display.', 'none', G_PARAM_READWRITE),
 
-			Glib::ParamSpec->scalar ('connection-color-gdk','connection_color_gdk',
-						'The color of the connection.', G_PARAM_READWRITE),
+			Glib::ParamSpec->scalar ('connection-colors-gdk','connection_colors_gdk',
+						'The colors of connections.', G_PARAM_READWRITE),
 		   ]
 	;
 
@@ -33,7 +33,11 @@ sub INIT_INSTANCE {
 	$self->{graph} = StreamGraph::View::Graph->new();
 	$self->{signals} = {}; # HoH
 	$self->{connections} = {}; # HoA
-	$self->{connection_color_gdk} = Gtk2::Gdk::Color->parse('darkblue');
+	$self->{connection_colors_gdk} = {
+		default => Gtk2::Gdk::Color->parse('gray'),
+		data => Gtk2::Gdk::Color->parse('black'),
+		parameter => Gtk2::Gdk::Color->parse('lightgray')
+	};
 	$self->{connection_arrows} = 'none';
 	return $self;
 }
@@ -194,6 +198,22 @@ sub successors {
 sub connect {
 	my ($self, $predecessor_item, $item) = @_;
 	$self->{graph}->add_edge($predecessor_item, $item);
+	my $color = $self->{connection_colors_gdk}{default};
+	my $type = "default";
+	if ($predecessor_item->{data}->isa("StreamGraph::Model::Filter")
+			and $item->{data}->isa("StreamGraph::Model::Filter")) {
+		if ($predecessor_item->{data}->outputType ne $item->{data}->inputType) {
+			croak "Output type " . $predecessor_item->{data}->outputType .
+					" does not match input type " . $item->{data}->inputType . ".\n";
+		}
+		$type = "data";
+	} elsif ($predecessor_item->{data}->isa("StreamGraph::Model::Parameter")
+			and $item->{data}->isa("StreamGraph::Model::Filter")) {
+		$type = "parameter";
+	} else {
+		croak "You cannot connect these types of items: " .
+			ref($predecessor_item->{data}) . " and " . ref($item->{data}) . ".\n";
+	}
 	my $connection = Gnome2::Canvas::Item->new(
 		$self->root,
 		'StreamGraph::View::Connection',
@@ -201,8 +221,9 @@ sub connect {
 		item=>$item,
 		arrows=>$self->{connection_arrows},
 		width_pixels=>1,
-		outline_color_gdk=>$self->{connection_color_gdk},
-		fill_color=>'darkblue'
+		outline_color_gdk=>$self->{connection_colors_gdk}{$type},
+		fill_color=>'darkblue',
+		type=>$type
 	);
 	push @{$self->{connections}{$item}}, $connection;
 	$item->signal_emit('connection_adjust');
