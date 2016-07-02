@@ -239,7 +239,7 @@ sub create_menu {
 	my $vbox = Gtk2::VBox->new(FALSE,5);
 	my @entries = (
 		[ "FileMenu",undef,"_Datei"],
-	  [ "New", 'gtk-new', undef,  "<control>N", undef, undef ],
+		[ "New", 'gtk-new', undef,  "<control>N", undef, undef ],
 		[ "Open", 'gtk-open', undef,  "<control>O", undef, \&loadDefaultFile ],
 		[ "Save", 'gtk-save', undef,  "<control>S", undef, \&saveFile ],
 		[ "SaveAs", 'gtk-save-as', undef,  "<shift><control>S", undef, undef ],
