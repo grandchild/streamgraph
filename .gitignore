@@ -2,7 +2,30 @@ streamgraph.conf
 *.str
 
 
-# Created by https://www.gitignore.io/api/java,linux,windows,osx,c++,eclipse,intellij
+# Created by https://www.gitignore.io/api/perl,java,linux,windows,osx,c++,eclipse,intellij
+
+### Perl ###
+/source/blib/
+/source/.build/
+_build/
+cover_db/
+inc/
+Build
+!Build/
+Build.bat
+.last_cover_stats
+/source/Makefile
+/source/Makefile.old
+/source/MANIFEST.bak
+/source/META.yml
+/source/META.json
+/source/MYMETA.*
+nytprof.out
+/source/pm_to_blib
+*.o
+*.bs
+/source/_eumm/
+
 
 ### Linux ###
 *~
