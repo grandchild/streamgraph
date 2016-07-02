@@ -4,7 +4,10 @@ use strict;
 use Gtk2 '-init';
 use Glib qw/TRUE FALSE/;
 use Gnome2::Canvas;
+use Carp;
 use Time::HiRes qw(gettimeofday);
+use YAML qw(DumpFile LoadFile Dump Bless Blessed);
+use Data::Dump qw(dump);
 
 use lib "./lib/";
 
@@ -12,7 +15,11 @@ use StreamGraph::View;
 use StreamGraph::View::ItemFactory;
 use StreamGraph::Model::NodeFactory;
 use StreamGraph::CodeGen;
+use StreamGraph::Util;
 use StreamGraph::Util::PropertyWindow;
+use StreamGraph::Util::Config;
+use StreamGraph::Util::File;
+
 
 my $window   = Gtk2::Window->new('toplevel');
 $window->signal_connect('button-release-event',\&_window_handler);
@@ -23,9 +30,11 @@ my $menu_filter;
 my $menu = create_menu();
 my $scroller = Gtk2::ScrolledWindow->new();
 my $view     = StreamGraph::View->new(aa=>1);
+# my $view = LoadFile("helloworld.sigraph");
 $view->set(connection_arrows=>'one-way');
 my $factory  = StreamGraph::View::ItemFactory->new(view=>$view);
 my $nodeFactory = StreamGraph::Model::NodeFactory->new();
+my $config = StreamGraph::Util::Config->new();
 
 $view->set_scroll_region(-50,-90,100,100);
 $scroller->add($view);
@@ -35,36 +44,7 @@ $window->set_type_hint('dialog');
 $window->add($menu);
 $menu->add($scroller);
 
-my $item1 = _text_item($factory,
-	$nodeFactory->createNode(
-		type=>"StreamGraph::Model::Filter",
-		name=>"IntGenerator",
-		globalVariables=>"int x;",
-		initCode=>"x = 0;",
-		workCode=>"push(x++);",
-		timesPush=>1,
-		outputType=>"int",
-		outputCount=>1
-		));
-$view->add_item($item1);
-my $item2 = _text_item($factory,
-	$nodeFactory->createNode(
-		type=>"StreamGraph::Model::Filter",
-		name=>"Printer",
-		workCode=>"println(pop());",
-		inputType=>"int",
-		inputCount=>1,
-		timesPop=>1
-		));
-$view->add_item($item2);
-my $item3 = addParameter();
-my $item4 = addParameter();
-$view->connect($item1,$item2);
-$view->connect($item3,$item2);
-$view->connect($item4,$item2);
-print $item1->{data};	
-print "\n----------------\n\n";
-print StreamGraph::CodeGen::generateCode($item1, "");
+loadDefaultFile();
 
 $window->show_all();
 
@@ -78,23 +58,6 @@ sub _closeapp {
 	$view->destroy();
 	Gtk2->main_quit();
 	return 0;
-}
-
-
-sub _text_item {
-	my ($factory, $data) = @_;
-	my $item = $factory->create_item(border=>'StreamGraph::View::Border::RoundedRect',
-					content=>'StreamGraph::View::Content::EllipsisText',
-					text=>$data->name,
-					font_desc=>Gtk2::Pango::FontDescription->from_string("Ariel Italic 8"),
-					hotspot_color_gdk=>Gtk2::Gdk::Color->parse('lightgreen'),
-					# outline_color_gdk=>Gtk2::Gdk::Color->parse('blue'),
-					fill_color_gdk   =>Gtk2::Gdk::Color->parse('white'),
-					data=>$data);
-
-	print "_text_item, item: $item\n";
-	$item->signal_connect(event=>\&_test_handler);
-	return $item;
 }
 
 sub _test_handler {
@@ -159,45 +122,65 @@ sub _window_handler {
 		}
 }
 
-sub addFilter {
-  my $item = _text_item($factory,
-	$nodeFactory->createNode(
-		type=>"StreamGraph::Model::Filter",
-		name=>"Filter",
-		workCode=>"println(pop());",
-		inputType=>"int",
-		inputCount=>1,
-		timesPop=>1
-		));
-  $view->add_item($item);
-	my ($width, $height) = $window->get_size();
-	$item->set(x=> ($view->{menuCoordX} - $width/2) );
-	$item->set(y=> ($view->{menuCoordY} - $height/2) );
+
+sub addItem {
+	my ($node) = @_;
+	my $item;
+	if ($node->isa("StreamGraph::Model::Filter")) {
+		$item = addFilter($node);
+	} elsif ($node->isa("StreamGraph::Model::Parameter")) {
+		$item = addParameter($node);
+	} elsif ($node->isa("StreamGraph::Model::Comment")) {
+		$item = addComment($node);
+	} else {
+		croak "Unknown node data type " . ref($node) . "\n";
+	}
+	$item->signal_connect(event=>\&_test_handler);
+	$view->add_item($item);
+	if (defined $view->{menuCoordX} and defined $view->{menuCoordY}) {
+		my ($width, $height) = $window->get_size();
+		$item->set(x=> ($view->{menuCoordX} - $width/2) );
+		$item->set(y=> ($view->{menuCoordY} - $height/2) );
+	}
+	return $item;
 }
 
-sub addParameter {
-	my $data = $nodeFactory->createNode(
-			type=>"StreamGraph::Model::Parameter",
-			name=>"Parameter",
-			outputType=>"int",
-		);
-
-	my $item = $factory->create_item(border=>'StreamGraph::View::Border::Rectangle',
+sub addFilter {
+	my ($node) = @_;
+	my $item = $factory->create_item(border=>'StreamGraph::View::Border::RoundedRect',
 					content=>'StreamGraph::View::Content::EllipsisText',
-					text=>$data->name,
+					text=>$node->name,
 					font_desc=>Gtk2::Pango::FontDescription->from_string("Ariel Italic 8"),
 					hotspot_color_gdk=>Gtk2::Gdk::Color->parse('lightgreen'),
 					# outline_color_gdk=>Gtk2::Gdk::Color->parse('blue'),
+					fill_color_gdk =>Gtk2::Gdk::Color->parse('white'),
+					data=>$node);
+	return $item;
+}
+
+sub addParameter {
+	my ($node) = @_;
+	my $item = $factory->create_item(border=>'StreamGraph::View::Border::Rectangle',
+					content=>'StreamGraph::View::Content::EllipsisText',
+					text=>$node->value,
+					# font_desc=>Gtk2::Pango::FontDescription->from_string("Ariel Italic 8"),
+					hotspot_color_gdk=>Gtk2::Gdk::Color->parse('lightgreen'),
+					outline_color_gdk=>Gtk2::Gdk::Color->parse('lightgray'),
 					fill_color_gdk   =>Gtk2::Gdk::Color->parse('white'),
-					data=>$data);
+					data=>$node);
+	return $item;
+}
 
-	print "_text_item, item: $item\n";
-
-	$item->signal_connect(event=>\&_test_handler);
-	$view->add_item($item);
-	my ($width, $height) = $window->get_size();
-	$item->set(x=> ($view->{menuCoordX} - $width/2) );
-	$item->set(y=> ($view->{menuCoordY} - $height/2) );
+sub addComment {
+	my ($node) = @_;
+	my $item = $factory->create_item(border=>'StreamGraph::View::Border::Rectangle',
+					content=>'StreamGraph::View::Content::EllipsisText',
+					text=>$node->value,
+					font_desc=>Gtk2::Pango::FontDescription->from_string("Ariel Italic 8"),
+					hotspot_color_gdk=>Gtk2::Gdk::Color->parse('lightgreen'),
+					outline_color_gdk=>Gtk2::Gdk::Color->parse('#ff0000'),
+					fill_color_gdk   =>Gtk2::Gdk::Color->parse('white'),
+					data=>$node);
 	return $item;
 }
 
@@ -206,13 +189,57 @@ sub delFilter {
 }
 
 
+sub addNewFilter {
+	addFilter(
+		$nodeFactory->createNode(
+			type=>"StreamGraph::Model::Filter",
+			name=>"Filter",
+			workCode=>"println(pop());",
+			inputType=>"int",
+			inputCount=>1,
+			timesPop=>1
+		)
+	);
+}
+
+sub addNewParameter {
+	addParameter(
+		$nodeFactory->createNode(
+			type=>"StreamGraph::Model::Parameter",
+			name=>"Parameter",
+			outputType=>"int",
+		)
+	);
+}
+
+sub saveFile {
+	StreamGraph::Util::File::save("helloworld.sigraph", $view->{graph});
+}
+
+sub loadFile {
+	my ($filename, $view) = @_;
+	my ($nodes, $connections) = StreamGraph::Util::File::load($filename);
+	$view->clear();
+	my @items = map { addItem($_) } @{$nodes};
+	map {
+		$view->connect(
+			StreamGraph::Util::getItemWithId(\@items, $_->{from}),
+			StreamGraph::Util::getItemWithId(\@items, $_->{to})
+		)
+	} @{$connections};
+}
+
+sub loadDefaultFile {
+	loadFile("helloworld.sigraph", $view);
+}
+
 sub create_menu {
 	my $vbox = Gtk2::VBox->new(FALSE,5);
 	my @entries = (
 		[ "FileMenu",undef,"_Datei"],
 	  [ "New", 'gtk-new', undef,  "<control>N", undef, undef ],
-		[ "Open", 'gtk-open', undef,  "<control>O", undef, undef ],
-		[ "Save", 'gtk-save', undef,  "<control>S", undef, undef ],
+		[ "Open", 'gtk-open', undef,  "<control>O", undef, \&loadDefaultFile ],
+		[ "Save", 'gtk-save', undef,  "<control>S", undef, \&saveFile ],
 		[ "SaveAs", 'gtk-save-as', undef,  "<shift><control>S", undef, undef ],
 		[ "Quit", 'gtk-quit', undef,  "<control>Q", undef, undef ],
 		[ "Close", 'gtk-close', undef,  "<shift>W", undef, undef ],
@@ -260,5 +287,6 @@ sub create_menu {
 	$vbox->show_all();
 	return $vbox;
 }
+
 
 1;
