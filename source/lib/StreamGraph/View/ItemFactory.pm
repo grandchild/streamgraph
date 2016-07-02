@@ -95,7 +95,8 @@ sub create_item {
 							$self->{view}->root,
 							'StreamGraph::View::Item',
 							border=>$border,
-							x=>0, y=>0);
+							x=>(defined $attributes{data} ? $attributes{data}->x : 0),
+							y=>(defined $attributes{data} ? $attributes{data}->y : 0));
 
 	# my $hotspot1          = $self->{grip_factory}->create_grip(
 	# 						item=>$item,
