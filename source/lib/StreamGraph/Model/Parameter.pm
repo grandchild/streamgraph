@@ -9,6 +9,6 @@ extends "StreamGraph::Model::Node";
 has outputType  => ( is=>"rw", default=>"void" );
 has value       => ( is=>"rw", default=>0);
 
-has saveMembers => (is=>"ro", default=>sub{[qw(name x y outputType value)]});
+has saveMembers => (is=>"ro", default=>sub{[qw(name id x y outputType value)]});
 
 1;

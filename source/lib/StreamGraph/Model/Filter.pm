@@ -29,6 +29,7 @@ has outputCount         => ( is=>"rw", default=>0 );
 
 has saveMembers         => ( is=>"ro", default=>sub{[qw(
 	name
+	id
 	x
 	y
 	initCode
