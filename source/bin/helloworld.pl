@@ -177,11 +177,11 @@ sub addComment {
 	my ($node) = @_;
 	my $item = $factory->create_item(border=>'StreamGraph::View::Border::Rectangle',
 					content=>'StreamGraph::View::Content::EllipsisText',
-					text=>$node->value,
+					text=>$node->string,
 					font_desc=>Gtk2::Pango::FontDescription->from_string("Ariel Italic 8"),
-					hotspot_color_gdk=>Gtk2::Gdk::Color->parse('lightgreen'),
-					outline_color_gdk=>Gtk2::Gdk::Color->parse('#ff0000'),
-					fill_color_gdk   =>Gtk2::Gdk::Color->parse('white'),
+					hotspot_color_gdk=>Gtk2::Gdk::Color->parse(''),
+					outline_color_gdk=>Gtk2::Gdk::Color->parse('#dfdfdf'),
+					fill_color_gdk   =>Gtk2::Gdk::Color->parse('#eee'),
 					data=>$node);
 	return $item;
 }
@@ -210,6 +210,16 @@ sub addNewParameter {
 			type=>"StreamGraph::Model::Parameter",
 			name=>"Parameter",
 			outputType=>"int",
+		)
+	);
+}
+
+sub addNewComment {
+	addItem(
+		$nodeFactory->createNode(
+			type=>"StreamGraph::Model::Comment",
+			name=>"Comment",
+			string=>"Foo happens here"
 		)
 	);
 }
@@ -248,6 +258,7 @@ sub create_menu {
 		[ "EditMenu",'gtk-edit'],
 		[ "NewF", undef, 'Neuer Filter', undef, undef, \&addNewFilter ],
 		[ "NewP", undef, 'Neuer Parameter', undef, undef, \&addNewParameter ],
+		[ "NewC", undef, 'Neuer Kommentar', undef, undef, \&addNewComment ],
 		[ "FilterMenu", undef, "_Filter"],
 		[ "DelF",'gtk-delete', undef, undef, undef, \&delFilter ],
 	);
@@ -273,6 +284,7 @@ sub create_menu {
 			<menu action='EditMenu'>
 				<menuitem action='NewF'/>
 				<menuitem action='NewP'/>
+				<menuitem action='NewC'/>
 			</menu>
 			<menu action='FilterMenu'>
 				<menuitem action='DelF'/>

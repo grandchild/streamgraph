@@ -24,14 +24,6 @@ nodes:
       outputCount: 0
     type: StreamGraph::Model::Filter
   - data:
-      name: Parameter
-      id: jMQ6Fg
-      x: -13
-      y: -103
-      outputType: int
-      value: 0
-    type: StreamGraph::Model::Parameter
-  - data:
       name: IntGenerator
       id: X1nHnQ
       x: -142
@@ -56,8 +48,8 @@ nodes:
   - data:
       name: Ident
       id: VivtMQ
-      x: -31
-      y: 21
+      x: -1
+      y: 13
       initCode: ''
       workCode: push(pop());
       globalVariables: ''
@@ -77,6 +69,21 @@ nodes:
     type: StreamGraph::Model::Filter
   - data:
       name: Parameter
+      id: jMQ6Fg
+      x: -13
+      y: -103
+      outputType: int
+      value: 0
+    type: StreamGraph::Model::Parameter
+  - data:
+      name: Comment
+      id: k11HLg
+      x: 63
+      y: -130
+      string: Foo happens here
+    type: StreamGraph::Model::Comment
+  - data:
+      name: Parameter
       id: Y/WZxw
       x: -30
       y: 75
@@ -86,11 +93,11 @@ nodes:
 connections:
   - from: jMQ6Fg
     to: HgqVkg
-  - from: Y/WZxw
-    to: HgqVkg
-  - from: X1nHnQ
-    to: HgqVkg
   - from: VivtMQ
     to: HgqVkg
   - from: X1nHnQ
     to: VivtMQ
+  - from: X1nHnQ
+    to: HgqVkg
+  - from: Y/WZxw
+    to: HgqVkg

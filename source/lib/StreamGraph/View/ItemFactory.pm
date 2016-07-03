@@ -97,41 +97,26 @@ sub create_item {
 							border=>$border,
 							x=>(defined $attributes{data} ? $attributes{data}->x : 0),
 							y=>(defined $attributes{data} ? $attributes{data}->y : 0));
-
-	# my $hotspot1          = $self->{grip_factory}->create_grip(
-	# 						item=>$item,
-	# 						border=>$border,
-	# 						side=>'left',
-	# 						fill_color_gdk=>$fill_color_gdk,
-	# 						hotspot_color_gdk=>$hotspot_color_gdk);
-
-	# my $hotspot2          = $self->{grip_factory}->create_grip(
-	# 						item=>$item,
-	# 						border=>$border,
-	# 						side=>'right',
-	# 						fill_color_gdk=>$fill_color_gdk,
-	# 						hotspot_color_gdk=>$hotspot_color_gdk);
-
-	my $hotspot3          = $self->{toggle_factory}->create_toggle(
-							item=>$item,
-							border=>$border,
-							side=>'left',
-							fill_color_gdk=>$fill_color_gdk,
-							outline_color_gdk=>$outline_color_gdk,
-							hotspot_color_gdk=>$hotspot_color_gdk);
-
-	my $hotspot4          = $self->{toggle_factory}->create_toggle(
-							item=>$item,
-							border=>$border,
-							side=>'right',
-							fill_color_gdk=>$fill_color_gdk,
-							outline_color_gdk=>$outline_color_gdk,
-							hotspot_color_gdk=>$hotspot_color_gdk);
-
-	# $item->add_hotspot('lower_left',   $hotspot1);
-	# $item->add_hotspot('lower_right',  $hotspot2);
-	$item->add_hotspot('toggle_left',  $hotspot3);
-	$item->add_hotspot('toggle_right', $hotspot4);
+	
+	if (!defined($attributes{data}) or !$attributes{data}->isa("StreamGraph::Model::Comment")) {
+		my $hotspot_in = $self->{toggle_factory}->create_toggle(
+						item=>$item,
+						border=>$border,
+						side=>'left',
+						fill_color_gdk=>$fill_color_gdk,
+						outline_color_gdk=>$outline_color_gdk,
+						hotspot_color_gdk=>$hotspot_color_gdk);
+		
+		my $hotspot_out = $self->{toggle_factory}->create_toggle(
+						item=>$item,
+						border=>$border,
+						side=>'right',
+						fill_color_gdk=>$fill_color_gdk,
+						outline_color_gdk=>$outline_color_gdk,
+						hotspot_color_gdk=>$hotspot_color_gdk);
+		$item->add_hotspot('toggle_left',  $hotspot_in);
+		$item->add_hotspot('toggle_right', $hotspot_out);
+	}
 	$item->set_data(defined $attributes{data} ?
 		$attributes{data} :
 		$item->set_data(StreamGraph::Model::NodeFactory->new
