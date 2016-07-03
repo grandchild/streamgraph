@@ -33,7 +33,9 @@ sub show_parameter {
 	$filterNameHbox->pack_start(Gtk2::Label->new("Name: "),FALSE,FALSE,0);
 	my $filterNameE = Gtk2::Entry->new();
 	$filterNameE->set_text($itemData->{name});
-	$filterNameE->signal_connect(changed => sub{	$itemData->{name} = $filterNameE->get_text(); $item->{border}->{content}->set(text => $filterNameE->get_text()); });
+	$filterNameE->signal_connect(changed => sub{
+		$itemData->{name} = $filterNameE->get_text();
+	});
 	$filterNameHbox->pack_start($filterNameE,FALSE,FALSE,0);
 	$dbox->pack_start($filterNameHbox,FALSE,FALSE,0);
 
@@ -42,7 +44,9 @@ sub show_parameter {
 	$filterTypeHbox->pack_start(Gtk2::Label->new("Type: "),FALSE,FALSE,0);
 	my $filterTypeE = Gtk2::Entry->new();
 	$filterTypeE->set_text($itemData->{outputType});
-	$filterTypeE->signal_connect(changed => sub{	$itemData->{outputType} = $filterTypeE->get_text();  });
+	$filterTypeE->signal_connect(changed => sub{
+		$itemData->{outputType} = $filterTypeE->get_text();
+	});
 	$filterTypeHbox->pack_start($filterTypeE,FALSE,FALSE,0);
 	$dbox->pack_start($filterTypeHbox,FALSE,FALSE,0);
 
@@ -51,7 +55,10 @@ sub show_parameter {
 	$filterValueHbox->pack_start(Gtk2::Label->new("Value: "),FALSE,FALSE,0);
 	my $filterValueE = Gtk2::Entry->new();
 	$filterValueE->set_text($itemData->{value});
-	$filterValueE->signal_connect(changed => sub{	$itemData->{value} = $filterValueE->get_text();  });
+	$filterValueE->signal_connect(changed => sub{
+		$itemData->{value} = $filterValueE->get_text();
+		$item->{border}->{content}->set(text => $filterValueE->get_text());
+	});
 	$filterValueHbox->pack_start($filterValueE,FALSE,FALSE,0);
 	$dbox->pack_start($filterValueHbox,FALSE,FALSE,0);
 
