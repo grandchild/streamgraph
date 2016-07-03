@@ -192,7 +192,7 @@ sub delFilter {
 
 
 sub addNewFilter {
-	addFilter(
+	addItem(
 		$nodeFactory->createNode(
 			type=>"StreamGraph::Model::Filter",
 			name=>"Filter",
@@ -205,7 +205,7 @@ sub addNewFilter {
 }
 
 sub addNewParameter {
-	addParameter(
+	addItem(
 		$nodeFactory->createNode(
 			type=>"StreamGraph::Model::Parameter",
 			name=>"Parameter",
@@ -246,8 +246,8 @@ sub create_menu {
 		[ "Quit", 'gtk-quit', undef,  "<control>Q", undef, undef ],
 		[ "Close", 'gtk-close', undef,  "<shift>W", undef, undef ],
 		[ "EditMenu",'gtk-edit'],
-		[ "NewF", undef, 'Neuer Filter', undef, undef, \&addFilter ],
-		[ "NewP", undef, 'Neuer Parameter', undef, undef, \&addParameter ],
+		[ "NewF", undef, 'Neuer Filter', undef, undef, \&addNewFilter ],
+		[ "NewP", undef, 'Neuer Parameter', undef, undef, \&addNewParameter ],
 		[ "FilterMenu", undef, "_Filter"],
 		[ "DelF",'gtk-delete', undef, undef, undef, \&delFilter ],
 	);
