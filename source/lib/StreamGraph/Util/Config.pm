@@ -9,7 +9,7 @@ use YAML qw(LoadFile DumpFile Dump);
 use Data::Dump qw(dump);
 
 has configFile => ( is=>"ro", default=>"streamgraph.conf" );
-has config     => ( is=>"rw", default=>undef );
+has config     => ( is=>"rw", default=>sub {undef} );
 has default    => ( is=>"ro", default=>sub{
 		my %hash = (streamit_home=>"", strc=>"strc");
 		return \%hash;
