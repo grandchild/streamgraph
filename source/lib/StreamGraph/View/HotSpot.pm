@@ -6,347 +6,215 @@ use warnings;
 use strict;
 use Carp;
 
-use StreamGraph::View::ArgUtils;
-
 use Glib ':constants';
-
 use Gnome2::Canvas;
 
-sub new
-{
-    my ($class, @attributes) = @_;
+use StreamGraph::View::ArgUtils;
 
-    my $self  = {};
 
-    bless $self, $class;
-
-    my %attributes = @attributes;
-
-    args_required(\%attributes, qw(item side));
-
-    args_store($self, \%attributes);
-
-    if (! grep { $_ eq $self->{side} } qw(right left))
-    {
-	croak "Unexpected side: $self->{side}. Valid are: 'right' and 'left'\n";
-    }
-
-    if (!$self->{item}->isa('StreamGraph::View::Item'))
-    {
-	croak "Item argument is not a StreamGraph::View::Item.\n";
-    }
-
-    $self->{engaged} = FALSE;
-
-    $self->{item}->signal_connect(hotspot_adjust=>
-				  sub { $self->hotspot_adjust_event_handler($_[1]); });
-
-    $self->{item}->signal_connect(event=>\&_event_handler, $self);
-
-#    $self->{image}   = $self->hotspot_get_image();
-
-    return $self;
+sub new {
+	my ( $class, @attributes ) = @_;
+	my $self = {};
+	bless $self, $class;
+	my %attributes = @attributes;
+	args_required( \%attributes, qw(item side) );
+	args_store( $self, \%attributes );
+	if ( !grep { $_ eq $self->{side} } qw(right left) ) {
+		croak "Unexpected side: $self->{side}. Valid are: 'right' and 'left'\n";
+	}
+	if ( !$self->{item}->isa('StreamGraph::View::Item') ) {
+		croak "Item argument is not a StreamGraph::View::Item.\n";
+	}
+	$self->{engaged} = FALSE;
+	$self->{item}->signal_connect( hotspot_adjust =>
+			sub { $self->hotspot_adjust_event_handler( $_[1] ); } );
+	$self->{item}->signal_connect( event => \&_event_handler, $self );
+	#    $self->{image}   = $self->hotspot_get_image();
+	return $self;
 }
-
 
 # $self->hotspot_adjust_event_handler($item);
-
-sub hotspot_adjust_event_handler
-{
-    my ($self, $item) = @_;
-
-    croak "You must supply a handler for the 'hotspot_adjust' event.\n";
+sub hotspot_adjust_event_handler {
+	my ( $self, $item ) = @_;
+	croak "You must supply a handler for the 'hotspot_adjust' event.\n";
 }
-
 
 # $self->hotspot_button_press($item, $event);
-
-sub hotspot_button_press
-{
-    my ($self, $item, $event) = @_;
+sub hotspot_button_press {
+	my ( $self, $item, $event ) = @_;
 }
-
 
 # $self->hotspot_button_release($item, $event);
-
-sub hotspot_button_release
-{
-    my ($self, $item, $event) = @_;
+sub hotspot_button_release {
+	my ( $self, $item, $event ) = @_;
 }
-
 
 # my $flag = $self->hotspot_engaged(\@coords);
-
-sub hotspot_engaged
-{
-    my ($self, $coords_ref) = @_;
-
-    return FALSE if (!$self->{enabled});
-
-    my @coords = @$coords_ref;
-
-    my ($x1, $y1, $x2, $y2) = $self->{image}->get_bounds();
-
-    return FALSE if (($coords[0] < $x1) || ($coords[0] > $x2));
-
-    return FALSE if (($coords[1] < $y1) || ($coords[1] > $y2));
-
-    return TRUE;
+sub hotspot_engaged {
+	my ( $self, $coords_ref ) = @_;
+	return FALSE if ( !$self->{enabled} );
+	my @coords = @$coords_ref;
+	my ( $x1, $y1, $x2, $y2 ) = $self->{image}->get_bounds();
+	return FALSE if ( ( $coords[0] < $x1 ) || ( $coords[0] > $x2 ) );
+	return FALSE if ( ( $coords[1] < $y1 ) || ( $coords[1] > $y2 ) );
+	return TRUE;
 }
-
 
 # $self->hotspot_enter_notify($item, $event);
-
-sub hotspot_enter_notify
-{
-    my ($self, $item, $event) = @_;
+sub hotspot_enter_notify {
+	my ( $self, $item, $event ) = @_;
 }
-
 
 # my $image = $self->hotspot_get_image();
-
-sub hotspot_get_image
-{
-    my $self = shift(@_);
-
-    croak "No hotspot image given. Every hotspot must \n" .
-	  "have a Gnome2::Canvas::Item for an image.\n";
+sub hotspot_get_image {
+	my $self = shift(@_);
+	croak "No hotspot image given. Every hotspot must \n"
+		. "have a Gnome2::Canvas::Item for an image.\n";
 }
-
 
 # $self->hotspot_leave_notify($item, $event);
-
-sub hotspot_leave_notify
-{
-    my ($self, $item, $event) = @_;
+sub hotspot_leave_notify {
+	my ( $self, $item, $event ) = @_;
 }
-
 
 # $self->hotspot_motion_notify($item, $event);
-
-sub hotspot_motion_notify
-{
-    my ($self, $item, $event) = @_;
+sub hotspot_motion_notify {
+	my ( $self, $item, $event ) = @_;
 }
-
 
 # $hotspot->set(...);
-
-sub set
-{
-    my $self = shift(@_);
-
-    my %attributes = @_;
-
-    args_valid(\%attributes, qw(visible enabled	fill_color_gdk
-				outline_color_gdk hotspot_color_gdk));
-
-    foreach my $key (keys %attributes)
-    {
-	if ($key eq 'enabled')
-	{
-	    $self->{enabled} = $attributes{$key};
-
-	    if ($self->{enabled})
-	    {
-		$self->{image}->show();
-	    }
-	    else
-	    {
-		$self->{image}->hide();
-	    }
-
-	    next;
+sub set {
+	my $self = shift(@_);
+	my %attributes = @_;
+	args_valid(
+		\%attributes, qw(visible enabled    fill_color_gdk
+			outline_color_gdk hotspot_color_gdk)
+	);
+	foreach my $key ( keys %attributes ) {
+		if ( $key eq 'enabled' ) {
+			$self->{enabled} = $attributes{$key};
+			if ( $self->{enabled} ) {
+				$self->{image}->show();
+			} else {
+				$self->{image}->hide();
+			}
+			next;
+		}
+		
+		if ( $key eq 'fill_color_gdk' ) {
+			my $fill_color_gdk = $attributes{$key};
+			if ( !$fill_color_gdk->isa('Gtk2::Gdk::Color') ) {
+				croak "set(fill_color_gdk=>...) expecting a Gtk2::Gdk::Color\n";
+			}
+			$self->{fill_color_gdk} = $fill_color_gdk;
+			$self->{image}->set( fill_color_gdk => $fill_color_gdk );
+			next;
+		}
+		
+		if ( $key eq 'outline_color_gdk' ) {
+			my $outline_color_gdk = $attributes{$key};
+			if ( !$outline_color_gdk->isa('Gtk2::Gdk::Color') ) {
+				croak "set(outline_color_gdk=>...) expecting a Gtk2::Gdk::Color\n";
+			}
+			$self->{outline_color_gdk} = $outline_color_gdk;
+			$self->{image}->set( outline_color_gdk => $outline_color_gdk );
+			next;
+		}
+		
+		if ( $key eq 'hotspot_color_gdk' ) {
+			my $hotspot_color_gdk = $attributes{$key};
+			if ( !$hotspot_color_gdk->isa('Gtk2::Gdk::Color') ) {
+				croak "set(hotspot_color_gdk=>...) expecting a Gtk2::Gdk::Color\n";
+			}
+			$self->{hotspot_color_gdk} = $hotspot_color_gdk;
+			next;
+		}
 	}
-
-	if ($key eq 'fill_color_gdk')
-	{
-	    my $fill_color_gdk = $attributes{$key};
-
-	    if (!$fill_color_gdk->isa('Gtk2::Gdk::Color'))
-	    {
-		croak "set(fill_color_gdk=>...) expecting a Gtk2::Gdk::Color\n";
-	    }
-
-	    $self->{fill_color_gdk} = $fill_color_gdk;
-
-	    $self->{image}->set(fill_color_gdk=>$fill_color_gdk);
-
-	    next;
-	}
-
-	if ($key eq 'outline_color_gdk')
-	{
-	    my $outline_color_gdk = $attributes{$key};
-
-	    if (!$outline_color_gdk->isa('Gtk2::Gdk::Color'))
-	    {
-		croak "set(outline_color_gdk=>...) expecting a Gtk2::Gdk::Color\n";
-	    }
-
-	    $self->{outline_color_gdk} = $outline_color_gdk;
-
-	    $self->{image}->set(outline_color_gdk=>$outline_color_gdk);
-
-	    next;
-	}
-
-	if ($key eq 'hotspot_color_gdk')
-	{
-	    my $hotspot_color_gdk = $attributes{$key};
-
-	    if (!$hotspot_color_gdk->isa('Gtk2::Gdk::Color'))
-	    {
-		croak "set(hotspot_color_gdk=>...) expecting a Gtk2::Gdk::Color\n";
-	    }
-
-	    $self->{hotspot_color_gdk} = $hotspot_color_gdk;
-
-	    next;
-	}
-    }
 }
 
-
-sub _cursor_grab
-{
-    my ($self, $item, $time) = @_;
-
-    $item->grab ([qw/pointer-motion-mask button-release-mask leave-notify-mask button-press-mask/],
-		 Gtk2::Gdk::Cursor->new('hand2'), $time);
-
-    $self->{image}->set(fill_color_gdk=>$self->{hotspot_color_gdk});
+sub _cursor_grab {
+	my ( $self, $item, $time ) = @_;
+	$item->grab(
+		[qw/pointer-motion-mask button-release-mask leave-notify-mask button-press-mask/],
+		Gtk2::Gdk::Cursor->new('hand2'),
+		$time
+	);
+	$self->{image}->set( fill_color_gdk => $self->{hotspot_color_gdk} );
 }
 
-
-sub _cursor_release
-{
-    my ($self, $item, $time) = @_;
-
-    $item->ungrab($time);
-
-    $self->{image}->set(fill_color_gdk=>$self->{fill_color_gdk});
+sub _cursor_release {
+	my ( $self, $item, $time ) = @_;
+	$item->ungrab($time);
+	$self->{image}->set( fill_color_gdk => $self->{fill_color_gdk} );
 }
 
-
-sub _event_enter_notify
-{
-    my ($self, $item, $event) = @_;
-
-    my @coords = $event->coords; # world
-
-    $self->{engaged} = $self->hotspot_engaged(\@coords);
-
-    if ($self->{engaged})
-    {
-	_cursor_grab($self, $item, $event->time);
-
-	$self->hotspot_enter_notify($item, $event);
-    }
-}
-
-
-sub _event_button_press
-{
-    my ($self, $item, $event) = @_;
-
-    if ($event->button == 1)
-    {
+sub _event_enter_notify {
+	my ( $self, $item, $event ) = @_;
 	my @coords = $event->coords; # world
-
-	$self->{engaged} = $self->hotspot_engaged(\@coords);
-
-	if ($self->{engaged})
-	{
-	    _cursor_grab($self, $item, $event->time);
-
-	    $self->hotspot_button_press($item, $event);
+	$self->{engaged} = $self->hotspot_engaged( \@coords );
+	if ( $self->{engaged} ) {
+		_cursor_grab( $self, $item, $event->time );
+		$self->hotspot_enter_notify( $item, $event );
 	}
-    }
 }
 
-
-sub _event_leave_notify
-{
-    my ($self, $item, $event) = @_;
-
-    if ($self->{engaged})
-    {
-	_cursor_release($self, $item, $event->time);
-
-	$self->hotspot_leave_notify($item, $event);
-    }
-}
-
-
-sub _event_button_release
-{
-    my ($self, $item, $event) = @_;
-
-    _cursor_release($self, $item, $event->time);
-
-    if ($self->{engaged})
-    {
-	$self->hotspot_button_release($item, $event);
-
-	$self->{engaged} = FALSE;
-    }
-}
-
-
-sub _event_motion_notify
-{
-    my ($self, $item, $event) = @_;
-
-    if ($event->state >= 'button1-mask')
-    {
-	if ($self->{engaged})
-	{
-	    $self->hotspot_motion_notify($item, $event);
+sub _event_button_press {
+	my ( $self, $item, $event ) = @_;
+	if ( $event->button == 1 ) {
+		my @coords = $event->coords; # world
+		$self->{engaged} = $self->hotspot_engaged( \@coords );
+		if ( $self->{engaged} ) {
+			_cursor_grab( $self, $item, $event->time );
+			$self->hotspot_button_press( $item, $event );
+		}
 	}
-    }
 }
 
-
-sub _event_handler
-{
-    my ($item, $event, $self) = @_;
-
-    my $event_type = $event->type;
-
-    my @coords = $event->coords;
-
-#    print "event_type: $event_type  event_coords: @coords\n";
-
-    if ($event_type eq 'motion-notify')
-    {
-	_event_motion_notify($self, $item, $event);
-    }
-
-    elsif ($event_type eq 'button-press')
-    {
-	_event_button_press($self, $item, $event);
-    }
-
-    elsif ($event_type eq 'button-release')
-    {
-	_event_button_release($self, $item, $event);
-    }
-
-    elsif ($event_type eq 'enter-notify')
-    {
-	_event_enter_notify($self, $item, $event);
-    }
-
-    elsif ($event_type eq 'leave-notify')
-    {
-	_event_leave_notify($self, $item, $event);
-    }
+sub _event_leave_notify {
+	my ( $self, $item, $event ) = @_;
+	if ( $self->{engaged} ) {
+		_cursor_release( $self, $item, $event->time );
+		$self->hotspot_leave_notify( $item, $event );
+	}
 }
 
+sub _event_button_release {
+	my ( $self, $item, $event ) = @_;
+	_cursor_release( $self, $item, $event->time );
+	if ( $self->{engaged} ) {
+		$self->hotspot_button_release( $item, $event );
+		$self->{engaged} = FALSE;
+	}
+}
 
+sub _event_motion_notify {
+	my ( $self, $item, $event ) = @_;
+	if ( $event->state >= 'button1-mask' ) {
+		if ( $self->{engaged} ) {
+			$self->hotspot_motion_notify( $item, $event );
+		}
+	}
+}
 
-1; # Magic true value required at end of module
+sub _event_handler {
+	my ( $item, $event, $self ) = @_;
+	my $event_type = $event->type;
+	my @coords = $event->coords;
+	#    print "event_type: $event_type  event_coords: @coords\n";
+	if ( $event_type eq 'motion-notify' ) {
+		_event_motion_notify( $self, $item, $event );
+	} elsif ( $event_type eq 'button-press' ) {
+		_event_button_press( $self, $item, $event );
+	} elsif ( $event_type eq 'button-release' ) {
+		_event_button_release( $self, $item, $event );
+	} elsif ( $event_type eq 'enter-notify' ) {
+		_event_enter_notify( $self, $item, $event );
+	} elsif ( $event_type eq 'leave-notify' ) {
+		_event_leave_notify( $self, $item, $event );
+	}
+}
+
+1;    # Magic true value required at end of module
 
 __END__
 
@@ -364,7 +232,7 @@ This document describes StreamGraph::View::HotSpot version 0.0.1
 
 use base 'StreamGraph::View::HotSpot';
 
-  
+
 =head1 DESCRIPTION
 
 This module is internal to StreamGraph::View. Four
@@ -476,21 +344,21 @@ event.
 You did not pass in a Gtk2::Gdk::Color for the color argument. Here's
 an example of how to get a Gtk2::Gdk::Color:
 
-     my $red_color = Gtk2::Gdk::Color->parse("red");
+	 my $red_color = Gtk2::Gdk::Color->parse("red");
 
 =item C<set(outline_color_gdk=E<gt>...) expecting a Gtk2::Gdk::Color>
 
 You did not pass in a Gtk2::Gdk::Color for the color argument. Here's
 an example of how to get a Gtk2::Gdk::Color:
 
-     my $red_color = Gtk2::Gdk::Color->parse("red");
+	 my $red_color = Gtk2::Gdk::Color->parse("red");
 
 =item C<set(hotspot_color_gdk=E<gt>...) expecting a Gtk2::Gdk::Color>
 
 You did not pass in a Gtk2::Gdk::Color for the color argument. Here's
 an example of how to get a Gtk2::Gdk::Color:
 
-     my $red_color = Gtk2::Gdk::Color->parse("red");
+	 my $red_color = Gtk2::Gdk::Color->parse("red");
 
 =item C<Unexpected side: $self->{side}. Valid are: 'right' and 'left'>
 
