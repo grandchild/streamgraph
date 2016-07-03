@@ -52,7 +52,7 @@ sub hotspot_button_press {
 		predecessor_item=>$item,
 		arrows=>$item->{view}->{connection_arrows},
 		width_pixels=>1,
-		outline_color_gdk=>$item->{view}->{connection_color_gdk},
+		outline_color_gdk=>$item->{view}->{connection_colors_gdk}{default},
 		fill_color=>'darkblue'
 	);
 }

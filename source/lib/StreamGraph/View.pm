@@ -55,12 +55,12 @@ sub SET_PROPERTY {
 		return;
 	}
 
-	if ($param_name eq 'connection_color_gdk') {
+	if ($param_name eq 'connection_colors_gdk') {
 		if (!$newval->isa('Gtk2::Gdk::Color')) {
 			croak "You may only set the connection color to " .
 				"a Gtk2::Gdk::Color.\n";
 		}
-		$self->{connection_color_gdk} = $newval;
+		$self->{connection_colors_gdk} = $newval;
 		return;
 	}
 	$self->{$param_name} = $newval;
@@ -462,9 +462,9 @@ StreamGraph::View::Content::Uri - Displays a URI.
 
 The antialiasing mode of the canvas.
 
-=item 'connection_color_gdk' (Gtk2::Gdk::Color : readable / writable)
+=item 'connection_colors_gdk' (Gtk2::Gdk::Color : readable / writable)
 
-The default color to apply to connection objects as they are created.
+The default colors to apply to connection objects of various types as they are created.
 
 =item 'connection_arrows' (string : readable / writable);
 
