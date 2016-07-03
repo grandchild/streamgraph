@@ -16,14 +16,12 @@ sub generateCode {
 	my $fileName = shift;
 	my $programText = generateMultiLineCommentary("Generated code from project $fileName");
 	# build Node list
-	my @nodeList = ();
-	push(@nodeList, StreamGraph::View::Item::all_successors($node));
+	my @nodeList = StreamGraph::View::Item::all_successors($node);
 	@nodeList = StreamGraph::Util::List::unique(@nodeList);
 	@nodeList = @{StreamGraph::Util::List::filterNodesForType(\@nodeList, "StreamGraph::Model::Filter")};
 	# first generate all filter code
 	$programText .= generateSectionCommentary("Section for all Filters");
 	foreach my $filterNode (@nodeList) {
-		print "generating Filter for $filterNode->{data}->name\n";
 		$programText .= generateFilter($filterNode);
 	}
 
@@ -168,6 +166,7 @@ sub generateFilter {
 	my $filterText = generateCommentary("Filter $name") . "$inputType->$outputType filter $name";
 	my @predecessors = StreamGraph::View::Item::predecessors($filterNode);
 	my @parameters = @{StreamGraph::Util::List::filterNodesForType(\@predecessors, "StreamGraph::Model::Parameter")};
+	# Todo: make names unique!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	$filterText .= generateParameters(\@parameters);
 	$filterText .= " {\n"; 
 	if(!($globalVariables eq "")){

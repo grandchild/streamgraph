@@ -101,9 +101,9 @@ sub successors {
 }
 
 # @all_nodes = $graph->all_successors;
-sub all_successors {
-	my ($self, $item) = @_;
-	return $self->{graph}->all_successors();
+sub topological_sort {
+	my ($self) = @_;
+	return $self->{graph}->topological_sort();
 }
 
 

@@ -267,26 +267,14 @@ sub successors {
 }
 
 # my @all_successors = $item->all_successors();
-# my @all_successors = $item->all_successors('left');
 sub all_successors {
-	my ($self, $side) = @_;
+	my ($self) = @_;
 	return () if (!defined $self->{graph});
 
-	my @items = $self->{graph}->all_successors($self);
+	my @items = $self->{graph}->topological_sort();
 	return () if (scalar @items == 0);
 
-	return @items if (!defined $side);
-
-	my $column = $self->get('column');
-	return () if (!defined $column);
-
-	my $column_no = $column->get('column_no');
-	if ($side eq 'right') {
-		return grep {$_->get_column_no() >= $column_no } @items;
-	}
-
-	# $side eq 'left'
-	return grep {$_->get_column_no() <= $column_no } @items;
+	return @items 
 }
 
 
