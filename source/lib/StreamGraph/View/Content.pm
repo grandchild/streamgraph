@@ -5,224 +5,136 @@ our $VERSION = '0.000001';
 use warnings;
 use strict;
 use Carp;
-
 use List::Util;
 
 use Gnome2::Canvas;
-
-use constant MIN_WIDTH=>10;
-use constant MIN_HEIGHT=>10;
+use constant MIN_WIDTH  => 10;
+use constant MIN_HEIGHT => 10;
 
 use StreamGraph::View::ArgUtils;
 
-sub new
-{
-    my $class = shift(@_);
 
-    my $self = {};
-
-    bless $self, $class;
-
-    my %attributes = @_;
-
-    args_required(\%attributes, 'group');
-
-    args_store($self, \%attributes);
-
-    arg_default($self, "x", 0);
-
-    arg_default($self, "y", 0);
-    
-    arg_default($self, "height", MIN_HEIGHT);
-    
-    arg_default($self, "width", MIN_WIDTH);
-
-    arg_default($self, "min_width", MIN_WIDTH);
-
-    arg_default($self, "min_height", MIN_HEIGHT);
-    
-    return $self;
+sub new {
+	my $class = shift(@_);
+	my $self = {};
+	bless $self, $class;
+	my %attributes = @_;
+	args_required( \%attributes, 'group' );
+	args_store( $self, \%attributes );
+	arg_default( $self, "x", 0 );
+	arg_default( $self, "y", 0 );
+	arg_default( $self, "height", MIN_HEIGHT );
+	arg_default( $self, "width", MIN_WIDTH );
+	arg_default( $self, "min_width", MIN_WIDTH );
+	arg_default( $self, "min_height", MIN_HEIGHT );
+	return $self;
 }
-
 
 # my $image = $content->content_get_image();
-
-sub content_get_image
-{
-    my $self = shift(@_);
-
-    croak "You must supply a content image by overriding 'content_get_image'.\n";
+sub content_get_image {
+	my $self = shift(@_);
+	croak "You must supply a content image by overriding 'content_get_image'.\n";
 }
-
 
 # $self->content_set_x($value);
-
-sub content_set_x
-{
-    my ($self, $value) = @_;
-
-    croak "You must set the content x coordinate by overriding 'content_set_x'.\n";
+sub content_set_x {
+	my ( $self, $value ) = @_;
+	croak "You must set the content x coordinate by overriding 'content_set_x'.\n";
 }
-
 
 # $self->content_set_y($value);
-
-sub content_set_y
-{
-    my ($self, $value) = @_;
-
-    croak "You must set the content y coordinate by overriding 'content_set_y'.\n";
+sub content_set_y {
+	my ( $self, $value ) = @_;
+	croak "You must set the content y coordinate by overriding 'content_set_y'.\n";
 }
-
 
 # $self->content_set_width($value);
-
-sub content_set_width
-{
-    my ($self, $value) = @_;
-
-    croak "You must set the content width by overriding 'content_set_width'.\n";
+sub content_set_width {
+	my ( $self, $value ) = @_;
+	croak "You must set the content width by overriding 'content_set_width'.\n";
 }
-
 
 # $self->content_set_height($value);
-
-sub content_set_height
-{
-    my ($self, $value) = @_;
-
-    croak "You must set the content height by overriding 'content_set_height'.\n";
+sub content_set_height {
+	my ( $self, $value ) = @_;
+	croak "You must set the content height by overriding 'content_set_height'.\n";
 }
-
 
 # $self->content_set_param($param_name, $value);
-
-sub content_set_param
-{
-    my ($self, $param_name, $value) = @_;
+sub content_set_param {
+	my ( $self, $param_name, $value ) = @_;
 }
 
-
 # my @values = $content->get(qw(x y width height));
-
-sub get
-{
-    my $self = shift(@_);
-
-    return undef if (scalar @_ == 0);
-
-    return _get($self, shift(@_)) if (scalar @_ == 1);
-
-    my @values = ();
-
-    foreach my $param_name (@_) { push @values, _get($self, $param_name); }
-
-    return @values;
+sub get {
+	my $self = shift(@_);
+	return undef if ( scalar @_ == 0 );
+	return _get( $self, shift(@_) ) if ( scalar @_ == 1 );
+	my @values = ();
+	foreach my $param_name (@_) { push @values, _get( $self, $param_name ); }
+	return @values;
 }
 
 # $canvas->reparent($group);
-
-sub reparent
-{
-    my ($self, $group) = @_;
-
-    $self->{group} = $group;
-
-    #FIXME: shouldn't reference image here...??
-    $self->{image}->reparent($group);
+sub reparent {
+	my ( $self, $group ) = @_;
+	$self->{group} = $group;
+	#FIXME: shouldn't reference image here...??
+	$self->{image}->reparent($group);
 }
 
 # $content->set(x=>0, y=>10, width=>20, height=>30);
-
-sub set
-{
-    my $self = shift(@_);
-
-    my %attributes = @_;
-
-    foreach my $param_name (keys %attributes)
-    {
-	my $value = $attributes{$param_name};
-
-	if ($param_name eq 'x')
-	{
-            next if ($self->{x} == $value);
-
-	    $self->{x} = $value;
-
-	    $self->content_set_x($value);
-
-	    next;
+sub set {
+	my $self = shift(@_);
+	my %attributes = @_;
+	foreach my $param_name ( keys %attributes ) {
+		my $value = $attributes{$param_name};
+		if ( $param_name eq 'x' ) {
+			next if ( $self->{x} == $value );
+			$self->{x} = $value;
+			$self->content_set_x($value);
+			next;
+		}
+		if ( $param_name eq 'y' ) {
+			next if ( $self->{y} == $value );
+			$self->{y} = $value;
+			$self->content_set_y($value);
+			next;
+		}
+		if ( $param_name eq 'height' ) {
+			next if ( $self->{height} == $value );
+			$self->{height} = $value;
+			$self->content_set_height($value);
+			next;
+		}
+		if ( $param_name eq 'width' ) {
+			next if ( $self->{width} == $value );
+			$self->{width} = $value;
+			$self->content_set_width($value);
+			next;
+		}
+		$self->content_set_param( $param_name, $value );
 	}
-
-	if ($param_name eq 'y')
-	{
-            next if ($self->{y} == $value);
-
-	    $self->{y} = $value;
-
-	    $self->content_set_y($value);
-
-	    next;
-	}
-
-	if ($param_name eq 'height')
-	{
-            next if ($self->{height} == $value);
-
-	    $self->{height} = $value;
-
-	    $self->content_set_height($value);
-
-	    next;
-	}
-
-	if ($param_name eq 'width')
-	{
-            next if ($self->{width} == $value);
-
-	    $self->{width} = $value;
-
-	    $self->content_set_width($value);
-
-	    next;
-	}
-
-	$self->content_set_param($param_name, $value);
-    }
 }
 
-
-sub get_min_height
-{
-    my $self = shift(@_);
-
-    return $self->{min_height};
+sub get_min_height {
+	my $self = shift(@_);
+	return $self->{min_height};
 }
 
-
-sub get_min_width
-{
-    my $self = shift(@_);
-
-    return $self->{min_width};
+sub get_min_width {
+	my $self = shift(@_);
+	return $self->{min_width};
 }
 
-
-sub _get
-{
-    my ($self, $param_name) = @_;
-
-    my $value = $self->{$param_name};
-
-    croak "Undefined value for key $param_name.\n" if (!defined $value);
-
-    return $value;
+sub _get {
+	my ( $self, $param_name ) = @_;
+	my $value = $self->{$param_name};
+	croak "Undefined value for key $param_name.\n" if ( !defined $value );
+	return $value;
 }
 
-
-
-1; # Magic true value required at end of module
+1;    # Magic true value required at end of module
 __END__
 
 =head1 NAME
@@ -238,7 +150,7 @@ This document describes StreamGraph::View::Content version 0.0.1
 
 use base 'StreamGraph::View::Content';
 
-  
+
 =head1 DESCRIPTION
 
 This module is internal to StreamGraph::View. It is the base class
