@@ -12,11 +12,11 @@ my $dividingLine = "---------------------------------------------------";
 # function which generates Code out of Graph from root Node
 # gets root (Item) as 1. input parameter and filename as 2.parameter
 sub generateCode {
-	my $node = shift;
+	my $graph = shift;
 	my $fileName = shift;
 	my $programText = generateMultiLineCommentary("Generated code from project $fileName");
 	# build Node list
-	my @nodeList = StreamGraph::View::Item::all_successors($node);
+	my @nodeList = $graph->topological_sort();
 	@nodeList = StreamGraph::Util::List::unique(@nodeList);
 	@nodeList = @{StreamGraph::Util::List::filterNodesForType(\@nodeList, "StreamGraph::Model::Filter")};
 	# first generate all filter code

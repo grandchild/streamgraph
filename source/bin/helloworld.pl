@@ -46,7 +46,7 @@ $menu->add($scroller);
 
 loadDefaultFile();
 
-print StreamGraph::CodeGen::generateCode($view->{graph}->get_root, "");
+print StreamGraph::CodeGen::generateCode($view->{graph}, "");
 
 $window->show_all();
 
