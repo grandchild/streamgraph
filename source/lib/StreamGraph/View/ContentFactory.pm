@@ -6,105 +6,84 @@ use warnings;
 use strict;
 use Carp;
 
+use List::Util;
+use Glib ':constants';
+
 use StreamGraph::View::Content::EllipsisText;
 use StreamGraph::View::Content::Picture;
 use StreamGraph::View::Content::Uri;
-
 use StreamGraph::View::ArgUtils;
 
-use List::Util;
 
-use Glib ':constants';
-
-sub new
-{
-    my $class = shift(@_);
-
-    my @attributes = @_;
-
-    my $self = {};
-
-    bless $self, $class;
-
-    my %attributes = @attributes;
-
-    args_valid(\%attributes, qw(view font_desc text_color_gdk));
-
-    args_required(\%attributes, qw(view));
-
-    args_store($self, \%attributes);
-
-    if (!($self->{view}->isa('StreamGraph::View')))
-    {
-	carp "Invalid StreamGraph::View argument.\n";
-    }
-
-    arg_default($self, "font_desc", Gtk2::Pango::FontDescription->from_string("Ariel Normal 10"));
-
-    arg_default($self, "text_color_gdk", Gtk2::Gdk::Color->parse('black'));
-
-    return $self;
+sub new {
+	my $class = shift(@_);
+	my @attributes = @_;
+	my $self = {};
+	bless $self, $class;
+	my %attributes = @attributes;
+	args_valid( \%attributes, qw(view font_desc text_color_gdk) );
+	args_required( \%attributes, qw(view) );
+	args_store( $self, \%attributes );
+	if ( !( $self->{view}->isa('StreamGraph::View') ) ) {
+		carp "Invalid StreamGraph::View argument.\n";
+	}
+	arg_default( $self, "font_desc", Gtk2::Pango::FontDescription->from_string("Ariel Normal 10") );
+	arg_default( $self, "text_color_gdk", Gtk2::Gdk::Color->parse('black') );
+	return $self;
 }
 
-
-sub create_content
-{
-    my ($self, @attributes) = @_;
-
-    my %attributes = @attributes;
-
-    args_valid(\%attributes, qw(type text uri pixbuf browser font_desc text_color_gdk));
-
-    args_required(\%attributes, qw(type));
-
-    my $type           = $attributes{type};
-
-    my $text           = $attributes{text};
-
-    my $uri            = $attributes{uri};
-
-    my $browser        = $attributes{browser};
-
-    my $pixbuf         = $attributes{pixbuf};
-
-    my $font_desc      = (defined $attributes{font_desc}) ?
-	                     $attributes{font_desc} : $self->{font_desc};
-
-    my $text_color_gdk = (defined $attributes{text_color_gdk}) ?
-	                     $attributes{text_color_gdk} : $self->{text_color_gdk};
-
-    if ($type eq 'StreamGraph::View::Content::EllipsisText')
-    {
-	return StreamGraph::View::Content::EllipsisText->new(
-		       group=>$self->{view}->root, 
-		       text=>$text,
-		       font_desc=>$font_desc,
-		       text_color_gdk=>$text_color_gdk);
-    }
-
-    if ($type eq 'StreamGraph::View::Content::Picture')
-    {
-	return StreamGraph::View::Content::Picture->new(
-		       group=>$self->{view}->root, 
-		       pixbuf=>$pixbuf);
-    }
-
-
-    if ($type eq 'StreamGraph::View::Content::Uri')
-    {
-	return StreamGraph::View::Content::Uri->new(
-		       group=>$self->{view}->root, 
-		       browser=>$browser,
-		       text=>$text, uri=>$uri,
-		       font_desc=>$font_desc,
-		       text_color_gdk=>$text_color_gdk);
-    }
-
-    croak "Unexpected content type: $type\n";
+sub create_content {
+	my ( $self, @attributes ) = @_;
+	my %attributes = @attributes;
+	args_valid( \%attributes,
+		qw(type text uri pixbuf browser font_desc text_color_gdk) );
+	args_required( \%attributes, qw(type) );
+	my $type = $attributes{type};
+	my $text = $attributes{text};
+	my $uri = $attributes{uri};
+	my $browser = $attributes{browser};
+	my $pixbuf = $attributes{pixbuf};
+	my $font_desc
+		= ( defined $attributes{font_desc} )
+		? $attributes{font_desc}
+		: $self->{font_desc};
+	
+	my $text_color_gdk
+		= ( defined $attributes{text_color_gdk} )
+		? $attributes{text_color_gdk}
+		: $self->{text_color_gdk};
+	
+	if ( $type eq 'StreamGraph::View::Content::EllipsisText' ) {
+		return StreamGraph::View::Content::EllipsisText->new(
+			group          => $self->{view}->root,
+			text           => $text,
+			font_desc      => $font_desc,
+			text_color_gdk => $text_color_gdk
+		);
+	}
+	
+	if ( $type eq 'StreamGraph::View::Content::Picture' ) {
+		return StreamGraph::View::Content::Picture->new(
+			group  => $self->{view}->root,
+			pixbuf => $pixbuf
+		);
+	}
+	
+	if ( $type eq 'StreamGraph::View::Content::Uri' ) {
+		return StreamGraph::View::Content::Uri->new(
+			group          => $self->{view}->root,
+			browser        => $browser,
+			text           => $text,
+			uri            => $uri,
+			font_desc      => $font_desc,
+			text_color_gdk => $text_color_gdk
+		);
+	}
+	
+	croak "Unexpected content type: $type\n";
 }
 
-
-1; # Magic true value required at end of module
+1;    # Magic true value required at end of module
 __END__
 
 =head1 NAME
@@ -121,7 +100,7 @@ This document describes StreamGraph::View::ContentFactory version
 =head1 SYNOPSIS
 
 use StreamGraph::View::ContentFactory;
-  
+
 =head1 DESCRIPTION
 
 This module is internal to StreamGraph::View. This factory makes
