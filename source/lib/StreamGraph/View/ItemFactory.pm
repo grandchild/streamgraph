@@ -98,7 +98,7 @@ sub create_item {
 							x=>(defined $attributes{data} ? $attributes{data}->x : 0),
 							y=>(defined $attributes{data} ? $attributes{data}->y : 0));
 	
-	if (!defined($attributes{data}) or !$attributes{data}->isa("StreamGraph::Model::Comment")) {
+	if (!defined($attributes{data}) or $attributes{data}->isa("StreamGraph::Model::Filter")) {
 		my $hotspot_in = $self->{toggle_factory}->create_toggle(
 						item=>$item,
 						border=>$border,
@@ -106,7 +106,9 @@ sub create_item {
 						fill_color_gdk=>$fill_color_gdk,
 						outline_color_gdk=>$outline_color_gdk,
 						hotspot_color_gdk=>$hotspot_color_gdk);
-		
+		$item->add_hotspot('toggle_left',  $hotspot_in);
+	}
+	if (!defined($attributes{data}) or !$attributes{data}->isa("StreamGraph::Model::Comment")) {
 		my $hotspot_out = $self->{toggle_factory}->create_toggle(
 						item=>$item,
 						border=>$border,
@@ -114,7 +116,6 @@ sub create_item {
 						fill_color_gdk=>$fill_color_gdk,
 						outline_color_gdk=>$outline_color_gdk,
 						hotspot_color_gdk=>$hotspot_color_gdk);
-		$item->add_hotspot('toggle_left',  $hotspot_in);
 		$item->add_hotspot('toggle_right', $hotspot_out);
 	}
 	$item->set_data(defined $attributes{data} ?
