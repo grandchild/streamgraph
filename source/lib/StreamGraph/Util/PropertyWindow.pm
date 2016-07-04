@@ -17,9 +17,33 @@ sub show {
 
 	if ($item->{data}->isa("StreamGraph::Model::Filter")) {
 		show_filter($item,$dialog);
-	} if ($item->{data}->isa("StreamGraph::Model::Parameter")) {
+	} elsif ($item->{data}->isa("StreamGraph::Model::Parameter")) {
 		show_parameter($item,$dialog);
+	} elsif ($item->{data}->isa("StreamGraph::Model::Comment")) {
+		show_comment($item,$dialog);
 	}
+}
+
+sub show_comment {
+	my ($item,$dialog) = @_;
+
+	my $itemData = $item->{data};
+	my $dbox = $dialog->vbox;
+
+	# PARAMETER NAME ENTRY
+	my $CommentStringHbox = Gtk2::HBox->new(FALSE,0);
+	$CommentStringHbox->pack_start(Gtk2::Label->new("Comment: "),FALSE,FALSE,0);
+	my $commentStringE = Gtk2::Entry->new();
+	$commentStringE->set_text($itemData->{name});
+	$commentStringE->signal_connect(changed => sub{
+		$itemData->{name} = $commentStringE->get_text();
+		$item->{border}->{content}->set(text => $commentStringE->get_text());
+	});
+	$CommentStringHbox->pack_start($commentStringE,FALSE,FALSE,0);
+	$dbox->pack_start($CommentStringHbox,FALSE,FALSE,0);
+	$dbox->show_all();
+	$dialog->signal_connect('delete-event'=>sub { undef $item->{dialog}; $dialog->destroy(); });
+	$dialog->show();
 }
 
 sub show_parameter {
