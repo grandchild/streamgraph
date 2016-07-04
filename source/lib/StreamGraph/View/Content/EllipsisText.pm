@@ -41,38 +41,35 @@ sub new
     # Normally the text is made to fit the space determined by the
     # width and height properties. On instantiation, the initial size
     # of the text is determined by the text itself and the MAX_WIDTH.
-
-    $self->{min_height} = $self->{image}->get('text-height');
-
-    $self->{height}     = $self->{image}->get('text-height');
-
-    $self->{width}      = $self->{image}->get('text-width');
-
-    if ($self->{width} > MAX_WIDTH)
-    {
-	$self->{width} = MAX_WIDTH;
-
-	_layout_text($self);
-    }
-
-    $self->{image}->set(clip=>1);
-
-    $self->{image}->set(clip_height=>$self->{height});
-
-    $self->{image}->set(clip_width=>$self->{width});
+    update($self);
 
 #    print "EllipsisText, new, height: $self->{height}  width: $self->{width}\n";
 
     return $self;
 }
 
+sub update {
+  my ($self) = @_;
+
+  $self->{min_height} = $self->{image}->get('text-height');
+  $self->{height}     = $self->{image}->get('text-height');
+  $self->{width}      = $self->{image}->get('text-width');
+  if ($self->{width} > MAX_WIDTH) {
+    $self->{width} = MAX_WIDTH;
+    _layout_text($self);
+  }
+
+  $self->{image}->set(clip=>1);
+  $self->{image}->set(clip_height=>$self->{height});
+  $self->{image}->set(clip_width=>$self->{width});
+}
 
 # my $image = $content->content_get_image();
 
 sub content_get_image
 {
     my $self = shift(@_);
-    
+
     my $image = Gnome2::Canvas::Item->new($self->{group}, 'Gnome2::Canvas::Text',
 					  text=>$self->{text},
 					  font_desc=>$self->{font_desc},
@@ -121,7 +118,7 @@ sub content_set_height
     my ($self, $value) = @_;
 
     $self->{image}->set('clip-height'=>$value);
-    
+
     _layout_text($self);
 }
 
@@ -286,20 +283,20 @@ version 0.0.1
 =head1 HEIRARCHY
 
  StreamGraph::View::Content
- +----StreamGraph::View::Content::EllipsisText  
+ +----StreamGraph::View::Content::EllipsisText
 
 =head1 SYNOPSIS
 
 use StreamGraph::View::Content::EllipsisText;
 
-  
+
 =head1 DESCRIPTION
 
 Displays text on a Gnome2::Canvas. If there is too much text to fit in
 the space allotted, the text will be truncated and an ellipsis will be
 appended.
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 Properties
 

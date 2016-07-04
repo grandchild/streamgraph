@@ -38,6 +38,7 @@ sub show_comment {
 	$commentStringE->signal_connect(changed => sub{
 		$itemData->{name} = $commentStringE->get_text();
 		$item->{border}->{content}->set(text => $commentStringE->get_text());
+		$item->update;
 	});
 	$CommentStringHbox->pack_start($commentStringE,FALSE,FALSE,0);
 	$dbox->pack_start($CommentStringHbox,FALSE,FALSE,0);
@@ -82,6 +83,7 @@ sub show_parameter {
 	$filterValueE->signal_connect(changed => sub{
 		$itemData->{value} = $filterValueE->get_text();
 		$item->{border}->{content}->set(text => $filterValueE->get_text());
+		$item->update;
 	});
 	$filterValueHbox->pack_start($filterValueE,FALSE,FALSE,0);
 	$dbox->pack_start($filterValueHbox,FALSE,FALSE,0);
@@ -102,7 +104,11 @@ sub show_filter {
 	$filterNameHbox->pack_start(Gtk2::Label->new("Name: "),FALSE,FALSE,0);
 	my $filterNameE = Gtk2::Entry->new();
 	$filterNameE->set_text($itemData->{name});
-	$filterNameE->signal_connect(changed => sub{	$itemData->{name} = $filterNameE->get_text(); $item->{border}->{content}->set(text => $filterNameE->get_text()) });
+	$filterNameE->signal_connect(changed => sub{
+		$itemData->{name} = $filterNameE->get_text();
+		$item->{border}->{content}->set(text => $filterNameE->get_text());
+		$item->update;
+	});
 	$filterNameHbox->pack_start($filterNameE,FALSE,FALSE,0);
 	$dbox->pack_start($filterNameHbox,FALSE,FALSE,0);
 

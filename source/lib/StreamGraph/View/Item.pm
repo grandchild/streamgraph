@@ -156,6 +156,12 @@ sub SET_PROPERTY {
 	}
 }
 
+sub update {
+	my ($self) = @_;
+
+	$self->{border}->update();
+	$self->set(width=>$self->{border}->get('width'), height=>$self->{border}->get('height'));
+}
 
 # $item->add_hotspot
 sub add_hotspot {
@@ -285,7 +291,7 @@ sub all_successors {
 	}
 
 	# $side eq 'left'
-	return grep {$_->get_column_no() <= $column_no } @items; 
+	return grep {$_->get_column_no() <= $column_no } @items;
 }
 
 
@@ -294,6 +300,8 @@ sub all_successors {
 # too slow due to an excessive number of signals.
 sub resize {
 	my ($self, $side, $delta_x, $delta_y) = @_;
+	$delta_x = $delta_x - $self->{width};
+	$delta_y =  $delta_y - $self->{height};
 	return if (!defined $self->{border});
 	$self->raise(1);
 	my ($x, $width, $height) = _resize($self, $side, $delta_x, $delta_y);

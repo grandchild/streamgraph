@@ -22,7 +22,7 @@ sub new
 
     my %attributes = @_;
 
-    args_valid(\%attributes, qw(group content x y width height radius width_pixels 
+    args_valid(\%attributes, qw(group content x y width height radius width_pixels
 				padding_pixels fill_color_gdk outline_color_gdk));
 
     arg_default($self, "radius", 10);
@@ -33,17 +33,20 @@ sub new
 
     $self->{content}->set(anchor=>'north-west');
 
-    my ($top, $left, $bottom, $right) = $self->border_insets();
-
-    $self->{width}  = $self->{content}->get('width') + ($left + $right);
-
-    $self->{height} = $self->{content}->get('height') + ($top + $bottom);
-
     $self->{border} = $self->border_get_image();
+    update($self);
 
     return $self;
 }
 
+sub update {
+  my ($self) = @_;
+
+  $self->{content}->update;
+  my ($top, $left, $bottom, $right) = $self->border_insets();
+  $self->{width}  = $self->{content}->get('width') + ($left + $right);
+  $self->{height} = $self->{content}->get('height') + ($top + $bottom);
+}
 
 # $border->border_get_image();
 
@@ -233,7 +236,7 @@ version 0.0.1
 =head1 SYNOPSIS
 
 use StreamGraph::View::Border::RoundedRect;
-  
+
 =head1 DESCRIPTION
 
 This module is internal to StreamGraph::View. It draws a rounded
@@ -241,7 +244,7 @@ rectangle border for a StreamGraph::View::Item. This rectangle is
 instantiated as part of the item creation process in
 StreamGraph::View::ItemFactory.
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 Properties
 

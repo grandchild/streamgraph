@@ -22,7 +22,7 @@ sub new
 
     my %attributes = @_;
 
-    args_valid(\%attributes, qw(group x y width height content width_pixels 
+    args_valid(\%attributes, qw(group x y width height content width_pixels
 				padding_pixels fill_color_gdk outline_color_gdk));
 
     arg_default($self, "fill_color_gdk", Gtk2::Gdk::Color->parse('white'));
@@ -32,24 +32,23 @@ sub new
     $self->{border} = $self->border_get_image();
 
     $self->{content}->set(anchor=>'north-west');
-
-    my ($top, $left, $bottom, $right) = $self->border_insets();
-
-    my $content_width = $self->{content}->get('width');
-
-    my $content_height = $self->{content}->get('height');
-
-    my $width_adjust = List::Util::max($content_width * 1.5, ($left + $right));
-
-    my $height_adjust = List::Util::max($content_height * 1.5, ($top + $bottom));
-
-    $self->{width} = $content_width + $width_adjust;
-
-    $self->{height} = $content_height + $height_adjust;
+    update($self);
 
     return $self;
 }
 
+sub update {
+  my ($self) = @_;
+
+  $self->{content}->_adjust_size();
+  my ($top, $left, $bottom, $right) = $self->border_insets();
+  my $content_width = $self->{content}->get('width');
+  my $content_height = $self->{content}->get('height');
+  my $width_adjust = List::Util::max($content_width * 1.5, ($left + $right));
+  my $height_adjust = List::Util::max($content_height * 1.5, ($top + $bottom));
+  $self->{width} = $content_width + $width_adjust;
+  $self->{height} = $content_height + $height_adjust;
+}
 
 sub border_get_image
 {
@@ -140,7 +139,7 @@ This document describes StreamGraph::View::Border::Ellipse version
 =head1 SYNOPSIS
 
 use StreamGraph::View::Border::Ellipse;
-  
+
 =head1 DESCRIPTION
 
 This module is internal to StreamGraph::View. It draws a
@@ -148,7 +147,7 @@ elliptical border for a StreamGraph::View::Item. This ellipse
 is instantiated as part of the item creation process in
 StreamGraph::View::ItemFactory.
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 Properties
 
@@ -201,7 +200,7 @@ Border.pm. It instantiates a Gnome2::Canvas::Ellipse.
 
 =item C<border_insets>
 
-Return the C<($top, $left, $bottom, $right)> insets for an ellipse. This 
+Return the C<($top, $left, $bottom, $right)> insets for an ellipse. This
 defined the rectangle inside the ellipse in which content may be placed.
 At the moment this algoriith is pretty crude. It will be improved.
 
