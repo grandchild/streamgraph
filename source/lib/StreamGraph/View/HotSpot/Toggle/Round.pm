@@ -6,78 +6,58 @@ use warnings;
 use strict;
 use Carp;
 
-use StreamGraph::View::ArgUtils;
-
-use constant IMAGE_RADIUS=>3;
-
 use Glib ':constants';
-
 use Gnome2::Canvas;
+use constant IMAGE_RADIUS => 3;
 
+use StreamGraph::View::ArgUtils;
 use base 'StreamGraph::View::HotSpot::Toggle';
 
-sub new
-{
-    my ($class, @attributes) = @_;
 
-    my $self = $class->SUPER::new(@attributes);
-
-    my %attributes = @attributes;
-
-    args_valid(\%attributes, qw(item side enabled radius
-				fill_color_gdk outline_color_gdk hotspot_color_gdk));
-
-    arg_default($self, 'radius', 10);
-
-    arg_default($self, 'enabled', FALSE);
-
-    arg_default($self, 'fill_color_gdk',    Gtk2::Gdk::Color->parse('white'));
-
-    arg_default($self, 'outline_color_gdk', Gtk2::Gdk::Color->parse('gray'));
-
-    arg_default($self, 'hotspot_color_gdk', Gtk2::Gdk::Color->parse('orange'));
-
-    $self->{image}   = $self->hotspot_get_image();
-
-    if (!$self->{enabled})
-    {
-	$self->{image}->hide();
-    }
-
-    return $self;
+sub new {
+	my ( $class, @attributes ) = @_;
+	my $self = $class->SUPER::new(@attributes);
+	my %attributes = @attributes;
+	args_valid(
+		\%attributes, qw(item side enabled radius
+			fill_color_gdk outline_color_gdk hotspot_color_gdk)
+	);
+	arg_default( $self, 'radius', 10 );
+	arg_default( $self, 'enabled', FALSE );
+	arg_default( $self, 'fill_color_gdk', Gtk2::Gdk::Color->parse('white') );
+	arg_default( $self, 'outline_color_gdk', Gtk2::Gdk::Color->parse('gray') );
+	arg_default( $self, 'hotspot_color_gdk', Gtk2::Gdk::Color->parse('orange') );
+	$self->{image} = $self->hotspot_get_image();
+	if ( !$self->{enabled} ) {
+		$self->{image}->hide();
+	}
+	return $self;
 }
-
-
 
 # $self->hotspot_adjust_event_handler($item);
-
-sub hotspot_adjust_event_handler
-{
-    my ($self, $item) = @_;
-
-    $self->SUPER::hotspot_adjust_event_handler($item);
-
-    my ($x, $y) = $self->{item}->get_connection_point($self->{side});
-
-    $self->{image}->set(x1=>$x - IMAGE_RADIUS, y1=>$y - IMAGE_RADIUS,
-			x2=>$x + IMAGE_RADIUS, y2=>$y + IMAGE_RADIUS);
+sub hotspot_adjust_event_handler {
+	my ( $self, $item ) = @_;
+	$self->SUPER::hotspot_adjust_event_handler($item);
+	my ( $x, $y ) = $self->{item}->get_connection_point( $self->{side} );
+	$self->{image}->set(
+		x1 => $x - IMAGE_RADIUS,
+		y1 => $y - IMAGE_RADIUS,
+		x2 => $x + IMAGE_RADIUS,
+		y2 => $y + IMAGE_RADIUS
+	);
 }
-
 
 # my $image = $self->hotspot_get_image();
-
-sub hotspot_get_image
-{
-    my $self = shift(@_);
-
-    return Gnome2::Canvas::Item->new($self->{item}, 'Gnome2::Canvas::Ellipse',
-				     fill_color_gdk=>$self->{fill_color_gdk},
-				     outline_color_gdk=>$self->{outline_color_gdk});
+sub hotspot_get_image {
+	my $self = shift(@_);
+	return Gnome2::Canvas::Item->new(
+		$self->{item}, 'Gnome2::Canvas::Ellipse',
+		fill_color_gdk    => $self->{fill_color_gdk},
+		outline_color_gdk => $self->{outline_color_gdk}
+	);
 }
 
-
-
-1; # Magic true value required at end of module
+1;    # Magic true value required at end of module
 __END__
 
 =head1 NAME
@@ -94,7 +74,7 @@ This document describes StreamGraph::View::ItemHotSpot version 0.0.1
 
 use StreamGraph::View::ItemHotSpot;
 
-  
+
 =head1 DESCRIPTION
 
 Four StreamGraph::View::ItemHotSpots are created for each
