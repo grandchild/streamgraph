@@ -349,6 +349,16 @@ sub toggle {
 }
 
 
+sub toggle_available {
+	my ($self, $available) = @_;
+	# foreach my $hotspot ($self->{hotspots}{'toggle_left'}) {
+	if ($self->{hotspots}{toggle_left}) {
+		$self->{hotspots}{toggle_left}->hotspot_toggle_available($self, $available ? 1 : 0);
+		$self->signal_emit('hotspot_adjust');
+	}
+}
+
+
 sub _set_visible {
 	my ($self, $date_time) = @_;
 #    print "_set_visible, self: $self  date_time: $date_time  self date time: $self->{hide_date_time}\n";

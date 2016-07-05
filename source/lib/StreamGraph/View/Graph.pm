@@ -7,7 +7,7 @@ use strict;
 use Carp;
 
 use Graph::Directed;
-# $graph = StreamGraph::View::Graph->new();
+
 
 sub new {
 	my $class = shift(@_);
@@ -114,6 +114,24 @@ sub topological_sort {
 	return $self->{graph}->topological_sort();
 }
 
+# @downstream = $graph->all_non_predecessors($item);
+sub all_non_predecessors {
+	my ($self, $item) = @_;
+	my @predecessors = $self->{graph}->all_predecessors($item);
+	push @predecessors, $item;
+	my @items;
+	foreach my $ai ($self->get_items) {
+		my $is_predecessor = 0;
+		foreach my $pi (@predecessors) {
+			if ($ai->{data}->id eq $pi->{data}->id) {
+				$is_predecessor = 1;
+				last;
+			}
+		}
+		push(@items, $ai) if !$is_predecessor;
+	}
+	return @items;
+}
 
 # $graph->set_root($item);
 sub set_root {

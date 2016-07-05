@@ -8,7 +8,8 @@ use Carp;
 
 use Glib ':constants';
 use Gnome2::Canvas;
-use constant IMAGE_RADIUS => 3;
+use constant IMAGE_RADIUS_NORMAL => 3;
+use constant IMAGE_RADIUS_AVAILABLE => 5;
 
 use StreamGraph::View::ArgUtils;
 use base 'StreamGraph::View::HotSpot::Toggle';
@@ -22,7 +23,7 @@ sub new {
 		\%attributes, qw(item side enabled radius
 			fill_color_gdk outline_color_gdk hotspot_color_gdk)
 	);
-	arg_default( $self, 'radius', 10 );
+	arg_default( $self, 'radius', IMAGE_RADIUS_NORMAL );
 	arg_default( $self, 'enabled', FALSE );
 	arg_default( $self, 'fill_color_gdk', Gtk2::Gdk::Color->parse('white') );
 	arg_default( $self, 'outline_color_gdk', Gtk2::Gdk::Color->parse('gray') );
@@ -40,11 +41,17 @@ sub hotspot_adjust_event_handler {
 	$self->SUPER::hotspot_adjust_event_handler($item);
 	my ( $x, $y ) = $self->{item}->get_connection_point( $self->{side} );
 	$self->{image}->set(
-		x1 => $x - IMAGE_RADIUS,
-		y1 => $y - IMAGE_RADIUS,
-		x2 => $x + IMAGE_RADIUS,
-		y2 => $y + IMAGE_RADIUS
+		x1 => $x - $self->{radius},
+		y1 => $y - $self->{radius},
+		x2 => $x + $self->{radius},
+		y2 => $y + $self->{radius}
 	);
+}
+
+sub hotspot_toggle_available {
+	my ( $self, $item, $available ) = @_;
+	$self->{radius} = $available ? IMAGE_RADIUS_AVAILABLE : IMAGE_RADIUS_NORMAL;
+	$self->hotspot_adjust_event_handler($item);
 }
 
 # my $image = $self->hotspot_get_image();
