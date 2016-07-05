@@ -126,7 +126,7 @@ sub _window_handler {
 
 
 sub addItem {
-	my ($node, $atMenu) = @_;
+	my ($node, $placeUnderMenu) = @_;
 	my $item;
 	if ($node->isa("StreamGraph::Model::Filter")) {
 		$item = addFilter($node);
@@ -139,7 +139,7 @@ sub addItem {
 	}
 	$item->signal_connect(event=>\&_test_handler);
 	$view->add_item($item);
-	if ($atMenu and defined $view->{menuCoordX} and defined $view->{menuCoordY}) {
+	if ($placeUnderMenu and defined $view->{menuCoordX} and defined $view->{menuCoordY}) {
 		my ($width, $height) = $window->get_size();
 		$item->set(x=> ($view->{menuCoordX} - $width/2) );
 		$item->set(y=> ($view->{menuCoordY} - $height/2) );
