@@ -90,12 +90,12 @@ sub _test_handler {
 		StreamGraph::Util::PropertyWindow::show($item,$window) if int (gettimeofday * 10) - $item->{clickTime} < 5;
 		$item->{clickTime} = int (gettimeofday * 10);
 	} elsif ($event_type eq 'enter-notify') {
-		if (defined $item->{view}->{tooglePress}) {
-			my $titem = $item->{view}->{tooglePress};
-			if ($item->{view}->{tooglePress} ne $item && int (gettimeofday * 100) == $titem->{connectTime}) {
+		if (defined $item->{view}->{togglePress}) {
+			my $titem = $item->{view}->{togglePress};
+			if ($item->{view}->{togglePress} ne $item && int (gettimeofday * 100) == $titem->{connectTime}) {
 				$item->{view}->connect($titem, $item);
 			}
-			undef $item->{view}->{tooglePress};
+			undef $item->{view}->{togglePress};
 		}
 	}
 }
@@ -105,10 +105,10 @@ sub _window_handler {
     my $event_type = $event->type;
     my @coords = $event->coords;
 		if ($event_type eq 'leave-notify') {
-			if (defined $view->{toogleCon}) {
-				$view->{toogleCon}->disconnect();
-				$view->{toogleCon}->destroy();
-				undef $view->{toogleCon};
+			if (defined $view->{toggleCon}) {
+				$view->{toggleCon}->disconnect();
+				$view->{toggleCon}->destroy();
+				undef $view->{toggleCon};
 			}
 			return;
 		}
