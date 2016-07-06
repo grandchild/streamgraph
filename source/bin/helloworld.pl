@@ -27,9 +27,9 @@ $window->signal_connect('leave-notify-event',\&_window_handler);
 my $uimanager;
 my $menu_edit;
 my $menu_filter;
-my $menu = create_menu();
 my $scroller = Gtk2::ScrolledWindow->new();
 my $view     = StreamGraph::View->new(aa=>1);
+my $menu = create_menu();
 # my $view = LoadFile("helloworld.sigraph");
 $view->set(connection_arrows=>'one-way');
 my $factory  = StreamGraph::View::ItemFactory->new(view=>$view);
@@ -70,9 +70,8 @@ sub _test_handler {
 	# print $item . "Event, type: $event_type  coords: @coords\n";
 
 	if ($event_type eq 'button-press' && $event->button == 1) {
-		my @coords_prime = $item->w2i(@coords); # cursor position.
-		$item->{x_prime} = $coords_prime[0];
-		$item->{y_prime} = $coords_prime[1];
+		$item->{x_prime} = $coords[0];
+		$item->{y_prime} = $coords[1];
 	} elsif ($event_type eq 'motion-notify') {
 		unless (defined $item->{y_prime}) {return;}
 		$item->set(x=>($item->get('x') + ($coords[0] - $item->{x_prime}) ));
@@ -83,12 +82,8 @@ sub _test_handler {
 		$view->{focusItem} = $item;
 		$view->{popup} = 1;
 		$menu_filter->popup (undef, undef, undef, undef, $event->button, $event->time);
-	} elsif ($event_type eq 'button-release' && $event->button == 1) {
-		undef $item->{x_prime};
-		undef $item->{y_prime};
-		if (!defined $item->{clickTime}) { $item->{clickTime} = int (gettimeofday * 10); return;}
-		StreamGraph::Util::PropertyWindow::show($item,$window) if int (gettimeofday * 10) - $item->{clickTime} < 5;
-		$item->{clickTime} = int (gettimeofday * 10);
+	} elsif ($event_type eq '2button-press' && $event->button == 1) {
+		StreamGraph::Util::PropertyWindow::show($item,$window);
 	} elsif ($event_type eq 'enter-notify') {
 		if (defined $item->{view}->{togglePress}) {
 			my $titem = $item->{view}->{togglePress};
@@ -97,6 +92,10 @@ sub _test_handler {
 			}
 			undef $item->{view}->{togglePress};
 		}
+	}
+	if ($event_type eq 'button-release') {
+		undef $item->{x_prime};
+		undef $item->{y_prime};
 	}
 }
 
@@ -190,6 +189,9 @@ sub delFilter {
 	$view->remove_item($view->{focusItem});
 }
 
+sub delConnection {
+	$view->remove_connection($view->{focusConnection});
+}
 
 sub addNewFilter {
 	addItem(
@@ -264,6 +266,8 @@ sub create_menu {
 		[ "NewC", undef, 'Neuer Kommentar', undef, undef, \&addNewComment ],
 		[ "FilterMenu", undef, "_Filter"],
 		[ "DelF",'gtk-delete', undef, undef, undef, \&delFilter ],
+		[ "Connection", undef, undef],
+		[ "DelC",'gtk-delete', undef, undef, undef, \&delConnection ],
 	);
 	$uimanager = Gtk2::UIManager->new;
 	my $accelgroup = $uimanager->get_accel_group;
@@ -293,12 +297,20 @@ sub create_menu {
 				<menuitem action='DelF'/>
 			</menu>
 		</menubar>
+		<menubar name='UnVisible'>
+			<menu action='Connection'>
+				<menuitem action='DelC'/>
+			</menu>
+		</menubar>
 	</ui>"
 	);
 
 	my $menubar = $uimanager->get_widget('/MenuBar');
+	my %menus;
 	$menu_edit = $uimanager->get_widget('/MenuBar/EditMenu')->get_submenu;
 	$menu_filter = $uimanager->get_widget('/MenuBar/FilterMenu')->get_submenu;
+	$menus{connection} = $uimanager->get_widget('/UnVisible/Connection')->get_submenu;
+	$view->{menu} = \%menus;
 	$vbox->pack_start($menubar,FALSE,FALSE,0);
 
 	$vbox->show_all();

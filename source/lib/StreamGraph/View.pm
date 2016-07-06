@@ -161,6 +161,13 @@ sub remove_item {
 	$item->destroy();
 }
 
+# $view->remove_connection($predecessor_item, $item);
+sub remove_connection {
+	my ($self, $connection) = @_;
+	$self->{graph}->remove_edge($connection->get('predecessor_item'),$connection->get('item'));
+	$connection->disconnect();
+	$connection->destroy();
+}
 
 # $view->set_root($item);
 sub set_root {

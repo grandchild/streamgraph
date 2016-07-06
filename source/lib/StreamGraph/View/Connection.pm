@@ -94,7 +94,9 @@ sub connection_event {
 	} elsif ($event->type eq 'leave-notify') {
 		$self->set(width_pixels => 1);
 	} elsif ($event->type eq 'button-release' && $event->button == 3) {
-		$view->{focusCon} = $self;
+		$view->{popup} = 1;
+		$view->{focusConnection} = $self;
+		$view->{menu}->{connection}->popup (undef, undef, undef, undef, $event->button, $event->time);
 	}
 }
 

@@ -93,6 +93,10 @@ sub remove_vertex {
 	$self->{graph}->delete_vertex($item);
 }
 
+sub remove_edge {
+	my ($self, $item1, $item2) = @_;
+	$self->{graph}->delete_edge($item1, $item2);
+}
 
 # @successors = $graph->successors($item);
 sub successors {
@@ -103,7 +107,7 @@ sub successors {
 # @successors = $graph->successors($item);
 sub all_successors {
 	my ($self, $item) = @_;
-	# change to: 
+	# change to:
 	return $self->{graph}->all_successors($item);
 }
 
