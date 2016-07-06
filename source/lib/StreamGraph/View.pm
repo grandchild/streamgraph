@@ -204,7 +204,6 @@ sub successors {
 
 sub connect {
 	my ($self, $predecessor_item, $item) = @_;
-	$self->{graph}->add_edge($predecessor_item, $item);
 	my $color = $self->{connection_colors_gdk}{default};
 	my $type = "default";
 	if ($predecessor_item->{data}->isa("StreamGraph::Model::Filter")
@@ -232,6 +231,7 @@ sub connect {
 		fill_color=>'darkblue',
 		type=>$type
 	);
+	$self->{graph}->add_edge($predecessor_item, $item);
 	$connection->signal_connect( event => sub { $connection->connection_event($self,pop @_); } );
 	push @{$self->{connections}{$item}}, $connection;
 	$item->signal_emit('connection_adjust');
