@@ -18,6 +18,7 @@ use StreamGraph::CodeGen;
 use StreamGraph::Util;
 use StreamGraph::Util::PropertyWindow;
 use StreamGraph::Util::DebugGraph;
+use StreamGraph::Util::DebugCode;
 use StreamGraph::Util::Config;
 use StreamGraph::Util::File;
 
@@ -126,6 +127,13 @@ sub _window_handler {
 
 sub graphViz {
 	StreamGraph::Util::DebugGraph::export_graph($window,$view);
+}
+
+sub codeGenShow {
+	StreamGraph::Util::DebugCode::show_code(
+		$window, $view,
+		StreamGraph::CodeGen::generateCode($view->{graph}, "")
+	);
 }
 
 sub addItem {
@@ -271,7 +279,8 @@ sub create_menu {
 		[ "FilterMenu", undef, "_Filter"],
 		[ "DelF",'gtk-delete', undef, undef, undef, \&delFilter ],
 		[ "DebugMenu", undef, "_Debug"],
-		[ "GraphViz",undef, 'GraphViz', "<control>D", undef, \&graphViz ],
+		[ "GraphViz", undef, 'Show GraphViz', "<control>D", undef, \&graphViz ],
+		[ "CodeGenShow", undef, 'Show Streamit Code', "<shift><control>D", undef, \&codeGenShow ],
 		[ "Connection", undef, undef],
 		[ "DelC",'gtk-delete', undef, undef, undef, \&delConnection ],
 	);
@@ -304,6 +313,7 @@ sub create_menu {
 			</menu>
 			<menu action='DebugMenu'>
 				<menuitem action='GraphViz'/>
+				<menuitem action='CodeGenShow'/>
 			</menu>
 		</menubar>
 		<menubar name='UnVisible'>
