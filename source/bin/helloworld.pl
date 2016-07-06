@@ -17,12 +17,14 @@ use StreamGraph::Model::NodeFactory;
 use StreamGraph::CodeGen;
 use StreamGraph::Util;
 use StreamGraph::Util::PropertyWindow;
+use StreamGraph::Util::DebugGraph;
 use StreamGraph::Util::Config;
 use StreamGraph::Util::File;
 
 
 my $window   = Gtk2::Window->new('toplevel');
 $window->signal_connect('button-release-event',\&_window_handler);
+$window->signal_connect('button-press-event',\&_window_handler);
 $window->signal_connect('leave-notify-event',\&_window_handler);
 my $uimanager;
 my $menu_edit;
@@ -115,11 +117,14 @@ sub _window_handler {
 			$view->{popup} = 0;
 			return;
 		}
-		if ($event->button == 3) {
+		if ($event_type eq 'button-release' && $event->button == 3) {
 			my @coords = $event->coords;
 			$view->{menuCoordX} =  $coords[0];
 			$view->{menuCoordY} =  $coords[1];
 			$menu_edit->popup(undef, undef, undef, undef, $event->button, 0);
+		}
+		if ($event_type eq '2button-press' && $event->button == 1) {
+			StreamGraph::Util::DebugGraph::export_graph($window,$view);
 		}
 }
 
