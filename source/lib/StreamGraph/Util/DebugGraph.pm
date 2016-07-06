@@ -38,7 +38,7 @@ sub export_graph {
 
 sub name_id {
 	my ($data) = @_;
-	return $data->{name} . " :: " . $data->{id};
+	return $data->{name} . "\n" . $data->{id};
 }
 
 1;

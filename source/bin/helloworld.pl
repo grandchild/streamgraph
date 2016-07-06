@@ -24,7 +24,6 @@ use StreamGraph::Util::File;
 
 my $window   = Gtk2::Window->new('toplevel');
 $window->signal_connect('button-release-event',\&_window_handler);
-$window->signal_connect('button-press-event',\&_window_handler);
 $window->signal_connect('leave-notify-event',\&_window_handler);
 my $uimanager;
 my $menu_edit;
@@ -123,11 +122,11 @@ sub _window_handler {
 			$view->{menuCoordY} =  $coords[1];
 			$menu_edit->popup(undef, undef, undef, undef, $event->button, 0);
 		}
-		if ($event_type eq '2button-press' && $event->button == 1) {
-			StreamGraph::Util::DebugGraph::export_graph($window,$view);
-		}
 }
 
+sub graphViz {
+	StreamGraph::Util::DebugGraph::export_graph($window,$view);
+}
 
 sub addItem {
 	my ($node, $placeUnderMenu) = @_;
@@ -271,6 +270,8 @@ sub create_menu {
 		[ "NewC", undef, 'Neuer Kommentar', undef, undef, \&addNewComment ],
 		[ "FilterMenu", undef, "_Filter"],
 		[ "DelF",'gtk-delete', undef, undef, undef, \&delFilter ],
+		[ "DebugMenu", undef, "_Debug"],
+		[ "GraphViz",undef, 'GraphViz', "<control>D", undef, \&graphViz ],
 		[ "Connection", undef, undef],
 		[ "DelC",'gtk-delete', undef, undef, undef, \&delConnection ],
 	);
@@ -300,6 +301,9 @@ sub create_menu {
 			</menu>
 			<menu action='FilterMenu'>
 				<menuitem action='DelF'/>
+			</menu>
+			<menu action='DebugMenu'>
+				<menuitem action='GraphViz'/>
 			</menu>
 		</menubar>
 		<menubar name='UnVisible'>
