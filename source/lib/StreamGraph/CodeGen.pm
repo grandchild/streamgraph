@@ -14,6 +14,9 @@ my $dividingLine = "---------------------------------------------------";
 sub generateCode {
 	my $graph = shift;
 	my $fileName = shift;
+	if(!$fileName){
+		$fileName = "";
+	}
 	my $programText = generateMultiLineCommentary("Generated code from project $fileName");
 	# build Node list
 	my @nodeList = $graph->topological_sort();
@@ -35,7 +38,7 @@ sub generateCode {
 
 sub generateCommentary{
 	my $commentText = shift;
-	$commentText = "\n/* " . $commentText . " */\n";
+	$commentText = "/* " . $commentText . " */\n";
 	return $commentText;
 }
 
@@ -49,7 +52,7 @@ sub generateMultiLineCommentary {
 
 sub generateSectionCommentary {
 	my $commentText = shift;
-	my $commentaryText = generateCommentary($dividingLine);
+	my $commentaryText = "\n" . generateCommentary($dividingLine);
 	$commentaryText .= generateMultiLineCommentary($commentText);
 	return $commentaryText;
 }
@@ -92,10 +95,12 @@ sub generateInit {
 	return $workText;
 }
 
-# gets list of parameters(type is item), flag if types should be included, flag if brackets should be inluded
-# and flag if  a List should be returned; both is assumed as standard; 
+# gets list of parameters(type is item), flag if types should be included, flag if brackets should be included in case listFlag is not set,
+# flag if parameter value is added;
+# and flag if a List should be returned; 
+# if flags are not given or not 1 or 0 it is assumed: typeFlag = 1; bracketflag = 1; valueFlag = 0; listFlag = 0; 
 # returns parameter string or List if flag is set
-# list/string generateParameters(item* parameterPointer, bool typeFlag, bool bracketFlag, bool listFlag);
+# list/string generateParameters(item* parameterPointer, bool typeFlag, bool bracketFlag, bool valueFlag, bool listFlag);
 sub generateParameters {
 	# initialization
 	my $parameterPointer = shift;
@@ -106,6 +111,10 @@ sub generateParameters {
 	my $bracketFlag = shift;
 	if (!defined($bracketFlag) || $bracketFlag != 0) {
 		$bracketFlag = 1;
+	}
+	my $valueFlag = shift;
+	if(!defined($valueFlag) || $valueFlag != 1) {
+		$valueFlag = 0;
 	}
 	my $listFlag = shift;
 	if (!defined($listFlag) || $listFlag != 1) {
@@ -128,6 +137,10 @@ sub generateParameters {
 				$parameterText .= "$parameterType ";
 			}
 			$parameterText .= "$parameterName";
+			if($valueFlag == 1){
+				my $parameterValue = $parameter->{data}->value; 
+				$parameterText .= " = $parameterValue";	
+			}
 			$workText .= $parameterText;
 			push(@parameterList, $parameterText);
 			if($nmbParameters != 0){
@@ -204,11 +217,10 @@ sub generatePipeline {
 	my $arraySize = @filterArray;
 	my $inputType =  $filterArray[0]->{data}->{inputType};
 	my $outputType = $filterArray[$arraySize-1]->{data}->{outputType};
-	my $pipelineHeader = "$inputType" . "->" . "$outputType pipeline " . getPipelineName() . "(";
+	my $pipelineHeader = "$inputType" . "->" . "$outputType pipeline " . getPipelineName() . "{\n";
 	# only generate so far because parameters need to be added  
-	my $pipelineFilters = "{\n";
+	my $pipelineFilters = "";
 	my @pipelineParameters = ();
-	my $alreadyAddedAtLeastOneParameterFlag = 0;
 	foreach my $filterNode (@filterArray) {
 		# only add if element is Filter
 		if($filterNode->{data}->isa("StreamGraph::Model::Filter")){
@@ -216,24 +228,23 @@ sub generatePipeline {
 			# get Parameters of Filter
 			my @predecessors = StreamGraph::View::Item::predecessors($filterNode);
 			my @filterParameters = @{StreamGraph::Util::List::filterNodesForType(\@predecessors, "StreamGraph::Model::Parameter")};
-			$pipelineFilters .= "\t add $name" . generateParameters(\@filterParameters, 0, 1) . ";\n";
-			my @generatedParameters = @{generateParameters(\@filterParameters, 1, 0, 1)};
+			$pipelineFilters .= "\tadd $name" . generateParameters(\@filterParameters, 0, 1, 0, 0) . ";\n";
+			my @generatedParameters = @{generateParameters(\@filterParameters, 1, 0, 1, 1)};
 			if(@generatedParameters != 0){
 				# merge
 				push(@pipelineParameters, @generatedParameters);
-				#if($alreadyAddedAtLeastOneParameterFlag == 0){
-				#	$pipelineParameters .= $generatedParameters;
-				#} else {
-				#	$pipelineParameters .= ", " . $generatedParameters ;
-				#}
-				#$alreadyAddedAtLeastOneParameterFlag = 1;
 			}
 		}
 	}
 	# delete duplicates
 	@pipelineParameters = StreamGraph::Util::List::unique(@pipelineParameters);
+	my $pipelineParametersLength = @pipelineParameters;
+	if(@pipelineParameters && ($pipelineParametersLength != 0)){
+		$pipelineHeader .= generateCommentary("parameters as pipeline variables") . join(";\n", @pipelineParameters);
+		$pipelineHeader =~ s/\n/\n\t/g;
+		$pipelineHeader .= ";\n\t" . generateCommentary("pipeline members");
+	}
 	$pipelineFilters .= "}\n";
-	$pipelineHeader .= join(", ", @pipelineParameters) . ")";
 	return $pipelineHeader . $pipelineFilters;
 }
 

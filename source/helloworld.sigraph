@@ -2,15 +2,19 @@
 ---
 nodes:
   - data:
-      name: Printer
+      name: OffsetBuffer
       id: HgqVkg
-      x: 138
-      y: -28
+      x: -2
+      y: -26
       initCode: ''
-      workCode: println(pop());
+      workCode: |-
+        int i = 0;
+        for(i = 0; i < rate; i++){ 
+        	push(pop()+offset);
+        }
       globalVariables: ''
-      timesPush: 0
-      timesPop: 1
+      timesPush: rate
+      timesPop: rate
       timesPeek: 0
       joinType: rr
       joinMultiplicities: 0
@@ -20,7 +24,7 @@ nodes:
       splitRRForAll: 1
       inputType: int
       inputCount: 1
-      outputType: void
+      outputType: int
       outputCount: 0
     type: StreamGraph::Model::Filter
   - data:
@@ -46,14 +50,22 @@ nodes:
       outputCount: 1
     type: StreamGraph::Model::Filter
   - data:
-      name: Ident
-      id: VivtMQ
-      x: -1
-      y: 13
+      name: rate
+      id: 8C9EUA
+      x: -88
+      y: -122
+      outputType: int
+      value: 5
+    type: StreamGraph::Model::Parameter
+  - data:
+      name: print
+      id: hng2qg
+      x: 154
+      y: -25
       initCode: ''
-      workCode: push(pop());
+      workCode: println(pop());
       globalVariables: ''
-      timesPush: 1
+      timesPush: 0
       timesPop: 1
       timesPeek: 0
       joinType: rr
@@ -64,40 +76,23 @@ nodes:
       splitRRForAll: 1
       inputType: int
       inputCount: 1
-      outputType: int
-      outputCount: 1
+      outputType: void
+      outputCount: 0
     type: StreamGraph::Model::Filter
   - data:
-      name: Parameter
-      id: jMQ6Fg
-      x: -13
-      y: -103
-      outputType: int
-      value: 0
-    type: StreamGraph::Model::Parameter
-  - data:
-      name: Comment
-      id: k11HLg
-      x: 63
-      y: -130
-      string: Foo happens here
-    type: StreamGraph::Model::Comment
-  - data:
-      name: Parameter
-      id: Y/WZxw
-      x: -30
-      y: 75
+      name: offset
+      id: xsU6/w
+      x: 2
+      y: -153
       outputType: int
       value: 0
     type: StreamGraph::Model::Parameter
 connections:
-  - from: jMQ6Fg
-    to: HgqVkg
-  - from: VivtMQ
-    to: HgqVkg
-  - from: X1nHnQ
-    to: VivtMQ
   - from: X1nHnQ
     to: HgqVkg
-  - from: Y/WZxw
+  - from: xsU6/w
     to: HgqVkg
+  - from: 8C9EUA
+    to: HgqVkg
+  - from: HgqVkg
+    to: hng2qg
