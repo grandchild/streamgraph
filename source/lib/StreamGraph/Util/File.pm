@@ -13,6 +13,9 @@ sub _write {
 	if(!defined($filename) || $filename eq ""){
 		$filename = "a";
 	}
+	if(!(substr($filename, -4, 4) eq ".str")){
+		$filename .= ".str";
+	}
 	open(my $fh, '>', $filename);
 	print $fh $writeString;
 	close $fh;
@@ -26,9 +29,6 @@ sub writeFile {
 # $file->writeStreamitSource($string, "filename");
 sub writeStreamitSource {
 	my ($writeString, $filename) = @_;
-	if(!(substr($filename, -4, 4) eq ".str")){
-		$filename .= ".str";
-	}
 	_write($writeString, $filename);
 }
 
