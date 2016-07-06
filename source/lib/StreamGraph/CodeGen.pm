@@ -8,14 +8,15 @@ use StreamGraph::Util::List;
 
 my $pipelineNumber = 0;
 my $dividingLine = "---------------------------------------------------";
+my $fileName;
 
 # function which generates Code out of Graph from root Node
 # gets root (Item) as 1. input parameter and filename as 2.parameter
 sub generateCode {
 	my $graph = shift;
-	my $fileName = shift;
+	$fileName = shift;
 	if(!$fileName){
-		$fileName = "";
+		$fileName = "default";
 	}
 	my $programText = generateMultiLineCommentary("Generated code from project $fileName");
 	# build Node list
@@ -197,8 +198,13 @@ sub generateFilter {
 
 # gets (at the moment) no parameters
 sub getPipelineName {
-	my $text = "Pipeline";
-	$text .= "$pipelineNumber";
+	my $text = "";
+	if($pipelineNumber == 0){
+		$text = $fileName;
+	} else {
+		$text = "Pipeline";
+		$text .= "$pipelineNumber";
+	}
 	$pipelineNumber++;
 	return $text;
 }
