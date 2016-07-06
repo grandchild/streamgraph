@@ -225,6 +225,7 @@ sub connect {
 		fill_color=>'darkblue',
 		type=>$type
 	);
+	$connection->signal_connect( event => sub { $connection->connection_event($self,pop @_); } );
 	push @{$self->{connections}{$item}}, $connection;
 	$item->signal_emit('connection_adjust');
 	$predecessor_item->signal_emit('connection_adjust');

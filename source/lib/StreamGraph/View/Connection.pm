@@ -58,7 +58,7 @@ sub SET_PROPERTY {
 				$self->{predecessor_item}
 					->signal_handler_disconnect( $self->{predecessor_signal_id} );
 		}
-		
+
 		$self->{predecessor_item} = $newval;
 		$self->{predecessor_signal_id}
 			= $newval->signal_connect( 'connection_adjust' =>
@@ -83,6 +83,18 @@ sub SET_PROPERTY {
 	# print "Connection, SET_PROPERTY, name: $param_name  value: $newval\n";
 	if ((defined $self->{predecessor_item}) && (defined $self->{item})) {
 		_set_connection_path($self);
+	}
+}
+
+sub connection_event {
+  my ($self, $view, $event) = @_;
+
+	if ($event->type eq 'enter-notify') {
+		$self->set(width_pixels => 5);
+	} elsif ($event->type eq 'leave-notify') {
+		$self->set(width_pixels => 1);
+	} elsif ($event->type eq 'button-release' && $event->button == 3) {
+		$view->{focusCon} = $self;
 	}
 }
 
@@ -173,7 +185,7 @@ sub _bpath {
 	$pathdef->lineto( $p[2], $p[3] );
 	$pathdef->lineto( $p[4], $p[5] );
 	return $pathdef if ($self->get('arrows') eq 'one-way' );
-	
+
 	my $o = 3;    # offset.
 	$h = $h + $o;
 	$pathdef->moveto( $x1, $y1 );
