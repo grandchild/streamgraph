@@ -137,6 +137,16 @@ sub all_non_predecessors {
 	return @items;
 }
 
+sub is_predecessor {
+	my ($self, $item, $potential_predecessor) = @_;
+	foreach my $pi ($self->{graph}->all_predecessors($item)) {
+		if ($pi->{data}->id eq $potential_predecessor->{data}->id) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
 # $graph->set_root($item);
 sub set_root {
 	my ($self, $item) = @_;

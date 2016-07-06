@@ -220,6 +220,9 @@ sub connect {
 		croak "You cannot connect these types of items: " .
 			ref($predecessor_item->{data}) . " and " . ref($item->{data}) . ".\n";
 	}
+	if ($self->{graph}->is_predecessor($predecessor_item, $item)) {
+		croak "Trying to form a circle.\n";
+	}
 	my $connection = Gnome2::Canvas::Item->new(
 		$self->root,
 		'StreamGraph::View::Connection',
