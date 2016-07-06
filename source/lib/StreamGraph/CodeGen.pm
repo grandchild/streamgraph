@@ -66,13 +66,13 @@ sub generateWork {
 	my $timesPop = $data->{timesPop};
 	my $timesPush = $data->{timesPush};
 	my $timesPeek = $data->{timesPeek};
-	if($timesPop && !($timesPop eq "")) {
+	if($timesPop) {
 		$workText .= " pop $timesPop";
 	}
-	if($timesPush && !($timesPush eq "")) {
+	if($timesPush) {
 		$workText .= " push $timesPush";
 	}
-	if ($timesPeek && !($timesPeek eq "")) {
+	if ($timesPeek) {
 		$workText .= " peek $timesPeek";
 	}
 	$workText .= " {\n";
