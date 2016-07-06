@@ -16,7 +16,7 @@ sub generateCode {
 	my $graph = shift;
 	$fileName = shift;
 	if(!$fileName){
-		$fileName = "default";
+		$fileName = "main";
 	}
 	my $programText = generateMultiLineCommentary("Generated code from project $fileName");
 	# build Node list
