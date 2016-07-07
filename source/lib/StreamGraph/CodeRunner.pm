@@ -4,7 +4,6 @@ use strict;
 use Moo;
 use Env qw($STREAMIT_HOME @PATH @CLASSPATH $JAVA_5_DIR);
 use POSIX ":sys_wait_h";
-use File::Temp qw(tempdir);
 
 
 has config     => ( is=>"rw", required=>1 );
@@ -54,16 +53,18 @@ sub isRunning {
 
 sub _compile {
 	my ($self) = @_;
-	my $cmd = "/home/jakob/dev/streamit/streamgraph/source/resources/sgstrc " . $self->config->get("streamgraph_tmp")."/" . $self->source;
+	my $cmd = $self->config->get("base_dir") . "resources/sgstrc " . $self->config->get("streamgraph_tmp")."/" . $self->source;
 	print "Run '$cmd'\n";
 	$SIG{CHLD} = "IGNORE";  # don't leave zombies of unwaited child processes, let them be reaped
 	$self->ccPid(fork);
 	unless($self->ccPid) {
+		use Cwd;
 		# system("rm -r " . $self->config->get("streamgraph_tmp"));
 		system("mkdir -p " . $self->config->get("streamgraph_tmp"));
 		system("cp " . $self->source . " " . $self->config->get("streamgraph_tmp"));
 		chdir $self->config->get("streamgraph_tmp");
-		my $result = `$cmd 2>&1`;
+		# my $result = `$cmd 2>&1`;
+		print $result;
 		$self->ccResult($result);
 		$self->ccSuccess($? >> 8);  # only this shift by 8 will show the actual return value
 		exit;

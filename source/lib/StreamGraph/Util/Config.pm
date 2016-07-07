@@ -7,6 +7,8 @@ use strict;
 use Moo;
 use YAML qw(LoadFile DumpFile Dump);
 use File::Temp qw(tempdir);
+use File::Basename;
+use File::Spec;
 
 
 has configFile => ( is=>"ro", default=>"streamgraph.conf" );
@@ -25,8 +27,11 @@ sub load {
 	my $filename = $self->configFile;
 	$self->createDefault if not -e $filename;
 	$self->{config} = LoadFile($filename);
+	
 	$self->{config}{streamgraph_tmp} = tempdir(TMPDIR=>1, TEMPLATE=>"streamgraph_XXXXX", CLEANUP=>1);
-	foreach my $key (@{[qw(streamit_home java_5_dir)]}) {
+	$self->{config}{base_dir} = File::Spec->rel2abs(dirname($0)."/..");
+	
+	foreach my $key (@{[qw(streamit_home java_5_dir base_dir)]}) {
 		$self->{config}{$key} .= "/" unless substr($self->{config}{$key}, -1) eq "/";
 	}
 }
