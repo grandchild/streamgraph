@@ -63,8 +63,8 @@ sub _compile {
 		system("mkdir -p " . $self->config->get("streamgraph_tmp"));
 		system("cp " . $self->source . " " . $self->config->get("streamgraph_tmp"));
 		chdir $self->config->get("streamgraph_tmp");
-		# my $result = `$cmd 2>&1`;
-		print $result;
+		my $result = `$cmd 2>&1`;
+		# print $result;
 		$self->ccResult($result);
 		$self->ccSuccess($? >> 8);  # only this shift by 8 will show the actual return value
 		exit;
