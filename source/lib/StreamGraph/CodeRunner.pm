@@ -60,8 +60,6 @@ sub _compile {
 	unless($self->ccPid) {
 		use Cwd;
 		# system("rm -r " . $self->config->get("streamgraph_tmp"));
-		system("mkdir -p " . $self->config->get("streamgraph_tmp"));
-		system("cp " . $self->source . " " . $self->config->get("streamgraph_tmp"));
 		chdir $self->config->get("streamgraph_tmp");
 		my $result = `$cmd 2>&1`;
 		# print $result;

@@ -49,7 +49,7 @@ $menu->add($scroller);
 
 loadDefaultFile();
 
-codeGenShow();
+codeGenShow($config);
 
 my $runner = StreamGraph::CodeRunner->new(config=>$config);
 $runner->setStreamitEnv($config);
@@ -58,7 +58,7 @@ while($runner->isCompiling) {
 	sleep(1);
 }
 # print "" . length($runner->ccResult) . " bytes of compile output\n";
-#$runner->run();
+$runner->run();
 # while($runner->isRunning) {
 # 	sleep(1);
 # }
@@ -149,9 +149,10 @@ sub graphViz {
 }
 
 sub codeGenShow {
+	my $configFile = shift;
 	StreamGraph::Util::DebugCode::show_code(
 		$window, $view,
-		StreamGraph::CodeGen::generateCode($view->{graph}, "")
+		StreamGraph::CodeGen::generateCode($view->{graph}, "", $configFile)
 	);
 }
 

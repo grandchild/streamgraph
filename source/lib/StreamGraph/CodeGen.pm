@@ -11,17 +11,24 @@ my $dividingLine = "---------------------------------------------------";
 my $fileName;
 
 # function which generates Code out of Graph from root Node
-# gets root (Item) as 1. input parameter and filename as 2.parameter
+# gets root (Item) as 1. input parameter, filename as 2.parameter and configFile as 3.parameter
 sub generateCode {
 	my $graph = shift;
 	$fileName = shift;
 	if(!$fileName){
 		$fileName = "main";
 	}
+	my $configFile = shift;
+	if(!$configFile){
+		return;
+	}
 	my $programText = generateMultiLineCommentary("Generated code from project $fileName");
 	# build Node list
 	my @nodeList = $graph->topological_sort();
 	@nodeList = StreamGraph::Util::List::unique(@nodeList);
+	foreach my $node (@nodeList) {
+		updateNodeName($node);
+	}
 	@nodeList = @{StreamGraph::Util::List::filterNodesForType(\@nodeList, "StreamGraph::Model::Filter")};
 	# first generate all filter code
 	$programText .= generateSectionCommentary("Section for all Filters");
@@ -33,7 +40,7 @@ sub generateCode {
 	$programText .= generatePipeline(\@nodeList, 1);
 	
 	### TODO: write to file in extra Util function
-	StreamGraph::Util::File::writeStreamitSource($programText, $fileName);
+	StreamGraph::Util::File::writeStreamitSource($programText, $configFile->get("streamgraph_tmp") . $fileName);
 	return $programText;
 }
 
@@ -172,7 +179,6 @@ sub generateFilter {
 		print "filterNode->data is not a Filter\n";
 		return "";
 	}
-	updateNodeName($filterNode);
 	my $data = $filterNode->{data};
 	my $inputType = $data->{inputType};
 	my $outputType = $data->{outputType};
