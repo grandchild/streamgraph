@@ -58,7 +58,7 @@ while($runner->isCompiling) {
 	sleep(1);
 }
 # print "" . length($runner->ccResult) . " bytes of compile output\n";
-$runner->run();
+#$runner->run();
 # while($runner->isRunning) {
 # 	sleep(1);
 # }

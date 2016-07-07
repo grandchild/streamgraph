@@ -6,7 +6,7 @@ use StreamGraph::View::Item;
 use StreamGraph::Util::File;
 use StreamGraph::Util::List;
 
-my $pipelineNumber = 0;
+my $boxNumber = 0;
 my $dividingLine = "---------------------------------------------------";
 my $fileName;
 
@@ -30,7 +30,7 @@ sub generateCode {
 	}
 
 	$programText .= generateSectionCommentary("Section for all Pipelines");
-	$programText .= generatePipeline(\@nodeList);
+	$programText .= generatePipeline(\@nodeList, 1);
 	
 	### TODO: write to file in extra Util function
 	StreamGraph::Util::File::writeStreamitSource($programText, $fileName);
@@ -172,6 +172,7 @@ sub generateFilter {
 		print "filterNode->data is not a Filter\n";
 		return "";
 	}
+	updateNodeName($filterNode);
 	my $data = $filterNode->{data};
 	my $inputType = $data->{inputType};
 	my $outputType = $data->{outputType};
@@ -195,24 +196,35 @@ sub generateFilter {
 }
 
 
+# gets a filterNode and updates it to have a Number at end of name.
+sub updateNodeName {
+	my $filterNode = shift;
+	if(!$filterNode){
+		return;
+	}
+	$filterNode->{data}->name( $filterNode->{data}->name . $boxNumber);
+	$boxNumber++;
+}
 
-# gets (at the moment) no parameters
+# gets a Flag if the Pipeline is the first/main pipeline
+# returns Name as String
 sub getPipelineName {
+	my $mainFlag = shift;
+	if(!$mainFlag || $mainFlag != 1){
+		$mainFlag = 0;
+	} 
 	my $text = "";
-	if($pipelineNumber == 0){
+	if($mainFlag == 1){
 		$text = $fileName;
 	} else {
-		$text = "Pipeline";
-		$text .= "$pipelineNumber";
+		$text = "Pipeline $boxNumber";
+		$boxNumber++;
 	}
-	$pipelineNumber++;
 	return $text;
 }
 
-
-
 # generates Pipeline Text
-# gets list/array of Nodes to be included in the pipeline
+# gets list/array of Nodes to be included in the pipeline and a flag if it is the main Pipeline
 # returns pipeline code
 sub generatePipeline {
 	my $filterPointer = shift;
@@ -220,10 +232,14 @@ sub generatePipeline {
 	if (!@filterArray) {
 		return "";
 	}
+	my $mainFlag = shift;
+	if(!$mainFlag || $mainFlag != 1){
+		$mainFlag = 0;
+	}
 	my $arraySize = @filterArray;
 	my $inputType =  $filterArray[0]->{data}->{inputType};
 	my $outputType = $filterArray[$arraySize-1]->{data}->{outputType};
-	my $pipelineHeader = "$inputType" . "->" . "$outputType pipeline " . getPipelineName() . "{\n";
+	my $pipelineHeader = "$inputType" . "->" . "$outputType pipeline " . getPipelineName($mainFlag) . "{\n";
 	# only generate so far because parameters need to be added  
 	my $pipelineFilters = "";
 	my @pipelineParameters = ();
