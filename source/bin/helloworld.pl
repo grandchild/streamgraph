@@ -15,6 +15,7 @@ use StreamGraph::View;
 use StreamGraph::View::ItemFactory;
 use StreamGraph::Model::NodeFactory;
 use StreamGraph::CodeGen;
+use StreamGraph::CodeRunner;
 use StreamGraph::Util;
 use StreamGraph::Util::PropertyWindow;
 use StreamGraph::Util::DebugGraph;
@@ -49,6 +50,24 @@ $menu->add($scroller);
 loadDefaultFile();
 
 codeGenShow();
+
+my $runner = StreamGraph::CodeRunner->new(config=>$config);
+$runner->setStreamitEnv($config);
+$runner->compile("main.str");
+while($runner->isCompiling) {
+	sleep(1);
+}
+# print "" . length($runner->ccResult) . " bytes of compile output\n";
+$runner->run();
+# while($runner->isRunning) {
+# 	sleep(1);
+# }
+# print "" . length($runner->runResult) . " bytes of run output\n";
+# my @result = split(/\n/, $runner->runResult);
+# for (my $i = 0; $i < 10; $i++) {
+# 	print $result[$i] . "\n";
+# }
+
 
 $window->show_all();
 

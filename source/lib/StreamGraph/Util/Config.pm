@@ -6,12 +6,14 @@ use warnings;
 use strict;
 use Moo;
 use YAML qw(LoadFile DumpFile Dump);
-use Data::Dump qw(dump);
 
 has configFile => ( is=>"ro", default=>"streamgraph.conf" );
 has config     => ( is=>"rw", default=>sub {undef} );
 has default    => ( is=>"ro", default=>sub{
-		my %hash = (streamit_home=>"", strc=>"strc");
+		my %hash = (
+			streamgraph_tmp=>"",
+			streamit_home=>""
+		);
 		return \%hash;
 	});
 
@@ -34,7 +36,6 @@ sub get {
 	if(!defined($self->{config})) {
 		$self->load;
 	}
-	dump($self->{config});
 	return $self->{config}->{$key};
 }
 
