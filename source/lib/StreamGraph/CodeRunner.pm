@@ -2,8 +2,9 @@ package StreamGraph::CodeRunner;
 
 use strict;
 use Moo;
-use Env qw($STREAMIT_HOME @PATH @CLASSPATH);
+use Env qw($STREAMIT_HOME @PATH @CLASSPATH $JAVA_5_DIR);
 use POSIX ":sys_wait_h";
+use File::Temp qw(tempdir);
 
 
 has config     => ( is=>"rw", required=>1 );
@@ -22,7 +23,7 @@ has runSuccess => ( is=>"rw", default=>0 );
 sub setStreamitEnv {
 	my ($self) = @_;
 	$STREAMIT_HOME = $self->config->get("streamit_home");
-	$STREAMIT_HOME .= substr($STREAMIT_HOME, -1) eq "/" ? "" : "/";
+	$JAVA_5_DIR = $self->config->get("java_5_dir");
 	push @PATH, $STREAMIT_HOME;
 	push @CLASSPATH, ".";
 	push @CLASSPATH, ($STREAMIT_HOME . "streamit.jar");
@@ -53,7 +54,7 @@ sub isRunning {
 
 sub _compile {
 	my ($self) = @_;
-	my $cmd = $STREAMIT_HOME."strc " . $self->config->get("streamgraph_tmp")."/" . $self->source;
+	my $cmd = "/home/jakob/dev/streamit/streamgraph/source/resources/sgstrc " . $self->config->get("streamgraph_tmp")."/" . $self->source;
 	print "Run '$cmd'\n";
 	$SIG{CHLD} = "IGNORE";  # don't leave zombies of unwaited child processes, let them be reaped
 	$self->ccPid(fork);

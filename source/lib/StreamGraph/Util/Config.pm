@@ -6,13 +6,15 @@ use warnings;
 use strict;
 use Moo;
 use YAML qw(LoadFile DumpFile Dump);
+use File::Temp qw(tempdir);
+
 
 has configFile => ( is=>"ro", default=>"streamgraph.conf" );
 has config     => ( is=>"rw", default=>sub {undef} );
 has default    => ( is=>"ro", default=>sub{
 		my %hash = (
-			streamgraph_tmp=>"",
-			streamit_home=>""
+			streamit_home=>"",
+			java_5_dir=>""
 		);
 		return \%hash;
 	});
@@ -23,6 +25,10 @@ sub load {
 	my $filename = $self->configFile;
 	$self->createDefault if not -e $filename;
 	$self->{config} = LoadFile($filename);
+	$self->{config}{streamgraph_tmp} = tempdir(TMPDIR=>1, TEMPLATE=>"streamgraph_XXXXX", CLEANUP=>1);
+	foreach my $key (@{[qw(streamit_home java_5_dir)]}) {
+		$self->{config}{$key} .= "/" unless substr($self->{config}{$key}, -1) eq "/";
+	}
 }
 
 sub write {
