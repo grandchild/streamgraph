@@ -297,8 +297,39 @@ sub saveAsFile {
 	saveFile();
 }
 
+sub loadDefaultFile {
+	my ($nodes, $connections) = StreamGraph::Util::File::load("helloworld.sigraph");
+	$view->clear();
+	my @items = map { addItem($_) } @{$nodes};
+	map {
+		$view->connect(
+			StreamGraph::Util::getItemWithId(\@items, $_->{from}),
+			StreamGraph::Util::getItemWithId(\@items, $_->{to})
+		)
+	} @{$connections};
+}
+
 sub loadFile {
-	my ($filename, $view) = @_;
+	my $filter = Gtk2::FileFilter->new();
+	$filter->set_name("StreamGraph");
+	$filter->add_pattern("*.sigraph");
+
+	my $file_chooser =  Gtk2::FileChooserDialog->new (
+		'Laden',
+		undef,
+		'open',
+		'gtk-cancel' => 'cancel',
+		'gtk-ok' => 'ok'
+	);
+	$file_chooser->add_filter($filter);
+
+	my $filename;
+	if ('ok' eq $file_chooser->run){
+		$filename = $file_chooser->get_filename;
+	}
+	$file_chooser->destroy;
+	unless (defined $filename){ return; }
+
 	my ($nodes, $connections) = StreamGraph::Util::File::load($filename);
 	$view->clear();
 	my @items = map { addItem($_) } @{$nodes};
@@ -310,16 +341,17 @@ sub loadFile {
 	} @{$connections};
 }
 
-sub loadDefaultFile {
-	loadFile("helloworld.sigraph", $view);
+sub newFile {
+	$view->clear();
+	undef $view->{saveFile}
 }
 
 sub create_menu {
 	my $vbox = Gtk2::VBox->new(FALSE,5);
 	my @entries = (
 		[ "FileMenu",undef,"_Datei"],
-		[ "New", 'gtk-new', undef,  "<control>N", undef, undef ],
-		[ "Open", 'gtk-open', undef,  "<control>O", undef, \&loadDefaultFile ],
+		[ "New", 'gtk-new', undef,  "<control>N", undef, \&newFile ],
+		[ "Open", 'gtk-open', undef,  "<control>O", undef, \&loadFile ],
 		[ "Save", 'gtk-save', undef,  "<control>S", undef, \&saveFile ],
 		[ "SaveAs", 'gtk-save-as', undef,  "<shift><control>S", undef, \&saveAsFile ],
 		[ "Quit", 'gtk-quit', undef,  "<control>Q", undef, undef ],
