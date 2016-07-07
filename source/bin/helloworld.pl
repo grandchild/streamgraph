@@ -261,7 +261,40 @@ sub addNewComment {
 }
 
 sub saveFile {
-	StreamGraph::Util::File::save("helloworld.sigraph", $view->{graph});
+	unless (defined $view->{saveFile}) {return saveAsFile();}
+	StreamGraph::Util::File::save($view->{saveFile}, $view->{graph});
+	$window->set_title("StreamGraphView - " . $view->{saveFile});
+}
+
+sub saveAsFile {
+	my $filter = Gtk2::FileFilter->new();
+	$filter->set_name("StreamGraph");
+	$filter->add_pattern("*.sigraph");
+
+	my $file_chooser =  Gtk2::FileChooserDialog->new (
+	'Speichern',
+	undef,
+	'save',
+	'gtk-cancel' => 'cancel',
+	'gtk-ok' => 'ok'
+	);
+	$file_chooser->add_filter($filter);
+	$file_chooser->set_do_overwrite_confirmation(TRUE);
+	my $filename;
+
+	if ('ok' eq $file_chooser->run){
+		$filename = $file_chooser->get_filename;
+	}
+
+	$file_chooser->destroy;
+
+	unless (defined $filename){ return; }
+
+	unless ($filename =~ /.sigraph\Z/) {
+		$filename .= ".sigraph";
+	}
+	$view->{saveFile} = $filename;
+	saveFile();
 }
 
 sub loadFile {
@@ -288,7 +321,7 @@ sub create_menu {
 		[ "New", 'gtk-new', undef,  "<control>N", undef, undef ],
 		[ "Open", 'gtk-open', undef,  "<control>O", undef, \&loadDefaultFile ],
 		[ "Save", 'gtk-save', undef,  "<control>S", undef, \&saveFile ],
-		[ "SaveAs", 'gtk-save-as', undef,  "<shift><control>S", undef, undef ],
+		[ "SaveAs", 'gtk-save-as', undef,  "<shift><control>S", undef, \&saveAsFile ],
 		[ "Quit", 'gtk-quit', undef,  "<control>Q", undef, undef ],
 		[ "Close", 'gtk-close', undef,  "<shift>W", undef, undef ],
 		[ "EditMenu",'gtk-edit'],
