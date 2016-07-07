@@ -51,24 +51,7 @@ loadDefaultFile();
 
 codeGenShow();
 
-my $runner = StreamGraph::CodeRunner->new(config=>$config);
-$runner->setStreamitEnv($config);
-$runner->compile("main.str");
-while($runner->isCompiling) {
-	sleep(1);
-}
-print $runner->compileResult();
-# print "" . length($runner->ccResult) . " bytes of compile output\n";
-$runner->run();
-while($runner->isRunning) {
-	sleep(1);
-}
-# print "" . length($runner->runResult) . " bytes of run output\n";
-# my @result = split(/\n/, $runner->runResult);
-# for (my $i = 0; $i < 10; $i++) {
-# 	print $result[$i] . "\n";
-# }
-
+runShow();
 
 $window->show_all();
 
@@ -155,6 +138,28 @@ sub codeGenShow {
 		StreamGraph::CodeGen::generateCode($view->{graph}, "", $config)
 	);
 }
+
+sub runShow {
+	my $runner = StreamGraph::CodeRunner->new(config=>$config);
+	$runner->setStreamitEnv($config);
+	$runner->compile("main.str");
+	while($runner->isCompiling) {
+		sleep(1);
+	}
+	# print $runner->compileResult();
+	# print "" . length($runner->ccResult) . " bytes of compile output\n";
+	$runner->run();
+	while($runner->isRunning) {
+		sleep(1);
+	}
+	print $runner->runResult(10);
+	# print "" . length($runner->runResult) . " bytes of run output\n";
+	# my @result = split(/\n/, $runner->runResult);
+	# for (my $i = 0; $i < 10; $i++) {
+	# 	print $result[$i] . "\n";
+	# }
+}
+
 
 sub addItem {
 	my ($node, $placeUnderMenu) = @_;
@@ -361,6 +366,8 @@ sub create_menu {
 		[ "NewF", undef, 'Neuer Filter', undef, undef, \&addNewFilter ],
 		[ "NewP", undef, 'Neuer Parameter', undef, undef, \&addNewParameter ],
 		[ "NewC", undef, 'Neuer Kommentar', undef, undef, \&addNewComment ],
+		[ "RunMenu", undef, "_Run"],
+		[ "RunShow", undef, 'Run', "<control>R", undef, \&runShow ],
 		[ "FilterMenu", undef, "_Filter"],
 		[ "DelF",'gtk-delete', undef, undef, undef, \&delFilter ],
 		[ "DebugMenu", undef, "_Debug"],
@@ -395,6 +402,9 @@ sub create_menu {
 			</menu>
 			<menu action='FilterMenu'>
 				<menuitem action='DelF'/>
+			</menu>
+			<menu action='RunMenu'>
+				<menuitem action='RunShow'/>
 			</menu>
 			<menu action='DebugMenu'>
 				<menuitem action='GraphViz'/>

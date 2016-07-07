@@ -8,21 +8,21 @@ use POSIX ":sys_wait_h";
 use StreamGraph::Util::File;
 
 
-has config     => ( is=>"rw", required=>1 );
+has config        => ( is=>"rw", required=>1 );
 
-has source     => ( is=>"rw" );
-has ccPid      => ( is=>"rw", default=>0 );
-has ccResult   => ( is=>"rw", default=>"" );
-has ccResultFile => ( is=>"ro", default=>"ccResult.txt" );
-has ccSuccess  => ( is=>"rw", default=>0 );
+has source        => ( is=>"rw" );
+has ccPid         => ( is=>"rw", default=>0 );
+has ccResult      => ( is=>"rw" );
+has ccResultFile  => ( is=>"ro", default=>"ccResult.txt" );
+has ccSuccess     => ( is=>"rw", default=>0 );
 has ccSuccessFile => ( is=>"ro", default=>"ccSuccess.txt" );
 
-has binary     => ( is=>"rw" );
-has rPid     => ( is=>"rw", default=>0 );
-has rResult  => ( is=>"rw", default=>"" );
-has rResultFile => ( is=>"ro", default=>"runResult.txt" );
-has rSuccess => ( is=>"rw", default=>0 );
-has rSuccessFile => ( is=>"ro", default=>"runSuccess.txt" );
+has binary        => ( is=>"rw" );
+has rPid          => ( is=>"rw", default=>0 );
+has rResult       => ( is=>"rw" );
+has rResultFile   => ( is=>"ro", default=>"runResult.txt" );
+has rSuccess      => ( is=>"rw", default=>0 );
+has rSuccessFile  => ( is=>"ro", default=>"runSuccess.txt" );
 
 
 sub setStreamitEnv {
@@ -38,13 +38,14 @@ sub compile {
 	my ($self, $filename) = @_;
 	$self->source($filename);
 	$self->_killIfNecessary(\&ccPid);
-	$self->ccResult(0);
+	$self->ccSuccess(-1);
 	$self->_compile();
 }
 
 sub run {
 	my ($self) = @_;
 	$self->_killIfNecessary(\&rPid);
+	$self->rSuccess(-1);
 	$self->_run();
 }
 
@@ -85,7 +86,6 @@ sub runSuccess {
 sub _compile {
 	my ($self) = @_;
 	my $cmd = $self->config->get("base_dir") . "resources/sgstrc " . $self->config->get("streamgraph_tmp") . $self->source;
-	print "Run '$cmd'\n";
 	$SIG{CHLD} = "IGNORE";  # don't leave zombies of unwaited child processes, let them be reaped
 	$self->ccPid(fork);
 	unless($self->ccPid) {
@@ -99,30 +99,29 @@ sub _compile {
 
 sub _updateCC {
 	my ($self) = @_;
-	if ($self->ccResult == 0) {
+	if ($self->ccSuccess == -1) {
 		$self->ccResult(StreamGraph::Util::File::readFileAsList($self->config->get("streamgraph_tmp") . $self->ccResultFile));
-		$self->ccSuccess(StreamGraph::Util::File::readFileAsList($self->config->get("streamgraph_tmp") . $self->ccSuccessFile));
+		$self->ccSuccess(abs(StreamGraph::Util::File::readFileAsList($self->config->get("streamgraph_tmp") . $self->ccSuccessFile)));
 	}
 }
 
 sub _run {
 	my ($self) = @_;
-	print "Run '" . $self->binary . "'\n";
 	$SIG{CHLD} = "IGNORE";
 	$self->rPid(fork);
 	unless($self->rPid) {
 		my $binary = $self->binary;
-		$self->rResult(`$binary 2>&1`);
-		$self->rSuccess($? >> 8);
+		StreamGraph::Util::File::writeFile("".`$binary 2>&1`, $self->config->get("streamgraph_tmp") . $self->rResultFile);
+		StreamGraph::Util::File::writeFile(($? >> 8), $self->config->get("streamgraph_tmp") . $self->rSuccessFile);  # only this shift by 8 will show the actual return value
 		exit;
 	}
 }
 
 sub _updateRun {
 	my ($self) = @_;
-	if ($self->rResult == 0) {
+	if ($self->rSuccess == -1) {
 		$self->rResult(StreamGraph::Util::File::readFileAsList($self->config->get("streamgraph_tmp") . $self->rResultFile));
-		$self->rSuccess(StreamGraph::Util::File::readFileAsList($self->config->get("streamgraph_tmp") . $self->rSuccessFile));
+		$self->rSuccess(abs(StreamGraph::Util::File::readFileAsList($self->config->get("streamgraph_tmp") . $self->rSuccessFile)));
 	}
 }
 
