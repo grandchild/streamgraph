@@ -31,7 +31,7 @@ sub load {
 	$self->{config}{streamgraph_tmp} = tempdir(TMPDIR=>1, TEMPLATE=>"streamgraph_XXXXX", CLEANUP=>1);
 	$self->{config}{base_dir} = File::Spec->rel2abs(dirname($0)."/..");
 	
-	foreach my $key (@{[qw(streamit_home java_5_dir base_dir)]}) {
+	foreach my $key (@{[qw(streamit_home java_5_dir base_dir streamgraph_tmp)]}) {
 		$self->{config}{$key} .= "/" unless substr($self->{config}{$key}, -1) eq "/";
 	}
 }

@@ -53,7 +53,7 @@ sub isRunning {
 
 sub _compile {
 	my ($self) = @_;
-	my $cmd = $self->config->get("base_dir") . "resources/sgstrc " . $self->config->get("streamgraph_tmp")."/" . $self->source;
+	my $cmd = $self->config->get("base_dir") . "resources/sgstrc " . $self->config->get("streamgraph_tmp") . $self->source;
 	print "Run '$cmd'\n";
 	$SIG{CHLD} = "IGNORE";  # don't leave zombies of unwaited child processes, let them be reaped
 	$self->ccPid(fork);
@@ -86,7 +86,7 @@ sub _run {
 
 sub _killIfNecessary {
 	my ($self, $process) = @_;
-	$self->binary($self->config->get("streamgraph_tmp") . "/a.out");
+	$self->binary($self->config->get("streamgraph_tmp") . "a.out");
 	if ($process->($self) > 0) {
 		kill("TERM", $process->($self));
 		kill("KILL", $process->($self));
