@@ -6,7 +6,7 @@ use Glib qw/TRUE FALSE/;
 use GraphViz;
 
 sub export_graph {
-	my ($window,$view) = @_;
+	my ($window,$view,$dir) = @_;
 	my $graph = $view->{graph};
 
 	my $g = GraphViz->new();
@@ -18,9 +18,9 @@ sub export_graph {
 	for my $edge (@E) {
 		$g->add_edge( name_id(${$edge}[0]->{data}) , name_id(${$edge}[1]->{data}) );
 	}
-	$g->as_png("view.png");
+	$g->as_png($dir . "/view.png");
 
-	if (defined $view->{DebugGraph}) { $view->{DebugGraph}->set_from_file("view.png"); return; }
+	if (defined $view->{DebugGraph}) { $view->{DebugGraph}->set_from_file($dir . "/view.png"); return; }
 	my $dialog = Gtk2::Dialog->new(
 		'DebugGraph',
 		$window,
@@ -28,7 +28,7 @@ sub export_graph {
 	);
 
 	my $dbox = $dialog->vbox;
-	my $image = Gtk2::Image->new_from_file ("view.png");
+	my $image = Gtk2::Image->new_from_file ($dir . "/view.png");
 	$view->{DebugGraph} = $image;
 	$dbox->pack_start($image,FALSE,FALSE,0);
 	$dbox->show_all();

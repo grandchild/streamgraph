@@ -145,7 +145,7 @@ sub _window_handler {
 }
 
 sub graphViz {
-	StreamGraph::Util::DebugGraph::export_graph($window,$view);
+	StreamGraph::Util::DebugGraph::export_graph($window,$view,$config->get('streamgraph_tmp'));
 }
 
 sub codeGenShow {
