@@ -63,7 +63,6 @@ sub _compile {
 		system("cp " . $self->source . " " . $self->config->get("streamgraph_tmp"));
 		chdir $self->config->get("streamgraph_tmp");
 		my $result = `$cmd 2>&1`;
-		print $result;
 		$self->ccResult($result);
 		$self->ccSuccess($? >> 8);  # only this shift by 8 will show the actual return value
 		exit;
@@ -77,9 +76,7 @@ sub _run {
 	$self->runPid(fork);
 	unless($self->runPid) {
 		my $binary = $self->binary;
-		my $result = `$binary 2>&1`;
-		print $result;
-		$self->runResult($result);
+		$self->runResult(`$binary 2>&1`);
 		$self->runSuccess($? >> 8);
 		exit;
 	}
