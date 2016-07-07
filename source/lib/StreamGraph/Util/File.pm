@@ -8,16 +8,13 @@ use Data::Dump qw(dump);
 use StreamGraph::Model::NodeFactory;
 
 
-sub _write {
-	my ($writeString, $filename) = @_;
-	open(my $fh, '>', $filename);
-	print $fh $writeString;
-	close $fh;
-}
-
 # $file->writeFile($string, "filename.ext");
 sub writeFile {
 	_write(@_);
+}
+
+sub readFile {
+	return _read(@_);
 }
 
 # $file->writeStreamitSource($string, "filename");
@@ -66,6 +63,21 @@ sub load {
 			( $_->{from}, $_->{to} )
 		} @{$obj->{connections}};
 	return (\@nodes, \@{$obj->{connections}});
+}
+
+sub _write {
+	my ($writeString, $filename) = @_;
+	open(my $fh, '>', $filename);
+	print $fh $writeString;
+	close $fh;
+}
+
+sub _read {
+	my ($filename) = @_;
+	open(my $fh, '<', $filename);
+	my $string = join("", <$fh>);
+	close $fh;
+	return $string;
 }
 
 1;
