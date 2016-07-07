@@ -26,9 +26,6 @@ sub generateCode {
 	# build Node list
 	my @nodeList = $graph->topological_sort();
 	@nodeList = StreamGraph::Util::List::unique(@nodeList);
-	foreach my $node (@nodeList) {
-		updateNodeName($node);
-	}
 	@nodeList = @{StreamGraph::Util::List::filterNodesForType(\@nodeList, "StreamGraph::Model::Filter")};
 	# first generate all filter code
 	$programText .= generateSectionCommentary("Section for all Filters");
@@ -179,10 +176,11 @@ sub generateFilter {
 		print "filterNode->data is not a Filter\n";
 		return "";
 	}
+	updateNodeName($filterNode);
 	my $data = $filterNode->{data};
 	my $inputType = $data->{inputType};
 	my $outputType = $data->{outputType};
-	my $name = $data->{name};
+	my $name = $data->{'_gen_name'};
 	my $globalVariables = $data->{globalVariables};
 	my $filterText = generateCommentary("Filter $name") . "$inputType->$outputType filter $name";
 	my @predecessors = StreamGraph::View::Item::predecessors($filterNode);
@@ -208,7 +206,7 @@ sub updateNodeName {
 	if(!$filterNode){
 		return;
 	}
-	$filterNode->{data}->name( $filterNode->{data}->name . $boxNumber);
+	$filterNode->{data}{'_gen_name'} = ( $filterNode->{data}->name . $boxNumber);
 	$boxNumber++;
 }
 
@@ -252,7 +250,7 @@ sub generatePipeline {
 	foreach my $filterNode (@filterArray) {
 		# only add if element is Filter
 		if($filterNode->{data}->isa("StreamGraph::Model::Filter")){
-			my $name = $filterNode->{data}->{name};
+			my $name = $filterNode->{data}->{'_gen_name'};
 			# get Parameters of Filter
 			my @predecessors = StreamGraph::View::Item::predecessors($filterNode);
 			my @filterParameters = @{StreamGraph::Util::List::filterNodesForType(\@predecessors, "StreamGraph::Model::Parameter")};
