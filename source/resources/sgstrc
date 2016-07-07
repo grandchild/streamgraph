@@ -28,8 +28,8 @@ use Env qw($JAVA_5_DIR);
 use Cwd;
 
 # AUTOCONFISCATE $var = "@VAR@";
-$java = "$JAVA_5_DIR/java";
-$javac = "$JAVA_5_DIR/javac";
+$java = "$JAVA_5_DIR/bin/java";
+$javac = "$JAVA_5_DIR/bin/javac";
 $cc = "gcc";
 $rm = "rm";
 $make = "make";
