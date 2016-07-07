@@ -142,24 +142,8 @@ sub codeGenShow {
 sub runShow {
 	my $runner = StreamGraph::CodeRunner->new(config=>$config);
 	$runner->setStreamitEnv($config);
-	$runner->compile("main.str");
-	while($runner->isCompiling) {
-		sleep(1);
-	}
-	# print $runner->compileResult();
-	# print "" . length($runner->ccResult) . " bytes of compile output\n";
-	$runner->run();
-	while($runner->isRunning) {
-		sleep(1);
-	}
-	print $runner->runResult(10);
-	# print "" . length($runner->runResult) . " bytes of run output\n";
-	# my @result = split(/\n/, $runner->runResult);
-	# for (my $i = 0; $i < 10; $i++) {
-	# 	print $result[$i] . "\n";
-	# }
+	$runner->compileAndRun("main.str", sub{ print $runner->runResult(10); });
 }
-
 
 sub addItem {
 	my ($node, $placeUnderMenu) = @_;

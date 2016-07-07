@@ -32,21 +32,29 @@ sub setStreamitEnv {
 	push @PATH, $STREAMIT_HOME;
 	push @CLASSPATH, ".";
 	push @CLASSPATH, ($STREAMIT_HOME . "streamit.jar");
+	$self->binary($self->config->get("streamgraph_tmp") . "a.out");
+}
+
+sub compileAndRun {
+	my ($self, $filename, $callback) = @_;
+	$self->compile($filename, sub{$self->run($callback)});
 }
 
 sub compile {
-	my ($self, $filename) = @_;
+	my ($self, $filename, $callback) = @_;
 	$self->source($filename);
 	$self->_killIfNecessary(\&ccPid);
 	$self->ccSuccess(-1);
 	$self->_compile();
+	$self->_after($self->ccPid, $callback);
 }
 
 sub run {
-	my ($self) = @_;
+	my ($self, $callback) = @_;
 	$self->_killIfNecessary(\&rPid);
 	$self->rSuccess(-1);
-	$self->_run();
+	$self->_run;
+	$self->_after($self->rPid, $callback);
 }
 
 sub isCompiling {
@@ -136,9 +144,17 @@ sub _getResult {
 	}
 }
 
+sub _after {
+	my ($self, $pid, $callback) = @_;
+	return if $pid < 0;
+	my $childpid = waitpid($pid, 0);
+	# waitpid seems to always return -1 after the process
+	# dies, and so a check is useless, even wrong
+	$callback->();
+}
+
 sub _killIfNecessary {
 	my ($self, $process) = @_;
-	$self->binary($self->config->get("streamgraph_tmp") . "a.out");
 	if ($process->($self) > 0) {
 		kill("TERM", $process->($self));
 		kill("KILL", $process->($self));
