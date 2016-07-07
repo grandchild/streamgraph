@@ -18,11 +18,11 @@ has ccSuccess  => ( is=>"rw", default=>0 );
 has ccSuccessFile => ( is=>"ro", default=>"ccSuccess.txt" );
 
 has binary     => ( is=>"rw" );
-has runPid     => ( is=>"rw", default=>0 );
-has runResult  => ( is=>"rw", default=>"" );
-has runResultFile => ( is=>"ro", default=>"runResult.txt" );
-has runSuccess => ( is=>"rw", default=>0 );
-has runSuccessFile => ( is=>"ro", default=>"runSuccess.txt" );
+has rPid     => ( is=>"rw", default=>0 );
+has rResult  => ( is=>"rw", default=>"" );
+has rResultFile => ( is=>"ro", default=>"runResult.txt" );
+has rSuccess => ( is=>"rw", default=>0 );
+has rSuccessFile => ( is=>"ro", default=>"runSuccess.txt" );
 
 
 sub setStreamitEnv {
@@ -44,7 +44,7 @@ sub compile {
 
 sub run {
 	my ($self) = @_;
-	$self->_killIfNecessary(\&runPid);
+	$self->_killIfNecessary(\&rPid);
 	$self->_run();
 }
 
@@ -55,19 +55,31 @@ sub isCompiling {
 
 sub isRunning {
 	my ($self) = @_;
-	return (waitpid($self->runPid, WNOHANG) != -1);
+	return (waitpid($self->rPid, WNOHANG) != -1);
 }
 
 sub compileResult {
-	my ($self) = @_;
+	my ($self, $lines) = @_;
 	$self->_updateCC;
-	return $self->ccResult;
+	return $self->_getResult($self->ccResult, $lines);
 }
 
 sub compileSuccess {
 	my ($self) = @_;
 	$self->_updateCC;
 	return $self->ccSuccess;
+}
+
+sub runResult {
+	my ($self, $lines) = @_;
+	$self->_updateRun;
+	return $self->_getResult($self->rResult, $lines);
+}
+
+sub runSuccess {
+	my ($self) = @_;
+	$self->_updateRun;
+	return $self->rSuccess;
 }
 
 sub _compile {
@@ -80,7 +92,7 @@ sub _compile {
 		# system("rm -r " . $self->config->get("streamgraph_tmp"));
 		chdir $self->config->get("streamgraph_tmp");
 		StreamGraph::Util::File::writeFile("".`$cmd 2>&1`, $self->config->get("streamgraph_tmp") . $self->ccResultFile);
-		StreamGraph::Util::File::writeFile($? >> 8, $self->config->get("streamgraph_tmp") . $self->ccSuccessFile);  # only this shift by 8 will show the actual return value
+		StreamGraph::Util::File::writeFile(($? >> 8), $self->config->get("streamgraph_tmp") . $self->ccSuccessFile);  # only this shift by 8 will show the actual return value
 		exit;
 	}
 }
@@ -88,8 +100,8 @@ sub _compile {
 sub _updateCC {
 	my ($self) = @_;
 	if ($self->ccResult == 0) {
-		$self->ccResult(StreamGraph::Util::File::readFile($self->config->get("streamgraph_tmp") . $self->ccResultFile));
-		$self->ccSuccess(StreamGraph::Util::File::readFile($self->config->get("streamgraph_tmp") . $self->ccSuccessFile));
+		$self->ccResult(StreamGraph::Util::File::readFileAsList($self->config->get("streamgraph_tmp") . $self->ccResultFile));
+		$self->ccSuccess(StreamGraph::Util::File::readFileAsList($self->config->get("streamgraph_tmp") . $self->ccSuccessFile));
 	}
 }
 
@@ -97,12 +109,31 @@ sub _run {
 	my ($self) = @_;
 	print "Run '" . $self->binary . "'\n";
 	$SIG{CHLD} = "IGNORE";
-	$self->runPid(fork);
-	unless($self->runPid) {
+	$self->rPid(fork);
+	unless($self->rPid) {
 		my $binary = $self->binary;
-		$self->runResult(`$binary 2>&1`);
-		$self->runSuccess($? >> 8);
+		$self->rResult(`$binary 2>&1`);
+		$self->rSuccess($? >> 8);
 		exit;
+	}
+}
+
+sub _updateRun {
+	my ($self) = @_;
+	if ($self->rResult == 0) {
+		$self->rResult(StreamGraph::Util::File::readFileAsList($self->config->get("streamgraph_tmp") . $self->rResultFile));
+		$self->rSuccess(StreamGraph::Util::File::readFileAsList($self->config->get("streamgraph_tmp") . $self->rSuccessFile));
+	}
+}
+
+sub _getResult {
+	my ($self, $result, $lines) = @_;
+	my @result = @{$result};
+	if ($lines) {
+		$lines = $#result if ($lines-1) > $#result;
+		return join("", @result[0..$lines]);
+	} else {
+		return join("", @result);
 	}
 }
 

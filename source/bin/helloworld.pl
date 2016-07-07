@@ -57,7 +57,7 @@ $runner->compile("main.str");
 while($runner->isCompiling) {
 	sleep(1);
 }
-print $runner->compileResult;
+print $runner->compileResult();
 # print "" . length($runner->ccResult) . " bytes of compile output\n";
 $runner->run();
 while($runner->isRunning) {

@@ -14,6 +14,10 @@ sub writeFile {
 }
 
 sub readFile {
+	return join("", _read(@_));
+}
+
+sub readFileAsList {
 	return _read(@_);
 }
 
@@ -75,9 +79,9 @@ sub _write {
 sub _read {
 	my ($filename) = @_;
 	open(my $fh, '<', $filename);
-	my $string = join("", <$fh>);
+	my @lines = <$fh>;
 	close $fh;
-	return $string;
+	return \@lines;
 }
 
 1;
