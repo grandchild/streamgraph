@@ -229,7 +229,12 @@ sub getPipelineName {
 
 # generates Pipeline Text
 # gets list/array of Nodes to be included in the pipeline and a flag if it is the main Pipeline
-# returns pipeline code
+# returns pipeline code????
+
+# calls generateSplitJoin if detects node with split at end and ends if node with join is detected
+# is called from generateSplitJoin if it(generateSplitjoin) detected multiple nodes in one branch
+# should return name of written Pipeline (as generateSplitJoin should do)
+# writes pipeline Code in global Variable pipelinesCode(as should generateSplitJoin) 
 sub generatePipeline {
 	my $filterPointer = shift;
 	my @filterArray = @{$filterPointer};
