@@ -15,11 +15,11 @@ sub show {
 	);
 	$item->{dialog} = $dialog;
 
-	if ($item->{data}->isa("StreamGraph::Model::Filter")) {
+	if ($item->{data}->isa("StreamGraph::Model::Node::Filter")) {
 		show_filter($item,$dialog);
-	} elsif ($item->{data}->isa("StreamGraph::Model::Parameter")) {
+	} elsif ($item->{data}->isa("StreamGraph::Model::Node::Parameter")) {
 		show_parameter($item,$dialog);
-	} elsif ($item->{data}->isa("StreamGraph::Model::Comment")) {
+	} elsif ($item->{data}->isa("StreamGraph::Model::Node::Comment")) {
 		show_comment($item,$dialog);
 	}
 }

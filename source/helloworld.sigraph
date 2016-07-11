@@ -26,7 +26,7 @@ nodes:
       inputCount: 1
       outputType: int
       outputCount: 0
-    type: StreamGraph::Model::Filter
+    type: StreamGraph::Model::Node::Filter
   - data:
       name: IntGenerator
       id: X1nHnQ
@@ -48,7 +48,7 @@ nodes:
       inputCount: 0
       outputType: int
       outputCount: 1
-    type: StreamGraph::Model::Filter
+    type: StreamGraph::Model::Node::Filter
   - data:
       name: rate
       id: 8C9EUA
@@ -56,7 +56,7 @@ nodes:
       y: -122
       outputType: int
       value: 5
-    type: StreamGraph::Model::Parameter
+    type: StreamGraph::Model::Node::Parameter
   - data:
       name: print
       id: hng2qg
@@ -78,7 +78,7 @@ nodes:
       inputCount: 1
       outputType: void
       outputCount: 0
-    type: StreamGraph::Model::Filter
+    type: StreamGraph::Model::Node::Filter
   - data:
       name: offset
       id: xsU6/w
@@ -86,7 +86,7 @@ nodes:
       y: -153
       outputType: int
       value: 0
-    type: StreamGraph::Model::Parameter
+    type: StreamGraph::Model::Node::Parameter
 connections:
   - from: X1nHnQ
     to: HgqVkg

@@ -206,15 +206,15 @@ sub connect {
 	my ($self, $predecessor_item, $item) = @_;
 	my $color = $self->{connection_colors_gdk}{default};
 	my $type = "default";
-	if ($predecessor_item->{data}->isa("StreamGraph::Model::Filter")
-			and $item->{data}->isa("StreamGraph::Model::Filter")) {
+	if ($predecessor_item->{data}->isa("StreamGraph::Model::Node::Filter")
+			and $item->{data}->isa("StreamGraph::Model::Node::Filter")) {
 		if ($predecessor_item->{data}->outputType ne $item->{data}->inputType) {
 			croak "Output type " . $predecessor_item->{data}->outputType .
 					" does not match input type " . $item->{data}->inputType . ".\n";
 		}
 		$type = "data";
-	} elsif ($predecessor_item->{data}->isa("StreamGraph::Model::Parameter")
-			and $item->{data}->isa("StreamGraph::Model::Filter")) {
+	} elsif ($predecessor_item->{data}->isa("StreamGraph::Model::Node::Parameter")
+			and $item->{data}->isa("StreamGraph::Model::Node::Filter")) {
 		$type = "parameter";
 	} else {
 		croak "You cannot connect these types of items: " .

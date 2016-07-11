@@ -7,9 +7,9 @@ use Moo;
 
 use StreamGraph::View::Item;
 use StreamGraph::View::ItemFactory;
-use StreamGraph::Model::Filter;
-use StreamGraph::Model::Parameter;
-use StreamGraph::Model::Comment;
+use StreamGraph::Model::Node::Filter;
+use StreamGraph::Model::Node::Parameter;
+use StreamGraph::Model::Node::Comment;
 
 # has view            => ( is=>"ro", required=>1 );
 

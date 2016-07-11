@@ -1,4 +1,4 @@
-package StreamGraph::Model::Parameter;
+package StreamGraph::Model::Node::Parameter;
 
 use warnings;
 use strict;

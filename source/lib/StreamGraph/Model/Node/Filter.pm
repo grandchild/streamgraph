@@ -1,4 +1,4 @@
-package StreamGraph::Model::Filter;
+package StreamGraph::Model::Node::Filter;
 
 use warnings;
 use strict;

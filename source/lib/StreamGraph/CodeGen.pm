@@ -26,7 +26,7 @@ sub generateCode {
 	# build Node list
 	my @nodeList = $graph->topological_sort();
 	@nodeList = StreamGraph::Util::List::unique(@nodeList);
-	@nodeList = @{StreamGraph::Util::List::filterNodesForType(\@nodeList, "StreamGraph::Model::Filter")};
+	@nodeList = @{StreamGraph::Util::List::filterNodesForType(\@nodeList, "StreamGraph::Model::Node::Filter")};
 	# first generate all filter code
 	$programText .= generateSectionCommentary("Section for all Filters");
 	foreach my $filterNode (@nodeList) {
@@ -172,7 +172,7 @@ sub generateFilter {
 		print "$filterNode is not defined \n";
 		return "";
 	}
-	if(!( $filterNode->{data}->isa("StreamGraph::Model::Filter") )){
+	if(!( $filterNode->{data}->isa("StreamGraph::Model::Node::Filter") )){
 		print "filterNode->data is not a Filter\n";
 		return "";
 	}
@@ -184,7 +184,7 @@ sub generateFilter {
 	my $globalVariables = $data->{globalVariables};
 	my $filterText = generateCommentary("Filter $name") . "$inputType->$outputType filter $name";
 	my @predecessors = StreamGraph::View::Item::predecessors($filterNode);
-	my @parameters = @{StreamGraph::Util::List::filterNodesForType(\@predecessors, "StreamGraph::Model::Parameter")};
+	my @parameters = @{StreamGraph::Util::List::filterNodesForType(\@predecessors, "StreamGraph::Model::Node::Parameter")};
 	# Todo: make names unique!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	$filterText .= generateParameters(\@parameters);
 	$filterText .= " {\n"; 
@@ -254,11 +254,11 @@ sub generatePipeline {
 	my @pipelineParameters = ();
 	foreach my $filterNode (@filterArray) {
 		# only add if element is Filter
-		if($filterNode->{data}->isa("StreamGraph::Model::Filter")){
+		if($filterNode->{data}->isa("StreamGraph::Model::Node::Filter")){
 			my $name = $filterNode->{data}->{'_gen_name'};
 			# get Parameters of Filter
 			my @predecessors = StreamGraph::View::Item::predecessors($filterNode);
-			my @filterParameters = @{StreamGraph::Util::List::filterNodesForType(\@predecessors, "StreamGraph::Model::Parameter")};
+			my @filterParameters = @{StreamGraph::Util::List::filterNodesForType(\@predecessors, "StreamGraph::Model::Node::Parameter")};
 			$pipelineFilters .= "\tadd $name" . generateParameters(\@filterParameters, 0, 1, 0, 0) . ";\n";
 			my @generatedParameters = @{generateParameters(\@filterParameters, 1, 0, 1, 1)};
 			if(@generatedParameters != 0){

@@ -1,4 +1,4 @@
-package StreamGraph::Model::Comment;
+package StreamGraph::Model::Node::Comment;
 
 use warnings;
 use strict;

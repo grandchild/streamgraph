@@ -148,11 +148,11 @@ sub runShow {
 sub addItem {
 	my ($node, $placeUnderMenu) = @_;
 	my $item;
-	if ($node->isa("StreamGraph::Model::Filter")) {
+	if ($node->isa("StreamGraph::Model::Node::Filter")) {
 		$item = addFilter($node);
-	} elsif ($node->isa("StreamGraph::Model::Parameter")) {
+	} elsif ($node->isa("StreamGraph::Model::Node::Parameter")) {
 		$item = addParameter($node);
-	} elsif ($node->isa("StreamGraph::Model::Comment")) {
+	} elsif ($node->isa("StreamGraph::Model::Node::Comment")) {
 		$item = addComment($node);
 	} else {
 		croak "Unknown node data type " . ref($node) . "\n";
@@ -217,7 +217,7 @@ sub delConnection {
 sub addNewFilter {
 	addItem(
 		$nodeFactory->createNode(
-			type=>"StreamGraph::Model::Filter",
+			type=>"StreamGraph::Model::Node::Filter",
 			name=>"Filter",
 			workCode=>"println(pop());",
 			inputType=>"int",
@@ -231,7 +231,7 @@ sub addNewFilter {
 sub addNewParameter {
 	addItem(
 		$nodeFactory->createNode(
-			type=>"StreamGraph::Model::Parameter",
+			type=>"StreamGraph::Model::Node::Parameter",
 			name=>"Parameter",
 			outputType=>"int",
 		),
@@ -242,7 +242,7 @@ sub addNewParameter {
 sub addNewComment {
 	addItem(
 		$nodeFactory->createNode(
-			type=>"StreamGraph::Model::Comment",
+			type=>"StreamGraph::Model::Node::Comment",
 			name=>"Comment",
 			string=>"Foo happens here"
 		),
