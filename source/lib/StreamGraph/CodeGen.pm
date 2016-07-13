@@ -5,6 +5,9 @@ use Data::Dump qw(dump);
 use StreamGraph::View::Item;
 use StreamGraph::Util::File;
 use StreamGraph::Util::List;
+use StreamGraph::Model::CodeObject::Pipeline;
+use StreamGraph::Model::CodeObject::SplitJoin;
+
 
 my $boxNumber = 0;
 my $dividingLine = "---------------------------------------------------";
@@ -32,9 +35,15 @@ sub generateCode {
 	foreach my $filterNode (@nodeList) {
 		$programText .= generateFilter($filterNode);
 	}
+	# build data structure for code generation of topographical constructs
+	my $mainPipeline = StreamGraph::Model::CodeObject::Pipeline->new(first=>$nodeList[0]);
+	$mainPipeline->generate(1);
+	my ($pipelinesCode, $splitJoinesCode) = $mainPipeline->buildCode("", "");
 
-	$programText .= generateSectionCommentary("Section for all Pipelines");
-	$programText .= generatePipeline(\@nodeList, 1);
+	$programText .= generateSectionCommentary("Section for all Pipelines") . $pipelinesCode; 
+	if($splitJoinesCode){
+		$programText .= generateSectionCommentary("Section for all Split-Joines") . $splitJoinesCode;
+	}
 	
 	### TODO: write to file in extra Util function
 	StreamGraph::Util::File::writeStreamitSource($programText, $configFile->get("streamgraph_tmp") . $fileName);
@@ -212,71 +221,28 @@ sub updateNodeName {
 
 # gets a Flag if the Pipeline is the first/main pipeline
 # returns Name as String
-sub getPipelineName {
+sub getTopologicalConstructName {
 	my $mainFlag = shift;
 	if(!$mainFlag || $mainFlag != 1){
 		$mainFlag = 0;
-	} 
+	}
+	my $splitJoinFlag = shift;
+	if(!$splitJoinFlag || $splitJoinFlag != 1){
+		$splitJoinFlag = 0;
+	}
 	my $text = "";
 	if($mainFlag == 1){
 		$text = $fileName;
 	} else {
-		$text = "Pipeline $boxNumber";
+		if($splitJoinFlag){
+			$text = "SplitJoin" . $boxNumber;
+		} else {
+			$text = "Pipeline" . $boxNumber;
+		}
 		$boxNumber++;
 	}
 	return $text;
 }
 
-# generates Pipeline Text
-# gets list/array of Nodes to be included in the pipeline and a flag if it is the main Pipeline
-# returns pipeline code????
-
-# calls generateSplitJoin if detects node with split at end and ends if node with join is detected
-# is called from generateSplitJoin if it(generateSplitjoin) detected multiple nodes in one branch
-# should return name of written Pipeline (as generateSplitJoin should do)
-# writes pipeline Code in global Variable pipelinesCode(as should generateSplitJoin) 
-sub generatePipeline {
-	my $filterPointer = shift;
-	my @filterArray = @{$filterPointer};
-	if (!@filterArray) {
-		return "";
-	}
-	my $mainFlag = shift;
-	if(!$mainFlag || $mainFlag != 1){
-		$mainFlag = 0;
-	}
-	my $arraySize = @filterArray;
-	my $inputType =  $filterArray[0]->{data}->{inputType};
-	my $outputType = $filterArray[$arraySize-1]->{data}->{outputType};
-	my $pipelineHeader = "$inputType" . "->" . "$outputType pipeline " . getPipelineName($mainFlag) . "{\n";
-	# only generate so far because parameters need to be added  
-	my $pipelineFilters = "";
-	my @pipelineParameters = ();
-	foreach my $filterNode (@filterArray) {
-		# only add if element is Filter
-		if($filterNode->{data}->isa("StreamGraph::Model::Node::Filter")){
-			my $name = $filterNode->{data}->{'_gen_name'};
-			# get Parameters of Filter
-			my @predecessors = StreamGraph::View::Item::predecessors($filterNode);
-			my @filterParameters = @{StreamGraph::Util::List::filterNodesForType(\@predecessors, "StreamGraph::Model::Node::Parameter")};
-			$pipelineFilters .= "\tadd $name" . generateParameters(\@filterParameters, 0, 1, 0, 0) . ";\n";
-			my @generatedParameters = @{generateParameters(\@filterParameters, 1, 0, 1, 1)};
-			if(@generatedParameters != 0){
-				# merge
-				push(@pipelineParameters, @generatedParameters);
-			}
-		}
-	}
-	# delete duplicates
-	@pipelineParameters = StreamGraph::Util::List::unique(@pipelineParameters);
-	my $pipelineParametersLength = @pipelineParameters;
-	if(@pipelineParameters && ($pipelineParametersLength != 0)){
-		$pipelineHeader .= generateCommentary("parameters as pipeline variables") . join(";\n", @pipelineParameters);
-		$pipelineHeader =~ s/\n/\n\t/g;
-		$pipelineHeader .= ";\n\t" . generateCommentary("pipeline members");
-	}
-	$pipelineFilters .= "}\n";
-	return $pipelineHeader . $pipelineFilters;
-}
 
 1;
