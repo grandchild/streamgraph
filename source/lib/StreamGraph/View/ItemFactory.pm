@@ -106,7 +106,8 @@ sub create_item {
 						side=>'left',
 						fill_color_gdk=>$fill_color_gdk,
 						outline_color_gdk=>$outline_color_gdk,
-						hotspot_color_gdk=>$hotspot_color_gdk);
+						hotspot_color_gdk=>$hotspot_color_gdk,
+						enabled=>($attributes{data}->inputType ne "void"));
 		$item->add_hotspot('toggle_left',  $hotspot_in);
 		$content->{image}->{connect_item} = $item;
 		$border->{border}->{connect_item} = $item;
@@ -119,7 +120,8 @@ sub create_item {
 						side=>'right',
 						fill_color_gdk=>$fill_color_gdk,
 						outline_color_gdk=>$outline_color_gdk,
-						hotspot_color_gdk=>$hotspot_color_gdk);
+						hotspot_color_gdk=>$hotspot_color_gdk,
+						enabled=>($attributes{data}->outputType ne "void"));
 		$item->add_hotspot('toggle_right', $hotspot_out);
 	}
 	$item->set_data(defined $attributes{data} ?

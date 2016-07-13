@@ -31,7 +31,7 @@ sub new {
 sub create_toggle {
     my ( $self, @attributes ) = @_;
     my %attributes = @attributes;
-    args_valid( \%attributes, qw(item border side fill_color_gdk outline_color_gdk hotspot_color_gdk) );
+    args_valid( \%attributes, qw(item border side enabled fill_color_gdk outline_color_gdk hotspot_color_gdk) );
     args_required( \%attributes, qw(item border side) );
     my $item = $attributes{item};
     if ( !$item->isa('StreamGraph::View::Item') ) {
@@ -42,6 +42,7 @@ sub create_toggle {
         croak "Invalid side. Must be 'right' or 'left'.\n";
     }
     my $border = $attributes{border};
+    my $enabled = defined $attributes{enabled} ? $attributes{enabled} : TRUE;
     my $fill_color_gdk
         = ( defined $attributes{fill_color_gdk} )
         ? $attributes{fill_color_gdk}
@@ -64,7 +65,7 @@ sub create_toggle {
             hotspot_color_gdk => $hotspot_color_gdk,
             outline_color_gdk => $outline_color_gdk,
             fill_color_gdk    => $fill_color_gdk,
-            enabled           => TRUE
+            enabled           => $enabled
         );
     }
 
@@ -75,7 +76,7 @@ sub create_toggle {
             hotspot_color_gdk => $hotspot_color_gdk,
             outline_color_gdk => $outline_color_gdk,
             fill_color_gdk    => $fill_color_gdk,
-            enabled           => TRUE
+            enabled           => $enabled
         );
     }
 
@@ -86,7 +87,7 @@ sub create_toggle {
             hotspot_color_gdk => $hotspot_color_gdk,
             outline_color_gdk => $outline_color_gdk,
             fill_color_gdk    => $fill_color_gdk,
-            enabled           => TRUE
+            enabled           => $enabled
         );
     }
 

@@ -243,16 +243,22 @@ sub show_filter {
 	$filterInhbox->pack_start(Gtk2::Label->new("Input: "),FALSE,FALSE,0);
 	my $filteInE = Gtk2::Entry->new();
 	$filteInE->set_text($itemData->{inputType});
-	$filteInE->signal_connect(changed => sub{	$itemData->{inputType} = $filteInE->get_text(); });
+	$filteInE->signal_connect(changed => sub{
+		$itemData->{inputType} = $filteInE->get_text();
+		$item->update;
+	});
 	$filterInhbox->pack_start($filteInE,FALSE,FALSE,0);
 	$filterTab->pack_start($filterInhbox,FALSE,FALSE,0);
 
-	# FILTER INPUT ENTRY
+	# FILTER OUTPUT ENTRY
 	my $filterOuthbox = Gtk2::HBox->new(FALSE,0);
 	$filterOuthbox->pack_start(Gtk2::Label->new("Output: "),FALSE,FALSE,0);
 	my $filteOutE = Gtk2::Entry->new();
 	$filteOutE->set_text($itemData->{outputType});
-	$filteOutE->signal_connect(changed => sub{	$itemData->{outputType} = $filteOutE->get_text(); });
+	$filteOutE->signal_connect(changed => sub{
+		$itemData->{outputType} = $filteOutE->get_text();
+		$item->update;
+	});
 	$filterOuthbox->pack_start($filteOutE,FALSE,FALSE,0);
 	$filterTab->pack_start($filterOuthbox,FALSE,FALSE,0);
 
