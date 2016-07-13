@@ -34,21 +34,18 @@ sub BUILDARGS {
 sub generate {
 	my ($self) = @_;
 	$self->name(StreamGraph::CodeGen::getTopologicalConstructName(0, 1));
-	my $codeObjects = $self->codeObjects();
-	if ($codeObjects->[0]->isa("StreamGraph::Model::Node::Filter")) {
-	 	$self->inputType($codeObjects->[0]->{data}->{inputType});
-	} else {
-		$codeObjects->[0]->generate();
-		$self->inputType($codeObjects->[0]->inputType);
-	}
-	my @codeObjects = $codeObjects;
-	if($codeObjects->[$#codeObjects]->isa("StreamGraph::Model::Node::Filter")){
-		$self->outputType($codeObjects->[$#codeObjects]->{data}->{outputType});
-	} else {
-		$codeObjects->[$#codeObjects]->generate();
-		$self->outputType($codeObjects->[$#codeObjects]->outputType);
-	}
+	$self->inputType($self->split()->{data}->outputType);
+	$self->outputType($self->join()->{data}->inputType);
 	my $splitJoinCode = $self->inputType . "->" . $self->outputType . " splitjoin " . $self->name . "{\n";
+	$splitJoinCode .= "\tsplit " . $self->split()->{data}->splitType . ";\n";
+	foreach my $codeObject (@{$self->codeObjects}) {
+		if(!($codeObject->{'_generated'})){
+			$codeObject->generate();
+		}
+		$splitJoinCode .= "\tadd " . $codeObject->name . ";\n";
+	}
+	$splitJoinCode .= "\tjoin " . $self->join()->{data}->joinType . ";\n}";
+	$self->code($splitJoinCode);
 }
 
 sub buildCode {
