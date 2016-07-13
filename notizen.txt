@@ -1,3 +1,31 @@
+
+
+--- TODO
+--- gui
+mehrere inputs
+ ((( mark/marked/entf
+      Filter > Delete macht was? (-> marked?)
+
+
+--- backend
+sigraph datei als parameter
+
+
+
+=======================================
+
+
+
+lua sdr editor
+
+akademische diskussion 3 - 6 seiten latex
+
+
+
+
+=======================================
+
+
 Implitzites Join/Split
  - nur im `splitjoin`-Konstrukt
 
