@@ -35,29 +35,25 @@ $scroller->signal_connect('motion-notify-event',\&_window_handler);
 $scroller->signal_connect('button-release-event',\&_window_handler);
 $scroller->signal_connect('button-press-event',\&_window_handler);
 $scroller->signal_connect('leave-notify-event',\&_window_handler);
-my $view     = StreamGraph::View->new(aa=>1);
-$view->set_scroll_region(0,0,5000,5000);
-$window->set_size_request(300,200);
-my $menu = create_menu();
-# my $view = LoadFile("helloworld.sigraph");
+my $view = StreamGraph::View->new(aa=>1);
 $view->set(connection_arrows=>'one-way');
-my $factory  = StreamGraph::View::ItemFactory->new(view=>$view);
-my $nodeFactory = StreamGraph::Model::NodeFactory->new();
-my $config = StreamGraph::Util::Config->new();
-
-$view->set_scroll_region(-50,-90,100,100);
+$view->set_scroll_region(-300,-200,5000,5000);
+$window->set_size_request(900,500);
+my $menu = create_menu();
 $scroller->add($view);
 $window->signal_connect('destroy'=>sub { _closeapp($view); });
-$window->set_default_size(400,400);
 $window->set_type_hint('dialog');
 $window->add($menu);
 $menu->add($scroller);
+
+my $factory = StreamGraph::View::ItemFactory->new(view=>$view);
+my $nodeFactory = StreamGraph::Model::NodeFactory->new();
+my $config = StreamGraph::Util::Config->new();
 
 $view->{saveFile} = shift or die "Usage: $0 [filename]\n";
 loadFile($view->{saveFile});
 
 # codeGenShow();
-
 # runShow();
 
 $window->show_all();
