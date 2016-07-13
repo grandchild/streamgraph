@@ -243,9 +243,13 @@ sub is_visible {
 
 # my @predecessors = $item->predecessors();
 sub predecessors {
-	my $self = shift(@_);
+	my ($self, $type) = shift(@_);
 	return () if (!defined $self->{graph});
-	return $self->{graph}->predecessors($self);
+	if (defined $type) {
+		return grep { $_->{data}->isa($type) } $self->{graph}->predecessors($self);
+	} else {
+		return $self->{graph}->predecessors($self);
+	}
 }
 
 
@@ -294,6 +298,15 @@ sub all_successors {
 	return grep {$_->get_column_no() <= $column_no } @items;
 }
 
+sub is_split {
+	my $self = shift;
+	return $self->successors > 1;
+}
+
+sub is_join {
+	my $self = shift;
+	return $self->predecessors("StreamGraph::Model::Node::Filter") > 1;
+}
 
 # resize: adjust the size of this item. This routine is needed because
 # the simple: $self->set(x=>$x1, width=>$width, height=>$height) is

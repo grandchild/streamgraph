@@ -50,27 +50,4 @@ has saveMembers         => ( is=>"ro", default=>sub{[qw(
 	outputCount
 )]});
 
-sub isSplitFilter {
-	my $self = shift;
-	my @filterSuccessors = $self->successors();
-	@filterSuccessors = @{StreamGraph::Util::List::filterNodesForType(\@filterSuccessors, "StreamGraph::Model::Node::Filter")}; 
-	my $nmbFilterSuccessors = @filterSuccessors; 
-	if($nmbFilterSuccessors > 1){
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
-sub isJoinFilter {
-	my $self = shift;
-	my @filterPredecessors = $self->predecessors();
-	@filterPredecessors = @{StreamGraph::Util::List::filterNodesForType(\@filterPredecessors, "StreamGraph::Model::Node::Filter")};
-	my $nmbFilterPredecessors = @filterPredecessors;
-	if($nmbFilterPredecessors > 1){
-		return 1;
-	} else {
-		return 0;
-	}
-}
 1;
