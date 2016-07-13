@@ -25,13 +25,18 @@ use StreamGraph::Util::File;
 
 
 my $window   = Gtk2::Window->new('toplevel');
-$window->signal_connect('button-release-event',\&_window_handler);
-$window->signal_connect('leave-notify-event',\&_window_handler);
+
 my $uimanager;
 my $menu_edit;
 my $menu_filter;
 my $scroller = Gtk2::ScrolledWindow->new();
+$scroller->signal_connect('motion-notify-event',\&_window_handler);
+$scroller->signal_connect('button-release-event',\&_window_handler);
+$scroller->signal_connect('button-press-event',\&_window_handler);
+$scroller->signal_connect('leave-notify-event',\&_window_handler);
 my $view     = StreamGraph::View->new(aa=>1);
+$view->set_scroll_region(0,0,5000,5000);
+$window->set_size_request(300,200);
 my $menu = create_menu();
 # my $view = LoadFile("helloworld.sigraph");
 $view->set(connection_arrows=>'one-way');
@@ -54,11 +59,18 @@ codeGenShow();
 runShow();
 
 $window->show_all();
-
+$view->set_scroll_region(-1000,-1000,1000,1000);
+$scroller->signal_connect('move-focus-out'=>\&sch);
+Gtk2::Gdk::Cursor->new ('hand1');
 Gtk2->main();
 
 exit 0;
 
+sub sch {
+	my ($ScrolledWindow, $directiontype) = @_;
+
+	print $directiontype . "\n";
+}
 
 sub _closeapp {
 	my $view = shift(@_);
@@ -77,6 +89,7 @@ sub _test_handler {
 	if ($event_type eq 'button-press' && $event->button == 1) {
 		$item->{x_prime} = $coords[0];
 		$item->{y_prime} = $coords[1];
+		$view->{focusItem} = $item;
 	} elsif ($event_type eq 'motion-notify') {
 		unless (defined $item->{y_prime}) {return;}
 		$item->set(x=>($item->get('x') + ($coords[0] - $item->{x_prime}) ));
@@ -89,14 +102,6 @@ sub _test_handler {
 		$menu_filter->popup (undef, undef, undef, undef, $event->button, $event->time);
 	} elsif ($event_type eq '2button-press' && $event->button == 1) {
 		StreamGraph::Util::PropertyWindow::show($item,$window);
-	} elsif ($event_type eq 'enter-notify') {
-		if (defined $item->{view}->{togglePress}) {
-			my $titem = $item->{view}->{togglePress};
-			if ($item->{view}->{togglePress} ne $item && int (gettimeofday * 100) == $titem->{connectTime}) {
-				$item->{view}->connect($titem, $item);
-			}
-			undef $item->{view}->{togglePress};
-		}
 	}
 	if ($event_type eq 'button-release') {
 		undef $item->{x_prime};
@@ -116,9 +121,27 @@ sub _window_handler {
 			}
 			return;
 		}
+		if ($event_type eq 'button-press' && $event->button == 1) {
+			if (defined $view->{focusItem}->{x_prime}) { return; }
+			my @rcoords = $event->root_coords;
+			$view->{x_prime} = $rcoords[0];
+			$view->{y_prime} = $rcoords[1];
+		} elsif ($event_type eq 'motion-notify') {
+			unless (defined $view->{y_prime}) {return;}
+			my ($cx, $cy) = $view->get_scroll_offsets();
+			my @rcoords = $event->root_coords;
+			$view->scroll_to($cx + ($view->{x_prime} - $rcoords[0]) , $cy + ($view->{y_prime} - $rcoords[1]) );
+			$view->{x_prime} = $rcoords[0];
+			$view->{y_prime} = $rcoords[1];
+			$window->show_all;
+		}
 		if ($view->{popup}) {
 			$view->{popup} = 0;
 			return;
+		}
+		if ($event_type eq 'button-release') {
+			undef $view->{x_prime};
+			undef $view->{y_prime};
 		}
 		if ($event_type eq 'button-release' && $event->button == 3) {
 			my @coords = $event->coords;
@@ -161,8 +184,9 @@ sub addItem {
 	$view->add_item($item);
 	if ($placeUnderMenu and defined $view->{menuCoordX} and defined $view->{menuCoordY}) {
 		my ($width, $height) = $window->get_size();
-		$item->set(x=> ($view->{menuCoordX} - $width/2) );
-		$item->set(y=> ($view->{menuCoordY} - $height/2) );
+		my ($fx,$fy,$tx, $ty) = $view->get_scroll_region();
+		$item->set(x=> ($view->{menuCoordX} + $fx) );
+		$item->set(y=> ($view->{menuCoordY} + $fx) );
 	}
 	return $item;
 }

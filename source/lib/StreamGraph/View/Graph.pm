@@ -58,8 +58,8 @@ sub is_connectable {
 			ref($item1->{data}) . " and " . ref($item2->{data}) . ".\n";
 		return 0;
 	}
-	if ($self->is_predecessor($item1, $item2)) {
-		print "Trying to form a circle.\n";
+	if ($self->is_predecessor($item1, $item2) || $item1 eq $item2) {
+		print "Trying to form a cicle.\n";
 		return 0;
 	}
 	return 1;

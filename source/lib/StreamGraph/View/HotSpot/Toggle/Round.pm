@@ -57,11 +57,13 @@ sub hotspot_toggle_available {
 # my $image = $self->hotspot_get_image();
 sub hotspot_get_image {
 	my $self = shift(@_);
-	return Gnome2::Canvas::Item->new(
+	my $ellipse = Gnome2::Canvas::Item->new(
 		$self->{item}, 'Gnome2::Canvas::Ellipse',
 		fill_color_gdk    => $self->{fill_color_gdk},
 		outline_color_gdk => $self->{outline_color_gdk}
 	);
+	$ellipse->{toggle} = $self;
+	return $ellipse;
 }
 
 1;    # Magic true value required at end of module
@@ -91,7 +93,7 @@ hotspots allow the user to expand/collapse the items in the mind map,
 or to resize an item.
 
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 Properties
 

@@ -7,7 +7,6 @@ use strict;
 use Carp;
 
 use Glib ':constants';
-use Time::HiRes qw(gettimeofday);
 use Gnome2::Canvas;
 use StreamGraph::View::Connection;
 use base 'StreamGraph::View::HotSpot';
@@ -23,6 +22,13 @@ sub hotspot_motion_notify {
 	my ($self, $item, $event) = @_;
 	if (defined $item->{view}->{toggleCon}) {
 		my @coords = $event->coords;
+		my $found = $item->{view}->get_item_at($coords[0], $coords[1]);
+		if (defined $found->{connect_item} && $item->{view}->{graph}->is_connectable($item,$found->{connect_item})) {
+			@coords = $found->{connect_item}->get_connection_point("left");
+		} else {
+			$coords[0] -= 5;
+			$coords[1] -= 5;
+		}
 		$item->{view}->{toggleCon}->{x2} = shift @coords;
 		$item->{view}->{toggleCon}->{y2} = shift @coords;
 		$item->{view}->{toggleCon}->_predecessor_connection();
@@ -37,21 +43,24 @@ sub hotspot_enter_notify {
 sub hotspot_button_release {
 	my ($self, $item, $event) = @_;
 	my @items = $item->{graph}->get_items;
+	my @coords = $event->coords;
 	foreach my $i (@items) {
 		$i->toggle_available(0);
 	};
-	$item->{view}->{togglePress} = $item;
-	$item->{connectTime} = int (gettimeofday * 100);
 	$item->{view}->{toggleCon}->disconnect();
 	$item->{view}->{toggleCon}->destroy();
 	undef $item->{view}->{toggleCon};
+	my $found = $item->{view}->get_item_at($coords[0], $coords[1]);
+	if (defined $found->{connect_item}) {
+		$item->{view}->connect($item, $found->{connect_item}) if $item ne $found->{connect_item};
+	}
 }
 
 sub hotspot_button_press {
 	my ($self, $item, $event) = @_;
 	my @items = $item->{graph}->all_non_predecessors($item);
 	foreach my $i (@items) {
-		$i->toggle_available(1);
+		$i->toggle_available(1) if $item->{view}->{graph}->is_connectable($item,$i);
 	};
 	$item->{view}->{toggleCon} = Gnome2::Canvas::Item->new(
 		$item->{view}->root,
