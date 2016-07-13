@@ -45,14 +45,14 @@ sub generate {
 	# CodeObjects list has all members of pipline in correct order. 
 	# CodeObjects may be splitJoin constructs or filters
 	my $codeObjects = $self->codeObjects();
-	if ($codeObjects->[0]->{data}->isa("StreamGraph::Model::Node::Filter")) {
+	if ($codeObjects->[0]->isFilter) {
 	 	$self->inputType($codeObjects->[0]->{data}->{inputType});
 	} else {
 		$codeObjects->[0]->generate();
 		$self->inputType($codeObjects->[0]->inputType);
 	}
 	my @codeObjects = $codeObjects;
-	if($codeObjects->[$#codeObjects]->{data}->isa("StreamGraph::Model::Node::Filter")){
+	if($codeObjects->[$#codeObjects]->isFilter){
 		$self->outputType($codeObjects->[$#codeObjects]->{data}->{outputType});
 	} else {
 		$codeObjects->[$#codeObjects]->generate();
@@ -71,7 +71,7 @@ sub generate {
 			$pipelineMembers .= "\tadd " . $codeObject->name . ";\n";
 		} else {
 			# element is Filter
-			if($codeObject->{data}->isa("StreamGraph::Model::Node::Filter")){
+			if($codeObject->isFilter){
 				# get Parameters of Filter
 				my @predecessors = StreamGraph::View::Item::predecessors($codeObject);
 				my @filterParameters = @{StreamGraph::Util::List::filterNodesForType(\@predecessors, "StreamGraph::Model::Node::Parameter")};

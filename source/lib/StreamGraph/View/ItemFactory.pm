@@ -99,7 +99,7 @@ sub create_item {
 							y=>(defined $attributes{data} ? $attributes{data}->y : 0));
 
 
-	if (!defined($attributes{data}) or $attributes{data}->isa("StreamGraph::Model::Node::Filter")) {
+	if (!defined($attributes{data}) or $attributes{data}->isFilter) {
 		my $hotspot_in = $self->{toggle_factory}->create_toggle(
 						item=>$item,
 						border=>$border,
@@ -112,7 +112,7 @@ sub create_item {
 		$border->{border}->{connect_item} = $item;
 		$hotspot_in->{image}->{connect_item} = $item;
 	}
-	if (!defined($attributes{data}) or !$attributes{data}->isa("StreamGraph::Model::Node::Comment")) {
+	if (!defined($attributes{data}) or !$attributes{data}->isComment) {
 		my $hotspot_out = $self->{toggle_factory}->create_toggle(
 						item=>$item,
 						border=>$border,

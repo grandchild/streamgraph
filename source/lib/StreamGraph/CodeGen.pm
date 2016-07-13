@@ -181,7 +181,7 @@ sub generateFilter {
 		print "$filterNode is not defined \n";
 		return "";
 	}
-	if(!( $filterNode->{data}->isa("StreamGraph::Model::Node::Filter") )){
+	if(!( $filterNode->isFilter )){
 		print "filterNode->data is not a Filter\n";
 		return "";
 	}

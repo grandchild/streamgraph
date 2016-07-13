@@ -230,11 +230,9 @@ sub connect {
 
 sub _connection_type {
 	my ($self, $predecessor_item, $item) = @_;
-	if ($predecessor_item->{data}->isa("StreamGraph::Model::Node::Filter")
-			and $item->{data}->isa("StreamGraph::Model::Node::Filter")) {
+	if ($predecessor_item->isFilter and $item->isFilter) {
 		return "data";
-	} elsif ($predecessor_item->{data}->isa("StreamGraph::Model::Node::Parameter")
-			and $item->{data}->isa("StreamGraph::Model::Node::Filter")) {
+	} elsif ($predecessor_item->isParameter and $item->isFilter) {
 		return "parameter";
 	} else {
 		return "default";
