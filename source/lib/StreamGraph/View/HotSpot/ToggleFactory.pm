@@ -14,103 +14,86 @@ use List::Util;
 
 use Glib ':constants';
 
-sub new
-{
+sub new {
     my $class = shift(@_);
-
     my @attributes = @_;
-
     my $self = {};
-
     bless $self, $class;
-
     my %attributes = @attributes;
-
-    args_valid(\%attributes, qw(fill_color_gdk outline_color_gdk hotspot_color_gdk));
-
-    args_store($self, \%attributes);
-
-    arg_default($self, "fill_color_gdk", Gtk2::Gdk::Color->parse('white'));
-
-    arg_default($self, "outline_color_gdk", Gtk2::Gdk::Color->parse('gray'));
-
-    arg_default($self, "hotspot_color_gdk", Gtk2::Gdk::Color->parse('orange'));
-
+    args_valid( \%attributes, qw(fill_color_gdk outline_color_gdk hotspot_color_gdk) );
+    args_store( $self, \%attributes );
+    arg_default( $self, "fill_color_gdk", Gtk2::Gdk::Color->parse('white') );
+    arg_default( $self, "outline_color_gdk", Gtk2::Gdk::Color->parse('gray') );
+    arg_default( $self, "hotspot_color_gdk", Gtk2::Gdk::Color->parse('orange') );
     return $self;
 }
 
-
-sub create_toggle
-{
-    my ($self, @attributes) = @_;
-
+sub create_toggle {
+    my ( $self, @attributes ) = @_;
     my %attributes = @attributes;
-
-    args_valid(\%attributes, qw(item border side fill_color_gdk outline_color_gdk hotspot_color_gdk));
-
-    args_required(\%attributes, qw(item border side));
-
+    args_valid( \%attributes, qw(item border side fill_color_gdk outline_color_gdk hotspot_color_gdk) );
+    args_required( \%attributes, qw(item border side) );
     my $item = $attributes{item};
-
-    if (!$item->isa('StreamGraph::View::Item'))
-    {
-	croak "Invalid item. Item must be a 'StreamGraph::View::Item'.\n";
+    if ( !$item->isa('StreamGraph::View::Item') ) {
+        croak "Invalid item. Item must be a 'StreamGraph::View::Item'.\n";
     }
-
     my $side = $attributes{side};
-
-    if (!grep { $_ eq $side } qw(right left))
-    {
-	croak "Invalid side. Must be 'right' or 'left'.\n";
+    if ( !grep { $_ eq $side } qw(right left) ) {
+        croak "Invalid side. Must be 'right' or 'left'.\n";
     }
-
     my $border = $attributes{border};
+    my $fill_color_gdk
+        = ( defined $attributes{fill_color_gdk} )
+        ? $attributes{fill_color_gdk}
+        : $self->{fill_color_gdk};
 
-    my $fill_color_gdk    = (defined $attributes{fill_color_gdk}) ?
-	                     $attributes{fill_color_gdk} : $self->{fill_color_gdk};
+    my $outline_color_gdk
+        = ( defined $attributes{outline_color_gdk} )
+        ? $attributes{outline_color_gdk}
+        : $self->{outline_color_gdk};
 
-    my $outline_color_gdk = (defined $attributes{outline_color_gdk}) ?
-	                     $attributes{outline_color_gdk} : $self->{outline_color_gdk};
+    my $hotspot_color_gdk
+        = ( defined $attributes{hotspot_color_gdk} )
+        ? $attributes{hotspot_color_gdk}
+        : $self->{hotspot_color_gdk};
 
-    my $hotspot_color_gdk = (defined $attributes{hotspot_color_gdk}) ?
-	                     $attributes{hotspot_color_gdk} : $self->{hotspot_color_gdk};
-
-    if ($border->isa('StreamGraph::View::Border::Ellipse'))
-    {
-	return StreamGraph::View::HotSpot::Toggle::Round->new(
-		       item=>$item, side=>$side,
-		       hotspot_color_gdk=>$hotspot_color_gdk,
-		       outline_color_gdk=>$outline_color_gdk,
-		       fill_color_gdk=>$fill_color_gdk,
-		       enabled=>TRUE);
+    if ( $border->isa('StreamGraph::View::Border::Ellipse') ) {
+        return StreamGraph::View::HotSpot::Toggle::Round->new(
+            item              => $item,
+            side              => $side,
+            hotspot_color_gdk => $hotspot_color_gdk,
+            outline_color_gdk => $outline_color_gdk,
+            fill_color_gdk    => $fill_color_gdk,
+            enabled           => TRUE
+        );
     }
 
-    if ($border->isa('StreamGraph::View::Border::RoundedRect'))
-    {
-	return StreamGraph::View::HotSpot::Toggle::Round->new(
-		       item=>$item, side=>$side,
-		       hotspot_color_gdk=>$hotspot_color_gdk,
-		       outline_color_gdk=>$outline_color_gdk,
-		       fill_color_gdk=>$fill_color_gdk,
-		       enabled=>TRUE);
+    if ( $border->isa('StreamGraph::View::Border::RoundedRect') ) {
+        return StreamGraph::View::HotSpot::Toggle::Round->new(
+            item              => $item,
+            side              => $side,
+            hotspot_color_gdk => $hotspot_color_gdk,
+            outline_color_gdk => $outline_color_gdk,
+            fill_color_gdk    => $fill_color_gdk,
+            enabled           => TRUE
+        );
     }
 
-
-    if ($border->isa('StreamGraph::View::Border::Rectangle'))
-    {
-	return StreamGraph::View::HotSpot::Toggle::Round->new(
-		       item=>$item, side=>$side,
-		       hotspot_color_gdk=>$hotspot_color_gdk,
-		       outline_color_gdk=>$outline_color_gdk,
-		       fill_color_gdk=>$fill_color_gdk,
-		       enabled=>TRUE);
+    if ( $border->isa('StreamGraph::View::Border::Rectangle') ) {
+        return StreamGraph::View::HotSpot::Toggle::Round->new(
+            item              => $item,
+            side              => $side,
+            hotspot_color_gdk => $hotspot_color_gdk,
+            outline_color_gdk => $outline_color_gdk,
+            fill_color_gdk    => $fill_color_gdk,
+            enabled           => TRUE
+        );
     }
 
     croak "Cannot make toggle. Unexpected border: $border\n";
 }
 
-
-1; # Magic true value required at end of module
+1;    # Magic true value required at end of module
 __END__
 
 =head1 NAME
