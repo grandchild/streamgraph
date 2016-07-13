@@ -14,6 +14,7 @@ use lib "./lib/";
 use StreamGraph::View;
 use StreamGraph::View::ItemFactory;
 use StreamGraph::Model::NodeFactory;
+use StreamGraph::GraphCompat;
 use StreamGraph::CodeGen;
 use StreamGraph::CodeRunner;
 use StreamGraph::Util qw (getItemWithId getNodeWithId);
@@ -153,7 +154,8 @@ sub _window_handler {
 }
 
 sub graphViz {
-	StreamGraph::Util::DebugGraph::export_graph($window,$view,$config->get('streamgraph_tmp'));
+	my $graphCompat = StreamGraph::GraphCompat->new($view->{graph});
+	StreamGraph::Util::DebugGraph::export_graph($window,$view,$graphCompat,$config->get('streamgraph_tmp'));
 }
 
 sub codeGenShow {

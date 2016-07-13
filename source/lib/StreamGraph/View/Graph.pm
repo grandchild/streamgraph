@@ -174,6 +174,22 @@ sub is_predecessor {
 	return 0;
 }
 
+sub successorless_filters {
+	my ($self) = @_;
+	return $self->{graph}->successorless_vertices;
+}
+
+sub predecessorless_filters {
+	my ($self) = @_;
+	my @sourceFilters = ();
+	foreach my $item ($self->get_items) {
+		if ($item->predecessors("StreamGraph::Model::Node::Filter") == 0) {
+			push @sourceFilters, $item;
+		}
+	}
+	return @sourceFilters;
+}
+
 # $graph->set_root($item);
 sub set_root {
 	my ($self, $item) = @_;

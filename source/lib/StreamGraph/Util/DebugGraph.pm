@@ -6,8 +6,7 @@ use Glib qw/TRUE FALSE/;
 use GraphViz;
 
 sub export_graph {
-	my ($window,$view,$dir) = @_;
-	my $graph = $view->{graph};
+	my ($window,$view,$graph,$dir) = @_;
 
 	my $g = GraphViz->new();
 	my @V = $graph->{graph}->vertices();
