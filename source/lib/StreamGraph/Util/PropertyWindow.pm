@@ -127,7 +127,7 @@ sub show_filter {
 	$joinCB->set_title("Type");
 	$joinCB->append_text('Round Robin');
 	$joinCB->append_text('Void');
-	if ($itemData->{joinType} eq 'roundrobbin') {
+	if ($itemData->{joinType} eq 'roundrobin') {
 		$joinCB->set_active(0);
 	} elsif ($itemData->{joinType} eq 'Void') {
 		$joinCB->set_active(1);
@@ -135,8 +135,8 @@ sub show_filter {
 		$joinCB->set_active(0);
 	}
 	$joinCB->signal_connect(changed => sub{
-		if ($joinCB->get_active_text eq 'Round Robbin') {
-			$itemData->{joinType} = "roundrobbin";
+		if ($joinCB->get_active_text eq 'Round Robin') {
+			$itemData->{joinType} = "roundrobin";
 		} elsif ($joinCB->get_active_text eq 'Void') {
 			$itemData->{joinType} = "void";
 		}
@@ -267,7 +267,7 @@ sub show_filter {
 	$splitCB->append_text('Round Robin');
 	$splitCB->append_text('Duplicate');
 	$splitCB->append_text('Void');
-	if ($itemData->{splitType} eq 'roundrobbin') {
+	if ($itemData->{splitType} eq 'roundrobin') {
 		$splitCB->set_active(0);
 	} elsif ($itemData->{splitType} eq 'Duplicate') {
 	$splitCB->set_active(1);
@@ -277,8 +277,8 @@ sub show_filter {
 		$splitCB->set_active(0);
 	}
 	$splitCB->signal_connect(changed => sub{
-		if ($splitCB->get_active_text eq 'Round Robbin') {
-			$itemData->{splitType} = "roundrobbin";
+		if ($splitCB->get_active_text eq 'Round Robin') {
+			$itemData->{splitType} = "roundrobin";
 		} elsif ($splitCB->get_active_text eq 'Duplicate') {
 			$itemData->{splitType} = "duplicate";
 		} elsif ($splitCB->get_active_text eq 'Void') {
