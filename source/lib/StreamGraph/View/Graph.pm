@@ -33,9 +33,36 @@ sub add_edge {
 	if ((!defined $item1) or (!defined $item2)) {
 		croak "You must specify two items to connect.\n";
 	}
+	if (!$self->is_connectable($item1, $item2)) {
+		return 0;
+	}
 	$self->add_vertex($item1) if (!$self->has_item($item1));
 	$self->add_vertex($item2) if (!$self->has_item($item2));
 	$self->{graph}->add_edge($item1, $item2);
+	return 1;
+}
+
+sub is_connectable {
+	my ($self, $item1, $item2) = @_;
+	if ($item1->{data}->isa("StreamGraph::Model::Node::Filter")
+			and $item2->{data}->isa("StreamGraph::Model::Node::Filter")) {
+		if ($item1->{data}->outputType ne $item2->{data}->inputType) {
+			print "Output type " . $item1->{data}->outputType .
+					" does not match input type " . $item2->{data}->inputType . ".\n";
+			return 0;
+		}
+	} elsif ($item1->{data}->isa("StreamGraph::Model::Node::Parameter")
+			and $item2->{data}->isa("StreamGraph::Model::Node::Filter")) {
+	} else {
+		print "You cannot connect these types of items: " .
+			ref($item1->{data}) . " and " . ref($item2->{data}) . ".\n";
+		return 0;
+	}
+	if ($self->is_predecessor($item1, $item2)) {
+		print "Trying to form a circle.\n";
+		return 0;
+	}
+	return 1;
 }
 
 # $root = $graph->get_root();

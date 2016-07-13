@@ -205,24 +205,10 @@ sub successors {
 sub connect {
 	my ($self, $predecessor_item, $item) = @_;
 	my $color = $self->{connection_colors_gdk}{default};
-	my $type = "default";
-	if ($predecessor_item->{data}->isa("StreamGraph::Model::Node::Filter")
-			and $item->{data}->isa("StreamGraph::Model::Node::Filter")) {
-		if ($predecessor_item->{data}->outputType ne $item->{data}->inputType) {
-			croak "Output type " . $predecessor_item->{data}->outputType .
-					" does not match input type " . $item->{data}->inputType . ".\n";
-		}
-		$type = "data";
-	} elsif ($predecessor_item->{data}->isa("StreamGraph::Model::Node::Parameter")
-			and $item->{data}->isa("StreamGraph::Model::Node::Filter")) {
-		$type = "parameter";
-	} else {
-		croak "You cannot connect these types of items: " .
-			ref($predecessor_item->{data}) . " and " . ref($item->{data}) . ".\n";
+	if (!$self->{graph}->add_edge($predecessor_item, $item)) {
+		return 0;
 	}
-	if ($self->{graph}->is_predecessor($predecessor_item, $item)) {
-		croak "Trying to form a circle.\n";
-	}
+	my $type = $self->_connection_type($predecessor_item, $item);
 	my $connection = Gnome2::Canvas::Item->new(
 		$self->root,
 		'StreamGraph::View::Connection',
@@ -234,12 +220,25 @@ sub connect {
 		fill_color=>'darkblue',
 		type=>$type
 	);
-	$self->{graph}->add_edge($predecessor_item, $item);
 	$connection->signal_connect( event => sub { $connection->connection_event($self,pop @_); } );
 	push @{$self->{connections}{$item}}, $connection;
 	$item->signal_emit('connection_adjust');
 	$predecessor_item->signal_emit('connection_adjust');
 	$self->_update_connection_depths;
+	return 1;
+}
+
+sub _connection_type {
+	my ($self, $predecessor_item, $item) = @_;
+	if ($predecessor_item->{data}->isa("StreamGraph::Model::Node::Filter")
+			and $item->{data}->isa("StreamGraph::Model::Node::Filter")) {
+		return "data";
+	} elsif ($predecessor_item->{data}->isa("StreamGraph::Model::Node::Parameter")
+			and $item->{data}->isa("StreamGraph::Model::Node::Filter")) {
+		return "parameter";
+	} else {
+		return "default";
+	}
 }
 
 sub _update_connection_depths {
