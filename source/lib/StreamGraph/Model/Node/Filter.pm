@@ -13,7 +13,7 @@ has timesPush           => ( is=>"rw", default=>0 );
 has timesPop            => ( is=>"rw", default=>0 );
 has timesPeek           => ( is=>"rw", default=>0 );
 
-has joinType            => ( is=>"rw", default=>"rr" );
+has joinType            => ( is=>"rw", default=>"roundrobin" );
 has joinMultiplicities  => ( is=>"rw", default=>(0) );
 has joinRRForAll        => ( is=>"rw", default=>1 );
 
