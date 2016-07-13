@@ -62,4 +62,15 @@ sub isSplitFilter {
 	}
 }
 
+sub isJoinFilter {
+	my $self = shift;
+	my @filterPredecessors = $self->predecessors();
+	@filterPredecessors = @{StreamGraph::Util::List::filterNodesForType(\@filterPredecessors, "StreamGraph::Model::Node::Filter")};
+	my $nmbFilterPredecessors = @filterPredecessors;
+	if($nmbFilterPredecessors > 1){
+		return 1;
+	} else {
+		return 0;
+	}
+}
 1;
