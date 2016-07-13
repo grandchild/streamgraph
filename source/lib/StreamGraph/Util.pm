@@ -3,6 +3,9 @@ package StreamGraph::Util;
 use strict;
 use warnings;
 
+use Exporter qw(import);
+our @EXPORT_OK = qw(getNodeWithId getItemWithId);
+
 
 sub getNodeWithId {
 	my (@nodes, $id) = @_;

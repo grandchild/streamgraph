@@ -16,7 +16,7 @@ use StreamGraph::View::ItemFactory;
 use StreamGraph::Model::NodeFactory;
 use StreamGraph::CodeGen;
 use StreamGraph::CodeRunner;
-use StreamGraph::Util;
+use StreamGraph::Util qw (getItemWithId getNodeWithId);
 use StreamGraph::Util::PropertyWindow;
 use StreamGraph::Util::DebugGraph;
 use StreamGraph::Util::DebugCode;
@@ -52,11 +52,12 @@ $window->set_type_hint('dialog');
 $window->add($menu);
 $menu->add($scroller);
 
-loadDefaultFile();
+$view->{saveFile} = shift or die "Usage: $0 [filename]\n";
+loadFile($view->{saveFile});
 
-codeGenShow();
+# codeGenShow();
 
-runShow();
+# runShow();
 
 $window->show_all();
 $view->set_scroll_region(-1000,-1000,1000,1000);
@@ -311,19 +312,7 @@ sub saveAsFile {
 	saveFile();
 }
 
-sub loadDefaultFile {
-	my ($nodes, $connections) = StreamGraph::Util::File::load("helloworld.sigraph");
-	$view->clear();
-	my @items = map { addItem($_) } @{$nodes};
-	map {
-		$view->connect(
-			StreamGraph::Util::getItemWithId(\@items, $_->{from}),
-			StreamGraph::Util::getItemWithId(\@items, $_->{to})
-		)
-	} @{$connections};
-}
-
-sub loadFile {
+sub openFile {
 	my $filter = Gtk2::FileFilter->new();
 	$filter->set_name("StreamGraph");
 	$filter->add_pattern("*.sigraph");
@@ -343,14 +332,18 @@ sub loadFile {
 	}
 	$file_chooser->destroy;
 	unless (defined $filename){ return; }
+	loadFile($filename);
+}
 
+sub loadFile {
+	my ($filename) = @_;
 	my ($nodes, $connections) = StreamGraph::Util::File::load($filename);
 	$view->clear();
 	my @items = map { addItem($_) } @{$nodes};
 	map {
 		$view->connect(
-			StreamGraph::Util::getItemWithId(\@items, $_->{from}),
-			StreamGraph::Util::getItemWithId(\@items, $_->{to})
+			getItemWithId(\@items, $_->{from}),
+			getItemWithId(\@items, $_->{to})
 		)
 	} @{$connections};
 }
@@ -365,7 +358,7 @@ sub create_menu {
 	my @entries = (
 		[ "FileMenu",undef,"_Datei"],
 		[ "New", 'gtk-new', undef,  "<control>N", undef, \&newFile ],
-		[ "Open", 'gtk-open', undef,  "<control>O", undef, \&loadFile ],
+		[ "Open", 'gtk-open', undef,  "<control>O", undef, \&openFile ],
 		[ "Save", 'gtk-save', undef,  "<control>S", undef, \&saveFile ],
 		[ "SaveAs", 'gtk-save-as', undef,  "<shift><control>S", undef, \&saveAsFile ],
 		[ "Quit", 'gtk-quit', undef,  "<control>Q", undef, undef ],

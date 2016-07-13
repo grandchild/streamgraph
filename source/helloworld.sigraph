@@ -2,6 +2,58 @@
 ---
 nodes:
   - data:
+      name: IntGenerator
+      id: X1nHnQ
+      x: -142
+      y: -27
+      initCode: x = 0;
+      workCode: push(x++);
+      globalVariables: int x;
+      timesPush: 1
+      timesPop: 0
+      timesPeek: 0
+      joinType: rr
+      joinMultiplicities: 0
+      joinRRForAll: 1
+      splitType: duplicate
+      splitMultiplicities: 0
+      splitRRForAll: 1
+      inputType: void
+      inputCount: 0
+      outputType: int
+      outputCount: 1
+    type: StreamGraph::Model::Node::Filter
+  - data:
+      name: rate
+      id: 8C9EUA
+      x: -216
+      y: -138
+      outputType: int
+      value: 5
+    type: StreamGraph::Model::Node::Parameter
+  - data:
+      name: Filter
+      id: yN6ERA
+      x: 147
+      y: 9
+      initCode: ''
+      workCode: println(pop());
+      globalVariables: ''
+      timesPush: 0
+      timesPop: 1
+      timesPeek: 0
+      joinType: rr
+      joinMultiplicities: 0
+      joinRRForAll: 1
+      splitType: duplicate
+      splitMultiplicities: 0
+      splitRRForAll: 1
+      inputType: int
+      inputCount: 1
+      outputType: void
+      outputCount: 0
+    type: StreamGraph::Model::Node::Filter
+  - data:
       name: OffsetBuffer
       id: HgqVkg
       x: -2
@@ -28,36 +80,6 @@ nodes:
       outputCount: 0
     type: StreamGraph::Model::Node::Filter
   - data:
-      name: IntGenerator
-      id: X1nHnQ
-      x: -142
-      y: -27
-      initCode: x = 0;
-      workCode: push(x++);
-      globalVariables: int x;
-      timesPush: 1
-      timesPop: 0
-      timesPeek: 0
-      joinType: rr
-      joinMultiplicities: 0
-      joinRRForAll: 1
-      splitType: duplicate
-      splitMultiplicities: 0
-      splitRRForAll: 1
-      inputType: void
-      inputCount: 0
-      outputType: int
-      outputCount: 1
-    type: StreamGraph::Model::Node::Filter
-  - data:
-      name: rate
-      id: 8C9EUA
-      x: -88
-      y: -122
-      outputType: int
-      value: 5
-    type: StreamGraph::Model::Node::Parameter
-  - data:
       name: print
       id: hng2qg
       x: 154
@@ -82,17 +104,45 @@ nodes:
   - data:
       name: offset
       id: xsU6/w
-      x: 2
-      y: -153
+      x: -128
+      y: -181
       outputType: int
       value: 0
     type: StreamGraph::Model::Node::Parameter
+  - data:
+      name: some_generator
+      id: yv1uSQ
+      x: -143
+      y: 23
+      initCode: ''
+      workCode: println(pop());
+      globalVariables: ''
+      timesPush: 0
+      timesPop: 1
+      timesPeek: 0
+      joinType: rr
+      joinMultiplicities: 0
+      joinRRForAll: 1
+      splitType: duplicate
+      splitMultiplicities: 0
+      splitRRForAll: 1
+      inputType: void
+      inputCount: 1
+      outputType: int
+      outputCount: 0
+    type: StreamGraph::Model::Node::Filter
 connections:
-  - from: X1nHnQ
-    to: HgqVkg
   - from: xsU6/w
     to: HgqVkg
   - from: 8C9EUA
-    to: HgqVkg
+    to: yv1uSQ
   - from: HgqVkg
     to: hng2qg
+  - from: yv1uSQ
+    to: HgqVkg
+  - from: X1nHnQ
+    to: HgqVkg
+  - from: HgqVkg
+    to: yN6ERA
+  - from: 8C9EUA
+    to: HgqVkg
