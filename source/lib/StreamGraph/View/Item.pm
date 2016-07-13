@@ -308,6 +308,10 @@ sub is_join {
 	return $self->predecessors("StreamGraph::Model::Node::Filter") > 1;
 }
 
+sub isFilter { return shift->{data}->isa("StreamGraph::Model::Node::Filter"); }
+sub isParameter { return shift->{data}->isa("StreamGraph::Model::Node::Parameter"); }
+sub isComment { return shift->{data}->isa("StreamGraph::Model::Node::Comment"); }
+
 # resize: adjust the size of this item. This routine is needed because
 # the simple: $self->set(x=>$x1, width=>$width, height=>$height) is
 # too slow due to an excessive number of signals.

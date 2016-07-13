@@ -20,6 +20,10 @@ has y           => ( is=>"rw", default=>0 );
 has saveMembers => ( is=>"ro", default=>sub{[qw(name id x y outputType)]} );
 
 
+sub isFilter { return shift->isa("StreamGraph::Model::Node::Filter"); }
+sub isParameter { return shift->isa("StreamGraph::Model::Node::Parameter"); }
+sub isComment { return shift->isa("StreamGraph::Model::Node::Comment"); }
+
 sub yaml_dump {
 	my $self = shift;
 	Bless($self)->keys($self->saveMembers);
