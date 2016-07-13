@@ -243,7 +243,7 @@ sub is_visible {
 
 # my @predecessors = $item->predecessors();
 sub predecessors {
-	my ($self, $type) = shift(@_);
+	my ($self, $type) = @_;
 	return () if (!defined $self->{graph});
 	if (defined $type) {
 		return grep { $_->{data}->isa($type) } $self->{graph}->predecessors($self);
