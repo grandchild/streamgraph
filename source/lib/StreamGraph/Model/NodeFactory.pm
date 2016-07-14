@@ -25,7 +25,7 @@ sub createIdentity {
 	my ($self, $datatype) = @_;
 	return StreamGraph::Model::Node::Filter->new(
 		name=>"__identity__",
-		workCode=>"push(pop())",
+		workCode=>"push(pop());",
 		timesPush=>1,
 		timesPop=>1,
 		inputType=>$datatype,
