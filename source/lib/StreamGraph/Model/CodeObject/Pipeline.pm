@@ -52,11 +52,11 @@ sub generate {
 		$self->inputType($codeObjects->[0]->inputType);
 	}
 	my @codeObjects = $codeObjects;
-	if($codeObjects->[$#codeObjects]->isFilter){
-		$self->outputType($codeObjects->[$#codeObjects]->{data}->{outputType});
+	if($codeObjects->[-1]->isFilter){
+		$self->outputType($codeObjects->[-1]->{data}->{outputType});
 	} else {
-		$codeObjects->[$#codeObjects]->generate();
-		$self->outputType($codeObjects->[$#codeObjects]->outputType);
+		$codeObjects->[-1]->generate();
+		$self->outputType($codeObjects->[-1]->outputType);
 	}
 	my $pipelineHeader = $self->inputType . "->" . $self->outputType . " pipeline " . $self->name . "{\n";
 	# only generate so far because parameters need to be added  
