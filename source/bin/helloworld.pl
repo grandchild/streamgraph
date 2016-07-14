@@ -31,10 +31,7 @@ my $uimanager;
 my $menu_edit;
 my $menu_filter;
 my $scroller = Gtk2::ScrolledWindow->new();
-$scroller->signal_connect('motion-notify-event',\&_window_handler);
-$scroller->signal_connect('button-release-event',\&_window_handler);
-$scroller->signal_connect('button-press-event',\&_window_handler);
-$scroller->signal_connect('leave-notify-event',\&_window_handler);
+$scroller->signal_connect('event',\&_window_handler);
 my $view = StreamGraph::View->new(aa=>1);
 $view->set(connection_arrows=>'one-way');
 $view->set_scroll_region(-300,-200,5000,5000);
@@ -55,6 +52,11 @@ loadFile($view->{saveFile});
 
 # codeGenShow();
 # runShow();
+
+$window->signal_connect('leave-notify-event',
+	sub { if (defined $view->{toggleCon}) {
+			$view->{toggleCon}->{predecessor_item}->{hotspots}->{'toggle_right'}->end_connection;
+	}	} );
 
 $window->show_all();
 $view->set_scroll_region(-1000,-1000,1000,1000);
@@ -113,6 +115,7 @@ sub _window_handler {
     my @coords = $event->coords;
 		if ($event_type eq 'leave-notify') {
 			if (defined $view->{toggleCon}) {
+				$view->{toggleCon}->{item}->
 				$view->{toggleCon}->disconnect();
 				$view->{toggleCon}->destroy();
 				undef $view->{toggleCon};
