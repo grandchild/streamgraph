@@ -21,8 +21,12 @@ sub show_code {
 	$codeView->modify_font(Gtk2::Pango::FontDescription->from_string("Deja Vu Sans Mono 8"));
 	$codeView->modify_text('normal', Gtk2::Gdk::Color->parse('#f8f8f8'));
 	$codeView->modify_base('normal', Gtk2::Gdk::Color->parse('#333'));
+	$codeView->set_editable(0);
 	$view->{debugCodeBuffer} = $codeBuffer;
-	$dbox->pack_start($codeView,FALSE,FALSE,0);
+	my $scroller = Gtk2::ScrolledWindow->new();
+	$scroller->add($codeView);
+	$scroller->set_size_request(500,700);
+	$dbox->pack_start($scroller,FALSE,FALSE,0);
 	$dbox->show_all();
 	$dialog->signal_connect('delete-event'=>sub { undef $view->{debugCodeBuffer}; $dialog->destroy(); });
 	$dialog->show();

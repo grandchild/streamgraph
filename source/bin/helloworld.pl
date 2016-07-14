@@ -34,7 +34,6 @@ my $scroller = Gtk2::ScrolledWindow->new();
 $scroller->signal_connect('event',\&_window_handler);
 my $view = StreamGraph::View->new(aa=>1);
 $view->set(connection_arrows=>'one-way');
-$view->set_scroll_region(-300,-200,5000,5000);
 $window->set_size_request(900,500);
 my $menu = create_menu();
 $scroller->add($view);
@@ -60,23 +59,25 @@ $window->signal_connect('leave-notify-event',
 
 $window->show_all();
 $view->set_scroll_region(-1000,-1000,1000,1000);
-$scroller->signal_connect('move-focus-out'=>\&sch);
-Gtk2::Gdk::Cursor->new ('hand1');
+scroll_to_center();
+
 Gtk2->main();
 
 exit 0;
-
-sub sch {
-	my ($ScrolledWindow, $directiontype) = @_;
-
-	print $directiontype . "\n";
-}
 
 sub _closeapp {
 	my $view = shift(@_);
 	$view->destroy();
 	Gtk2->main_quit();
 	return 0;
+}
+
+sub scroll_to_center{
+	my ($sx1, $sy1, $sx2, $sy2) = $view->get_scroll_region();
+	my ($width,$height) = $window->get_size();
+	my $x = ($sx2 - $sx1 - $width)/2;
+	my $y = ($sy2 - $sy1 - $height)/2;
+	$view->scroll_to($x,$y);
 }
 
 sub _test_handler {
@@ -113,15 +114,7 @@ sub _window_handler {
     my ($win, $event) = @_;
     my $event_type = $event->type;
     my @coords = $event->coords;
-		if ($event_type eq 'leave-notify') {
-			if (defined $view->{toggleCon}) {
-				$view->{toggleCon}->{item}->
-				$view->{toggleCon}->disconnect();
-				$view->{toggleCon}->destroy();
-				undef $view->{toggleCon};
-			}
-			return;
-		}
+
 		if ($event_type eq 'button-press' && $event->button == 1) {
 			if (defined $view->{focusItem}->{x_prime}) { return; }
 			my @rcoords = $event->root_coords;
@@ -136,15 +129,12 @@ sub _window_handler {
 			$view->{y_prime} = $rcoords[1];
 			$window->show_all;
 		}
-		if ($view->{popup}) {
-			$view->{popup} = 0;
-			return;
-		}
 		if ($event_type eq 'button-release') {
 			undef $view->{x_prime};
 			undef $view->{y_prime};
 		}
 		if ($event_type eq 'button-release' && $event->button == 3) {
+			if ($view->{popup}) {	$view->{popup} = 0;	return;	}
 			my @coords = $event->coords;
 			$view->{menuCoordX} =  $coords[0];
 			$view->{menuCoordY} =  $coords[1];
