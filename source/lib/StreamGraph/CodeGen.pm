@@ -185,6 +185,10 @@ sub generateFilter {
 		print "filterNode->data is not a Filter\n";
 		return "";
 	}
+	if($filterNode->{data}->name eq "__void_sink__" || $filterNode->{data}->name eq "__void_source__"){
+		$filterNode->{'_no_add'} = 1;
+		return "";
+	}
 	updateNodeName($filterNode);
 	my $data = $filterNode->{data};
 	my $inputType = $data->{inputType};
@@ -203,7 +207,7 @@ sub generateFilter {
 	}
 	$filterText .= generateInit($data);
 	$filterText .= generateWork($data);
-	$filterText .= "}\n";
+	$filterText .= "}\n\n";
 
 	return $filterText;
 }
@@ -226,16 +230,16 @@ sub getTopologicalConstructName {
 	if(!$mainFlag || $mainFlag != 1){
 		$mainFlag = 0;
 	}
-	my $splitJoinFlag = shift;
-	if(!$splitJoinFlag || $splitJoinFlag != 1){
-		$splitJoinFlag = 0;
+	my $splitJoinText = shift;
+	if(!$splitJoinText){
+		$splitJoinText = 0;
 	}
 	my $text = "";
 	if($mainFlag == 1){
 		$text = $fileName;
 	} else {
-		if($splitJoinFlag){
-			$text = "SplitJoin" . $boxNumber;
+		if($splitJoinText){
+			$text = "SplitJoin" . $boxNumber . $splitJoinText;
 		} else {
 			$text = "Pipeline" . $boxNumber;
 		}

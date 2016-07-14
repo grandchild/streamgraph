@@ -71,7 +71,7 @@ sub generate {
 			$pipelineMembers .= "\tadd " . $codeObject->name . ";\n";
 		} else {
 			# element is Filter
-			if($codeObject->isFilter){
+			if($codeObject->isFilter && !($codeObject->{'_no_add'})){
 				# get Parameters of Filter
 				my @predecessors = StreamGraph::View::Item::predecessors($codeObject);
 				my @filterParameters = @{StreamGraph::Util::List::filterNodesForType(\@predecessors, "StreamGraph::Model::Node::Parameter")};
@@ -84,7 +84,7 @@ sub generate {
 			}
 		}
 	}
-	$pipelineMembers .= "}\n";
+	$pipelineMembers .= "}\n\n";
 	# delete duplicates in pipelineParameters
 	@pipelineParameters = StreamGraph::Util::List::unique(@pipelineParameters);
 	my $pipelineParametersLength = @pipelineParameters;
@@ -100,7 +100,8 @@ sub generate {
 
 sub buildCode {
 	my $self = shift;
-	my ($pipelinesCode, $splitJoinesCode) = shift;
+	my $pipelinesCode = shift;
+	my $splitJoinesCode = shift;
 	$pipelinesCode .= $self->code;
 	foreach my $codeObject (@{$self->codeObjects}) {
 		if($codeObject->isa("StreamGraph::Model::CodeObject::SplitJoin")){

@@ -12,7 +12,7 @@ nodes:
       timesPush: 1
       timesPop: 0
       timesPeek: 0
-      joinType: rr
+      joinType: roundrobin
       joinMultiplicities: 0
       joinRRForAll: 1
       splitType: duplicate
@@ -42,7 +42,7 @@ nodes:
       timesPush: 0
       timesPop: 1
       timesPeek: 0
-      joinType: rr
+      joinType: roundrobin
       joinMultiplicities: 0
       joinRRForAll: 1
       splitType: duplicate
@@ -68,7 +68,7 @@ nodes:
       timesPush: rate
       timesPop: rate
       timesPeek: 0
-      joinType: rr
+      joinType: roundrobin
       joinMultiplicities: 0
       joinRRForAll: 1
       splitType: duplicate
@@ -90,7 +90,7 @@ nodes:
       timesPush: 0
       timesPop: 1
       timesPeek: 0
-      joinType: rr
+      joinType: roundrobin
       joinMultiplicities: 0
       joinRRForAll: 1
       splitType: duplicate
@@ -120,7 +120,7 @@ nodes:
       timesPush: 0
       timesPop: 1
       timesPeek: 0
-      joinType: rr
+      joinType: roundrobin
       joinMultiplicities: 0
       joinRRForAll: 1
       splitType: duplicate

@@ -9,6 +9,7 @@ extends "StreamGraph::Model::CodeObject";
 use StreamGraph::Model::CodeObject::Pipeline;
 use StreamGraph::Model::Node;
 use StreamGraph::CodeGen;
+use Data::Dump qw(dump);
 
 
 has split  => ( is=>"rw" );
@@ -27,13 +28,14 @@ sub BUILDARGS {
 	}
 	$args{next} = $codeObjects[0]->next;
 	$args{join} = $args{next};
+	$args{codeObjects} = \@codeObjects;
 	return \%args;
 }
 
 
 sub generate {
 	my ($self) = @_;
-	$self->name(StreamGraph::CodeGen::getTopologicalConstructName(0, 1));
+	$self->name(StreamGraph::CodeGen::getTopologicalConstructName(0, $self->split->{data}->name));
 	$self->inputType($self->split()->{data}->outputType);
 	$self->outputType($self->join()->{data}->inputType);
 	my $splitJoinCode = $self->inputType . "->" . $self->outputType . " splitjoin " . $self->name . "{\n";
@@ -44,13 +46,15 @@ sub generate {
 		}
 		$splitJoinCode .= "\tadd " . $codeObject->name . ";\n";
 	}
-	$splitJoinCode .= "\tjoin " . $self->join()->{data}->joinType . ";\n}";
+	$splitJoinCode .= "\tjoin " . $self->join()->{data}->joinType . ";\n}\n\n";
 	$self->code($splitJoinCode);
+	$self->{'_generated'} = 1;
 }
 
 sub buildCode {
 	my $self = shift;
-	my ($pipelinesCode, $splitJoinesCode) = shift;
+	my $pipelinesCode = shift;
+	my $splitJoinesCode = shift;
 	$splitJoinesCode .= $self->code;
 	foreach my $codeObject (@{$self->codeObjects}) {
 		# in a splitJoin the codeObjects can only be Pipelines (for the moment)
