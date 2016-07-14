@@ -148,9 +148,10 @@ sub graphViz {
 }
 
 sub codeGenShow {
+	my $graphCompat = StreamGraph::GraphCompat->new($view->{graph});
 	StreamGraph::Util::DebugCode::show_code(
 		$window, $view,
-		StreamGraph::CodeGen::generateCode($view->{graph}, "", $config)
+		StreamGraph::CodeGen::generateCode($graphCompat, "", $config)
 	);
 }
 

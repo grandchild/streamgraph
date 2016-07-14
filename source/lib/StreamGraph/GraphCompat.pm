@@ -31,9 +31,10 @@ sub sink { return shift->{sink}; }
 sub factory { return shift->{factory}; }
 
 sub _createItem {
+	my ($graph, $data) = @_;
 	# Fake-bless a simple hash into View::Item class, because we don't want the
 	# whole view in here, but need View::Graph vertices to be View::Items.
-	return bless({data=>shift}, "StreamGraph::View::Item");
+	return bless({data=>$data, graph=>$graph}, "StreamGraph::View::Item");
 }
 
 sub _addIdentities {
@@ -44,9 +45,11 @@ sub _addIdentities {
 		if ($pred->isFilter && $pred->is_split
 				&& $succ->isFilter && $succ->is_join) {
 			my $identity = _createItem(
+				$self,
 				$self->factory->createIdentity($pred->{data}->outputType)
 			);
 			# print "Should add identity between " . $pred->{data}->name . " and " . $succ->{data}->name . "\n";
+			$pred->{graph} = $self;
 			$self->add_vertex($identity);
 			$self->add_edge($pred, $identity);
 			$self->remove_edge($pred, $succ);
@@ -82,11 +85,12 @@ sub _addVoidEnd {
 			$_->isFilter && $getIOType->($_->{data}) eq "void"
 		} @endNodes;
 		if (@trueEndNodes > 1) {
-			my $voidEnd = _createItem(
+			my $voidEnd = _createItem($self,
 				$self->factory->createVoidEnd($type, scalar @trueEndNodes)
 			);
 			foreach my $end (@trueEndNodes) {
 				if ($type eq "sink") {
+					$end->{graph} = $self;
 					$self->add_edge($end, $voidEnd);
 				} elsif ($type eq "source") {
 					$self->add_edge($voidEnd, $end);

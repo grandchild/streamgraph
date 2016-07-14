@@ -20,13 +20,13 @@ sub BUILDARGS {
 	
 	my $node = delete $args{first};
 	$args{split} = $node;
-	my @codeObjects = [];
+	my @codeObjects = ();
 	my @successors = $node->successors;
 	foreach my $s (@successors) {
 		push(@codeObjects, StreamGraph::Model::CodeObject::Pipeline->new(first=>$s));
 	}
-	# potentially check discrepancies here!
-	$args{join} = $codeObjects[0]->next;
+	$args{next} = $codeObjects[0]->next;
+	$args{join} = $args{next};
 	return \%args;
 }
 
@@ -52,7 +52,7 @@ sub buildCode {
 	my $self = shift;
 	my ($pipelinesCode, $splitJoinesCode) = shift;
 	$splitJoinesCode .= $self->code;
-	foreach my $codeObject ($self->codeObjects) {
+	foreach my $codeObject (@{$self->codeObjects}) {
 		# in a splitJoin the codeObjects can only be Pipelines (for the moment)
 		if($codeObject->isa("StreamGraph::Model::CodeObject::Pipeline")){
 			($pipelinesCode, $splitJoinesCode) = $codeObject->buildCode($pipelinesCode, $splitJoinesCode);
