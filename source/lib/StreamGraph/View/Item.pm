@@ -161,8 +161,10 @@ sub update {
 
 	$self->{border}->update();
 	$self->set(width=>$self->{border}->get('width'), height=>$self->{border}->get('height'));
-	$self->{hotspots}{'toggle_left'}->set(enabled=>$self->{data}->inputType ne "void");
-	$self->{hotspots}{'toggle_right'}->set(enabled=>$self->{data}->outputType ne "void");
+	if ($self->isFilter) {
+		$self->{hotspots}{'toggle_left'}->set(enabled=>$self->{data}->inputType ne "void");
+		$self->{hotspots}{'toggle_right'}->set(enabled=>$self->{data}->outputType ne "void");
+	}
 }
 
 # $item->add_hotspot
