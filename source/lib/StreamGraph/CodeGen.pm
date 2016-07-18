@@ -25,6 +25,7 @@ sub generateCode {
 	if(!$configFile){
 		return;
 	}
+	$boxNumber = 0;
 	my $programText = generateMultiLineCommentary("Generated code from project $fileName");
 	# build Node list
 	my @nodeList = $graph->topological_sort();
