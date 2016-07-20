@@ -46,6 +46,8 @@ sub INIT_INSTANCE {
 	$self->{column}      = undef;
 	$self->{border}      = undef;
 	$self->{hotspots}    = {};
+	$self->{con_buttom}  = ();
+	$self->{con_top}		 = ();
 	$self->{visible}     = TRUE;
 	$self->{date_time}   = undef;
 	$self->{data}        = undef;
@@ -173,6 +175,35 @@ sub add_hotspot {
 	$self->{hotspots}{$hotspot_type} = $hotspot;
 }
 
+# $item->add_connection($self, $side, $connection)
+sub add_connection {
+	my ($self, $side, $connection) = @_;
+	if ($side eq 'top') {
+		push (@{$self->{con_top}},$connection);
+	} elsif ($side eq 'bottom'){
+		push (@{$self->{con_buttom}},$connection);
+	} else {
+		croak "side must be bottom or top";
+	}
+	$self->signal_emit('connection_adjust');
+}
+
+# $item->add_connection($self, $side, $connection)
+sub remove_connection {
+	my ($self, $side, $connection) = @_;
+	_remove_connection($self->{con_top},$connection) if ($side eq 'top');
+	_remove_connection($self->{con_buttom},$connection) if ($side eq 'bottom');
+	$self->signal_emit('connection_adjust');
+}
+
+sub _remove_connection {
+	my ($arr, $connection) = @_;
+	my $n = 0;
+	for my $con (@{$arr}){
+		if ($con eq $connection) { splice @{$arr}, $n, 1; return;	}
+		$n++;
+	}
+}
 
 # $item->set_data($data);
 sub set_data {
@@ -201,10 +232,19 @@ sub get_column_no {
 }
 
 
-# $item->get_connection_point('left');
+# $item->get_connection_point('top');
 sub get_connection_point {
-	my ($self, $side) = @_;
-	return $self->{border}->get_connection_point($side);
+	my ($self, $side, $connection) = @_;
+	unless (defined $connection) {
+			return $self->{border}->get_connection_point($side,0,1);
+	}
+	my $arr = ($side eq 'top') ? $self->{con_top} : $self->{con_buttom};
+	my $n = 1;
+	for my $con (@{$arr}) {
+		if ($con eq $connection) { return $self->{border}->get_connection_point($side,$n,$#{$arr}+1); }
+		$n++;
+	}
+	return $self->{border}->get_connection_point($side,0,1);
 }
 
 
@@ -258,7 +298,7 @@ sub predecessors {
 
 
 # my @successors = $item->successors();
-# my @successors = $item->successors('left');
+# my @successors = $item->successors('top');
 sub successors {
 	my ($self, $side) = @_;
 	return () if (!defined $self->{graph});
@@ -272,11 +312,11 @@ sub successors {
 	return () if (!defined $column);
 
 	my $column_no = $column->get('column_no');
-	if ($side eq 'right') {
+	if ($side eq 'buttom') {
 		return grep {$_->get_column_no() >= $column_no } @items;
 	}
 
-	# $side eq 'left'
+	# $side eq 'top'
 	return grep {$_->get_column_no() <= $column_no } @items;
 }
 
@@ -294,11 +334,11 @@ sub all_successors {
 	return () if (!defined $column);
 
 	my $column_no = $column->get('column_no');
-	if ($side eq 'right') {
+	if ($side eq 'buttom') {
 		return grep {$_->get_column_no() >= $column_no } @items;
 	}
 
-	# $side eq 'left'
+	# $side eq 'top'
 	return grep {$_->get_column_no() <= $column_no } @items;
 }
 
@@ -340,13 +380,13 @@ sub _resize {
 	my $min_height = $self->{border}->get_min_height();
 	my $min_width = $self->{border}->get_min_width();
 	my ($x, $width, $height) = $self->get(qw(x width height));
-	if ($side eq 'right') {
+	if ($side eq 'buttom') {
 		my $new_width = List::Util::max($min_width, ($width + $delta_x));
 		my $new_height = List::Util::max($min_height, ($height + $delta_y));
 		return ($x, $new_width, $new_height);
 	}
 
-	# $side eq 'left'
+	# $side eq 'top'
 	my $new_width = List::Util::max($min_width, ($width - $delta_x));
 	my $new_height = List::Util::max($min_height, ($height + $delta_y));
 	my $new_x = ($new_width > $min_width) ? $x + $delta_x : $x;
@@ -577,7 +617,7 @@ Return an array of successor items of this item.
 =item C<successors ($side)>
 
 Return an array of items that are on one side of this item. The side
-may be 'left' or 'right'.
+may be 'top' or 'buttom'.
 
 =item C<toggle ()>
 

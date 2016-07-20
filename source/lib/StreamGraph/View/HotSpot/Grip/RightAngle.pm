@@ -81,7 +81,7 @@ sub _get_path_def
 
     my @p = ();
 
-    if ($self->{side} eq 'left')
+    if ($self->{side} eq 'top')
     {
 	my $x0 = $x + $offset;
 
@@ -89,7 +89,7 @@ sub _get_path_def
 
 	@p = ($x0,$y0, $x0,$y0-$h, $x0+$h,$y0);
     }
-    else # $self->{side} eq 'right'
+    else # $self->{side} eq 'buttom'
     {
 	my $x0 = $x + $width - $offset;
 
@@ -137,14 +137,14 @@ use StreamGraph::View::HotSpot::Grip::Lentil;
 =head1 HEIRARCHY
 
 
-  
+
 =head1 DESCRIPTION
 
 A LentilGrip hotspot may be used to resize a
 StreamGraph::View::Item. Normally, this grip will be used with an
 StreamGraph::View::Border:RoundedRect.
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 Properties
 
@@ -182,7 +182,7 @@ when the mouse is placed close to it.
 
 =over
 
-=item C<new (item=E<gt>$item, side=E<gt>'left')>
+=item C<new (item=E<gt>$item, side=E<gt>'top')>
 
 Instantiates a hotspot. The following properties may be passed: item,
 side, visible, enabled, fill_color_gdk, outline_color_gdk,

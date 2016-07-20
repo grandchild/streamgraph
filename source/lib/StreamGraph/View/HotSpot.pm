@@ -19,8 +19,8 @@ sub new {
 	my %attributes = @attributes;
 	args_required( \%attributes, qw(item side) );
 	args_store( $self, \%attributes );
-	if ( !grep { $_ eq $self->{side} } qw(right left) ) {
-		croak "Unexpected side: $self->{side}. Valid are: 'right' and 'left'\n";
+	if ( !grep { $_ eq $self->{side} } qw(buttom top) ) {
+		croak "Unexpected side: $self->{side}. Valid are: 'buttom' and 'top'\n";
 	}
 	if ( !$self->{item}->isa('StreamGraph::View::Item') ) {
 		croak "Item argument is not a StreamGraph::View::Item.\n";
@@ -100,7 +100,7 @@ sub set {
 			}
 			next;
 		}
-		
+
 		if ( $key eq 'fill_color_gdk' ) {
 			my $fill_color_gdk = $attributes{$key};
 			if ( !$fill_color_gdk->isa('Gtk2::Gdk::Color') ) {
@@ -110,7 +110,7 @@ sub set {
 			$self->{image}->set( fill_color_gdk => $fill_color_gdk );
 			next;
 		}
-		
+
 		if ( $key eq 'outline_color_gdk' ) {
 			my $outline_color_gdk = $attributes{$key};
 			if ( !$outline_color_gdk->isa('Gtk2::Gdk::Color') ) {
@@ -120,7 +120,7 @@ sub set {
 			$self->{image}->set( outline_color_gdk => $outline_color_gdk );
 			next;
 		}
-		
+
 		if ( $key eq 'hotspot_color_gdk' ) {
 			my $hotspot_color_gdk = $attributes{$key};
 			if ( !$hotspot_color_gdk->isa('Gtk2::Gdk::Color') ) {
@@ -243,7 +243,7 @@ hotspots allow the user to expand/collapse the items in the mind map,
 or to resize an item.
 
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 Properties
 
@@ -360,10 +360,10 @@ an example of how to get a Gtk2::Gdk::Color:
 
 	 my $red_color = Gtk2::Gdk::Color->parse("red");
 
-=item C<Unexpected side: $self->{side}. Valid are: 'right' and 'left'>
+=item C<Unexpected side: $self->{side}. Valid are: 'buttom' and 'top'>
 
-You have to specify whether this hotspot is on the left or right side 
-of the item it is attached to. Choose either 'left' or 'right'.
+You have to specify whether this hotspot is on the left or right side
+of the item it is attached to. Choose either 'top' or 'buttom'.
 
 =item C<Item argument is not a StreamGraph::View::Item.>
 

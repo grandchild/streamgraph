@@ -38,8 +38,8 @@ sub create_toggle {
         croak "Invalid item. Item must be a 'StreamGraph::View::Item'.\n";
     }
     my $side = $attributes{side};
-    if ( !grep { $_ eq $side } qw(right left) ) {
-        croak "Invalid side. Must be 'right' or 'left'.\n";
+    if ( !grep { $_ eq $side } qw(buttom top) ) {
+        croak "Invalid side. Must be 'buttom' or 'top'.\n";
     }
     my $border = $attributes{border};
     my $enabled = defined $attributes{enabled} ? $attributes{enabled} : TRUE;
@@ -112,10 +112,10 @@ version 0.0.1
 =head1 SYNOPSIS
 
 use StreamGraph::View::HotSpot::ToggleFactory;
-  
+
 =head1 DESCRIPTION
 
-This factory makes toggles that are used to expand or collapse the tree 
+This factory makes toggles that are used to expand or collapse the tree
 of items shown in the mind map.
 
 The following types of toggles are currently supported:
@@ -125,7 +125,7 @@ toggle.
 
 This factory is used by the StreamGraph::View::ItemFactory.
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 Properties
 
@@ -150,7 +150,7 @@ The color of the toggle.
 =item 'outline_color_gdk' (Gtk2::Gdk::Color)
 
 The color of the toggle outline.
- 
+
 =item 'hotspot_color_gdk' (Gtk2::Gdk::Color)
 
 The color of the toggle when it is engaged.
@@ -182,7 +182,7 @@ to the caller. The side may be C<left> or C<right>.
 
 You must pass in a StreamGraph::View::Item argument.
 
-=item C<Invalid side. Must be 'right' or 'left'>
+=item C<Invalid side. Must be 'buttom' or 'top'>
 
 You must set the side to be either: C<left> or C<right>.
 

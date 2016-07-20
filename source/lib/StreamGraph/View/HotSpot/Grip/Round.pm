@@ -55,7 +55,7 @@ sub hotspot_adjust_event_handler
 
     my ($x, $y, $width, $height) = $self->{item}->get(qw(x y width height));
 
-    if ($self->{side} eq 'left')
+    if ($self->{side} eq 'top')
     {
 	_set_point($self, $x + ($r / 2) + $offset, $y + $height - ($r / 2) - $offset);
     }
@@ -107,13 +107,13 @@ version 0.0.1
 
 use StreamGraph::View::HotSpot::Grip::Round;
 
-  
+
 =head1 DESCRIPTION
 
 The StreamGraph::View::HotSpot::Grip::Round is a round grip that
 may be used to resize a StreamGraph::View::Item.
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 Properties
 

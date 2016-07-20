@@ -53,7 +53,7 @@ sub hotspot_adjust_event_handler
 
     my ($top, $left, $bottom, $right) = $self->{item}->get_insets();
 
-    if ($self->{side} eq 'left')
+    if ($self->{side} eq 'top')
     {
 	_set_point($self, $x + $left, $y + $height - $bottom);
     }
@@ -109,7 +109,7 @@ version 0.0.1
 
 use StreamGraph::View::HotSpot::Grip::EllipseRound;
 
-  
+
 =head1 DESCRIPTION
 
 The StreamGraph::View::HotSpot::Grip::EllipseRound is a round grip that
@@ -117,7 +117,7 @@ may be used to resize a StreamGraph::View::Border::Ellipse.
 
 This special grip positions itself differently from the other grips.
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 Properties
 

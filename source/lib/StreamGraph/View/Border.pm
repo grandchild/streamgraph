@@ -159,72 +159,48 @@ sub reparent
 
 sub set
 {
-    my $self = shift(@_);
+  my $self = shift(@_);
+  my %attributes = @_;
+  foreach my $param_name (keys %attributes) {
+    my $value = $attributes{$param_name};
 
-    my %attributes = @_;
-
-    foreach my $param_name (keys %attributes)
-    {
-	my $value = $attributes{$param_name};
-
-	if ($param_name eq 'x')
-	{
+  	if ($param_name eq 'x')	{
 	    $self->{x} = $value;
-
 	    $self->{content}->set(x=>$value + ($self->border_insets())[1]);
-
 	    $self->border_set_x($value);
-
 	    next;
-	}
+  	}
 
-	if ($param_name eq 'y')
-	{
-	    $self->{y} = $value;
-
-	    $self->{content}->set(y=>$value + ($self->border_insets())[0]);
-
-	    $self->border_set_y($value);
-
-	    next;
-	}
-
-	if ($param_name eq 'width')
-	{
-	    my $min_width = $self->{content}->get_min_width();
-
-	    my ($top, $left, $bottom, $right) = $self->border_insets();
-
-	    my $width = List::Util::max($value, $min_width + ($left + $right));
-
-	    $self->{width} = $width;
-
-	    $self->{content}->set(width=>($width - ($left + $right)));
-
-	    $self->border_set_width($width);
-
-	    next;
-	}
-
-	if ($param_name eq 'height')
-	{
-	    my $min_height = $self->{content}->get_min_height();
-
-	    my ($top, $left, $bottom, $right) = $self->border_insets();
-
-	    my $height = List::Util::max($value, $min_height + ($top + $bottom));
-
-	    $self->{height} = $height;
-
-	    $self->{content}->set(height=>($height - ($top + $bottom)));
-
-	    $self->border_set_height($height);
-
-	    next;
-	}
-
-	$self->border_set_param($param_name=>$value);
+    if ($param_name eq 'y') {
+      $self->{y} = $value;
+      $self->{content}->set(y=>$value + ($self->border_insets())[0]);
+      $self->border_set_y($value);
+      next;
     }
+
+  	if ($param_name eq 'width') {
+	    my $min_width = $self->{content}->get_min_width();
+	    my ($top, $left, $bottom, $right) = $self->border_insets();
+	    my $width = List::Util::max($value, $min_width + ($left + $right));
+	    $self->{width} = $width;
+	    $self->{content}->set(width=>($width - ($left + $right)));
+	    $self->border_set_width($width);
+	    next;
+  	}
+
+  	if ($param_name eq 'height')
+  	{
+	    my $min_height = $self->{content}->get_min_height();
+	    my ($top, $left, $bottom, $right) = $self->border_insets();
+	    my $height = List::Util::max($value, $min_height + ($top + $bottom));
+	    $self->{height} = $height;
+	    $self->{content}->set(height=>($height - ($top + $bottom)));
+	    $self->border_set_height($height);
+	    next;
+  	}
+
+    $self->border_set_param($param_name=>$value);
+  }
 }
 
 
@@ -232,13 +208,10 @@ sub set
 
 sub get_connection_point
 {
-    my ($self, $side) = @_;
-
-    my $y = $self->{y} + ($self->{height} / 2);
-
-    my $x = ($side eq 'left') ? $self->{x} : $self->{x} + $self->{width};
-
-    return ($x, $y);
+  my ($self, $side, $num, $num_total) = @_;
+  my $x = $self->{x} + 10 + $num * ( ($self->{width}-20) / $num_total);
+  my $y = ($side eq 'top') ? ($self->{y}) : ($self->{y} + $self->{height});
+  return ($x, $y);
 }
 
 
@@ -291,14 +264,14 @@ This document describes StreamGraph::View::Border version 0.0.1
 
 use base 'StreamGraph::View::Border';
 
-  
+
 =head1 DESCRIPTION
 
 This module is internal to StreamGraph::View. It is the base class
 for objects that draw borders and offers several classes that are to
 be overidden.
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 Properties
 
@@ -306,7 +279,7 @@ be overidden.
 
 =item 'content' (StreamGraph::View::Content)
 
-The content to be placed in this border. 
+The content to be placed in this border.
 
 =item 'group' (Gnome2::Canvas::Group)
 

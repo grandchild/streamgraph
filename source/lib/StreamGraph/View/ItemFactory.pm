@@ -103,7 +103,7 @@ sub create_item {
 		my $hotspot_in = $self->{toggle_factory}->create_toggle(
 						item=>$item,
 						border=>$border,
-						side=>'left',
+						side=>'top',
 						fill_color_gdk=>$fill_color_gdk,
 						outline_color_gdk=>$outline_color_gdk,
 						hotspot_color_gdk=>$hotspot_color_gdk,
@@ -117,7 +117,7 @@ sub create_item {
 		my $hotspot_out = $self->{toggle_factory}->create_toggle(
 						item=>$item,
 						border=>$border,
-						side=>'right',
+						side=>'buttom',
 						fill_color_gdk=>$fill_color_gdk,
 						outline_color_gdk=>$outline_color_gdk,
 						hotspot_color_gdk=>$hotspot_color_gdk,

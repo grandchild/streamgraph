@@ -24,7 +24,7 @@ sub hotspot_motion_notify {
 		my @coords = $event->coords;
 		my $found = $item->{view}->get_item_at($coords[0], $coords[1]);
 		if (defined $found->{connect_item} && $item->{view}->{graph}->is_connectable($item,$found->{connect_item})) {
-			@coords = $found->{connect_item}->get_connection_point("left");
+			@coords = $found->{connect_item}->get_connection_point("top");
 		} else {
 			$coords[0] -= 5;
 			$coords[1] -= 5;

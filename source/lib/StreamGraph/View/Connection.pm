@@ -122,7 +122,7 @@ sub update {
 }
 
 sub _direction {
-    return ('right', 'right');
+    return ('buttom', 'buttom');
 }
 
 sub _item_connection {
@@ -131,11 +131,11 @@ sub _item_connection {
 		_direction($self->get('predecessor_item'), $self->get('item'))
 	)[1];
 
-	my $side = ( $direction eq 'right' ) ? 'left' : 'right';
-	my ( $x2, $y2 ) = $self->get('item')->get_connection_point($side);
+	my $side = ( $direction eq 'buttom' ) ? 'top' : 'buttom';
+	my ( $x2, $y2 ) = $self->get('item')->get_connection_point($side,$self);
 	my @successors = $self->get('item')->successors($side);
 	my $offset
-		= ( $side eq 'left' )
+		= ( $side eq 'top' )
 		? -3
 		: 3;    # FIXME: UGH should be radius of toggle.
 	$self->{x2} = ( scalar @successors > 0 ) ? $x2 + $offset : $x2;
@@ -148,10 +148,10 @@ sub _predecessor_connection {
 	my $direction = (
 		_direction($self->get('predecessor_item'), $self->get('item'))
 	)[0];
-	my ($x1, $y1) = $self->get('predecessor_item')->get_connection_point($direction);
+	my ($x1, $y1) = $self->get('predecessor_item')->get_connection_point($direction,$self);
 	my @successors = $self->get('predecessor_item')->successors($direction);
 	my $offset
-		= ( $direction eq 'left' )
+		= ( $direction eq 'top' )
 		? -3
 		: 3;    # FIXME: UGH should be radius of toggle.
 	$self->{x1} = ( scalar @successors > 0 ) ? $x1 + $offset : $x1;
@@ -167,18 +167,18 @@ sub _bpath {
 	my $y2 = $self->{y2};
 	my ( $predecessor_direction, $item_direction )
 		= _direction( $self->get('predecessor_item'), $self->get('item') );
-	my $c = List::Util::max( 25, abs( ( ( $x2 - $x1 ) / 2 ) ) );
-	my $a = ( $predecessor_direction eq 'right' ) ? $x1 + $c : $x1 - $c;
-	my $b = ( $item_direction eq 'right' ) ? $x2 - $c : $x2 + $c;
-	my @p = ( $x1, $y1, $a, $y1, $b, $y2, $x2, $y2 );
+	my $c = List::Util::max( 25, abs( ( ( $y2 - $y1 ) / 2 ) ) );
+	my $a = ( $predecessor_direction eq 'buttom' ) ? $y1 + $c : $y1 - $c;
+	my $b = ( $item_direction eq 'buttom' ) ? $y2 - $c : $y2 + $c;
+	my @p = ( $x1, $y1, $x1, $a, $x2, $b, $x2, $y2 );
 	my $pathdef = Gnome2::Canvas::PathDef->new();
 	$pathdef->moveto( $p[0], $p[1] );
 	$pathdef->curveto( $p[2], $p[3], $p[4], $p[5], $p[6], $p[7] );
 	return $pathdef if ($self->get('arrows') eq 'none' );
 	my $h = 4 * $self->get('width-pixels');    # Height of arrow head.
 	my $v = $h / 2;
-	if ($item_direction eq 'right') {
-		@p = ( $x2 - $h, $y2 + $v, $x2 - $h, $y2 - $v, $x2, $y2 );
+	if ($item_direction eq 'buttom') {
+		@p = ( $x2 - $v, $y2 - $h, $x2 + $v, $y2 - $h, $x2, $y2 );
 	} else {
 		@p = ( $x2 + $h, $y2 + $v, $x2 + $h, $y2 - $v, $x2, $y2 );
 	}
@@ -191,7 +191,7 @@ sub _bpath {
 	my $o = 3;    # offset.
 	$h = $h + $o;
 	$pathdef->moveto( $x1, $y1 );
-	if ($item_direction eq 'left') {
+	if ($item_direction eq 'top') {
 		@p = ( $x1 - $h, $y1 + $v, $x1 - $h, $y1 - $v, $x1, $y1 );
 	} else {
 		@p = ( $x1 + $h, $y1 + $v, $x1 + $h, $y1 - $v, $x1, $y1 );
