@@ -284,6 +284,33 @@ sub is_visible {
 	return $self->get('visible');
 }
 
+# returns list of parameters as ...::CodeObject::Parameter unless parameterTypeFlag is set to 0
+sub get_parameters {
+	my $self = shift;
+	if(!$self->{data}->isa("StreamGraph::Model::Node::Filter")){
+		return ();
+	}
+	my $parameterTypeFlag = shift;
+	if(!defined($parameterTypeFlag) || $parameterTypeFlag != 0){
+		$parameterTypeFlag = 1;
+	}
+	my @ps = $self->predecessors("StreamGraph::Model::Node::Parameter");
+	if($parameterTypeFlag == 1){
+		my @parameters = ();
+		foreach my $p (@ps) {
+			if(!$p->{data}->{'_generated'}){
+				my $newParameter = StreamGraph::Model::CodeObject::Parameter->new(node=>$p);
+				$p->{data}->{'_codeObject'} = $newParameter;
+				push(@parameters, $newParameter);
+			} else {
+				push(@parameters, $p->{data}->{'_codeObject'});
+			}
+		}
+		return \@parameters;
+	} else {
+		return \@ps;
+	} 
+}
 
 # my @predecessors = $item->predecessors();
 sub predecessors {

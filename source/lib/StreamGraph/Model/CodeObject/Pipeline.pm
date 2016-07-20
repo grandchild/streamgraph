@@ -11,6 +11,12 @@ use StreamGraph::Model::Node;
 use StreamGraph::CodeGen;
 use Data::Dump qw(dump);
 
+has codeObjects	=> ( is=>"rw", default=>sub{()} );
+has next		=> ( is=>"rw" );
+has code 		=> ( is=>"rw" );
+has parameters	=> ( is=>"rw", default=>sub{()} );
+has inputType	=> ( is=>"rw" );
+
 
 sub BUILDARGS {
 	my ($class, %args) = @_;
@@ -18,20 +24,26 @@ sub BUILDARGS {
 	my $node = delete $args{first};
 	my @codeObjects = ($node);
 	my @successors = $node->successors;
+	my @parameters = @{$node->get_parameters()};
 	while ($successors[0] && !($successors[0]->is_join())) {
 		if($node->is_split()) {
 			my $splitjoin = StreamGraph::Model::CodeObject::SplitJoin->new(first=>$node);
 			push(@codeObjects, $splitjoin);
 			push(@codeObjects, $splitjoin->next);
+			push(@parameters, @{$splitjoin->parameters});
 			$node = $splitjoin->next;
 		} else {
 			push(@codeObjects, $successors[0]);
+			my @p = @{$successors[0]->get_parameters()};
+			push(@parameters, @p);
 			$node = $successors[0];
 		}
 		@successors = $node->successors;
 	}
 	$args{next} = $successors[0];
 	$args{codeObjects} = \@codeObjects;
+	@parameters = StreamGraph::Util::List::unique(@parameters);
+	$args{parameters} = \@parameters;
 	return \%args;
 }
 
@@ -58,7 +70,7 @@ sub generate {
 		$codeObjects->[-1]->generate();
 		$self->outputType($codeObjects->[-1]->outputType);
 	}
-	my $pipelineHeader = $self->inputType . "->" . $self->outputType . " pipeline " . $self->name . "{\n";
+	my $pipelineHeader = $self->inputType . "->" . $self->outputType . " pipeline " . $self->name;
 	# only generate so far because parameters need to be added  
 	my $pipelineMembers = "";
 	my @pipelineParameters = ();
@@ -68,30 +80,37 @@ sub generate {
 			if(!($codeObject->{'_generated'})){
 				$codeObject->generate();
 			}
-			$pipelineMembers .= "\tadd " . $codeObject->name . ";\n";
+			$pipelineMembers .= "\tadd " . $codeObject->name;
+			my @params = @{$codeObject->parameters};
+			if(@params){
+				$pipelineMembers .= "(" . join(", ", map($_->name, @params)) . ")";
+			}
+			$pipelineMembers .= ";\n";
 		} else {
 			# element is Filter
 			if($codeObject->isFilter && !($codeObject->{'_no_add'})){
 				# get Parameters of Filter
-				my @predecessors = StreamGraph::View::Item::predecessors($codeObject);
-				my @filterParameters = @{StreamGraph::Util::List::filterNodesForType(\@predecessors, "StreamGraph::Model::Node::Parameter")};
-				$pipelineMembers .= "\tadd " . $codeObject->{data}->{'_gen_name'} . StreamGraph::CodeGen::generateParameters(\@filterParameters, 0, 1, 0, 0) . ";\n";
-				my @generatedParameters = @{StreamGraph::CodeGen::generateParameters(\@filterParameters, 1, 0, 1, 1)};
-				if(@generatedParameters != 0){
-					# merge
-					push(@pipelineParameters, @generatedParameters);
-				}
+				$pipelineMembers .= "\tadd " . $codeObject->{data}->{'_gen_name'} . StreamGraph::CodeGen::generateParameters($codeObject->get_parameters(0), 0, 1, 0, 0) . ";\n";
 			}
 		}
 	}
 	$pipelineMembers .= "}\n\n";
 	# delete duplicates in pipelineParameters
-	@pipelineParameters = StreamGraph::Util::List::unique(@pipelineParameters);
-	my $pipelineParametersLength = @pipelineParameters;
-	if(@pipelineParameters && ($pipelineParametersLength != 0)){
-		$pipelineHeader .= StreamGraph::CodeGen::generateCommentary("parameters as pipeline variables") . join(";\n", @pipelineParameters);
-		$pipelineHeader =~ s/\n/\n\t/g;
-		$pipelineHeader .= ";\n\t" . StreamGraph::CodeGen::generateCommentary("pipeline members");
+	if($mainFlag){
+		if(@{$self->parameters}){
+			my $parametersText = join(";\n", map($_->outputType . " " . $_->name . " = " . $_->value, @{$self->parameters}));
+			$pipelineHeader .= "{\n" . StreamGraph::CodeGen::generateCommentary("parameters as pipeline variables") . $parametersText;
+			$pipelineHeader =~ s/\n/\n\t/g;
+			$pipelineHeader .= ";";
+		} else {
+			$pipelineHeader .= "{";
+		}
+		$pipelineHeader .= "\n\t" . StreamGraph::CodeGen::generateCommentary("pipeline members");
+	} else {
+		if(@{$self->parameters}){
+			$pipelineHeader .= "(" . join(", ", map($_->outputType . " " . $_->name, @{$self->parameters})) . ")";
+		}
+		$pipelineHeader .= "{\n";
 	}
 	$self->{'_generated'} = 1;
 	$self->code($pipelineHeader . $pipelineMembers);

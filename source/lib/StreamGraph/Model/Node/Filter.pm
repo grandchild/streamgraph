@@ -2,6 +2,7 @@ package StreamGraph::Model::Node::Filter;
 
 use warnings;
 use strict;
+use StreamGraph::Model::CodeObject::Parameter;
 
 use Moo;
 extends "StreamGraph::Model::Node";
@@ -49,5 +50,6 @@ has saveMembers         => ( is=>"ro", default=>sub{[qw(
 	outputType
 	outputCount
 )]});
+
 
 1;
