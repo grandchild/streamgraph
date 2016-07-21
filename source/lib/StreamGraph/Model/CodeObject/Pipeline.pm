@@ -31,6 +31,7 @@ sub BUILDARGS {
 			push(@codeObjects, $splitjoin);
 			push(@codeObjects, $splitjoin->next);
 			push(@parameters, @{$splitjoin->parameters});
+			push(@parameters, @{$splitjoin->next->get_parameters()});
 			$node = $splitjoin->next;
 		} else {
 			push(@codeObjects, $successors[0]);
