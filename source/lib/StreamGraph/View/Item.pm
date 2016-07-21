@@ -303,6 +303,8 @@ sub get_parameters {
 				$p->{data}->{'_codeObject'} = $newParameter;
 				push(@parameters, $newParameter);
 			} else {
+				# update values
+				$p->{data}->{'_codeObject'}->updateValues();
 				push(@parameters, $p->{data}->{'_codeObject'});
 			}
 		}

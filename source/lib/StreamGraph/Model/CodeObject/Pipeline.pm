@@ -22,6 +22,9 @@ sub BUILDARGS {
 	my ($class, %args) = @_;
 	
 	my $node = delete $args{first};
+	
+	my $first = $node;
+
 	my @codeObjects = ($node);
 	my @successors = $node->successors;
 	my @parameters = @{$node->get_parameters()};
