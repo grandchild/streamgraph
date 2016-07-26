@@ -150,6 +150,7 @@ sub _cursor_release {
 
 sub _event_enter_notify {
 	my ( $self, $item, $event ) = @_;
+	if ($self->{side} eq 'top') { return; }
 	my @coords = $event->coords; # world
 	$self->{engaged} = $self->hotspot_engaged( \@coords );
 	if ( $self->{engaged} ) {

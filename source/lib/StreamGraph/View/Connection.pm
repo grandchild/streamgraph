@@ -47,6 +47,7 @@ sub INIT_INSTANCE {
 	$self->{item} = undef;
 	$self->{item_signal_id} = 0;
 	$self->{type} = 'default';
+	$self->{toggles} = {};
 }
 
 sub SET_PROPERTY {
@@ -115,6 +116,8 @@ sub disconnect {
 	$self->{predecessor_item}
 		->signal_handler_disconnect( $self->{predecessor_signal_id} );
     $self->{item}->signal_handler_disconnect( $self->{item_signal_id} ) if defined $self->{item};
+	$self->{toggles}{top}->destroy if defined $self->{toggles}{top};
+	$self->{toggles}{down}->destroy if defined $self->{toggles}{down};
 }
 
 sub update {
@@ -122,7 +125,7 @@ sub update {
 }
 
 sub _direction {
-    return ('buttom', 'buttom');
+    return ('down', 'down');
 }
 
 sub _item_connection {
@@ -131,7 +134,7 @@ sub _item_connection {
 		_direction($self->get('predecessor_item'), $self->get('item'))
 	)[1];
 
-	my $side = ( $direction eq 'buttom' ) ? 'top' : 'buttom';
+	my $side = ( $direction eq 'down' ) ? 'top' : 'down';
 	my ( $x2, $y2 ) = $self->get('item')->get_connection_point($side,$self);
 	my @successors = $self->get('item')->successors($side);
 	my $offset
@@ -168,8 +171,8 @@ sub _bpath {
 	my ( $predecessor_direction, $item_direction )
 		= _direction( $self->get('predecessor_item'), $self->get('item') );
 	my $c = List::Util::max( 25, abs( ( ( $y2 - $y1 ) / 2 ) ) );
-	my $a = ( $predecessor_direction eq 'buttom' ) ? $y1 + $c : $y1 - $c;
-	my $b = ( $item_direction eq 'buttom' ) ? $y2 - $c : $y2 + $c;
+	my $a = ( $predecessor_direction eq 'down' ) ? $y1 + $c : $y1 - $c;
+	my $b = ( $item_direction eq 'down' ) ? $y2 - $c : $y2 + $c;
 	my @p = ( $x1, $y1, $x1, $a, $x2, $b, $x2, $y2 );
 	my $pathdef = Gnome2::Canvas::PathDef->new();
 	$pathdef->moveto( $p[0], $p[1] );
@@ -177,7 +180,7 @@ sub _bpath {
 	return $pathdef if ($self->get('arrows') eq 'none' );
 	my $h = 4 * $self->get('width-pixels');    # Height of arrow head.
 	my $v = $h / 2;
-	if ($item_direction eq 'buttom') {
+	if ($item_direction eq 'down') {
 		@p = ( $x2 - $v, $y2 - $h, $x2 + $v, $y2 - $h, $x2, $y2 );
 	} else {
 		@p = ( $x2 + $h, $y2 + $v, $x2 + $h, $y2 - $v, $x2, $y2 );
@@ -186,6 +189,27 @@ sub _bpath {
 	$pathdef->lineto( $p[0], $p[1] );
 	$pathdef->lineto( $p[2], $p[3] );
 	$pathdef->lineto( $p[4], $p[5] );
+
+	if (defined $self->{toggles}{top}) {
+		my $image = $self->{toggles}{top};
+		$image->set(
+			x1 => $self->{x1} - 3,
+			y1 => $self->{y1} - 3,
+			x2 => $self->{x1} + 3,
+			y2 => $self->{y1} + 3,
+		);
+		$image->show;
+	}
+	if (defined $self->{toggles}{down}) {
+		my $image = $self->{toggles}{down};
+		$image->set(
+			x1 => $self->{x2} - 3,
+			y1 => $self->{y2} - 3,
+			x2 => $self->{x2} + 3,
+			y2 => $self->{y2} + 3,
+		);
+		$image->show;
+	}
 	return $pathdef if ($self->get('arrows') eq 'one-way' );
 
 	my $o = 3;    # offset.

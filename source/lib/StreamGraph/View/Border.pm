@@ -111,7 +111,7 @@ sub border_set_param
 }
 
 
-# my ($top, $left, $bottom, $right) = $self->border_insets();
+# my ($top, $left, $down, $right) = $self->border_insets();
 
 sub border_insets
 {
@@ -180,7 +180,7 @@ sub set
 
   	if ($param_name eq 'width') {
 	    my $min_width = $self->{content}->get_min_width();
-	    my ($top, $left, $bottom, $right) = $self->border_insets();
+	    my ($top, $left, $down, $right) = $self->border_insets();
 	    my $width = List::Util::max($value, $min_width + ($left + $right));
 	    $self->{width} = $width;
 	    $self->{content}->set(width=>($width - ($left + $right)));
@@ -191,10 +191,10 @@ sub set
   	if ($param_name eq 'height')
   	{
 	    my $min_height = $self->{content}->get_min_height();
-	    my ($top, $left, $bottom, $right) = $self->border_insets();
-	    my $height = List::Util::max($value, $min_height + ($top + $bottom));
+	    my ($top, $left, $down, $right) = $self->border_insets();
+	    my $height = List::Util::max($value, $min_height + ($top + $down));
 	    $self->{height} = $height;
-	    $self->{content}->set(height=>($height - ($top + $bottom)));
+	    $self->{content}->set(height=>($height - ($top + $down)));
 	    $self->border_set_height($height);
 	    next;
   	}
@@ -209,7 +209,7 @@ sub set
 sub get_connection_point
 {
   my ($self, $side, $num, $num_total) = @_;
-  my $x = $self->{x} + 10 + $num * ( ($self->{width}-20) / $num_total);
+  my $x = int $self->{x} + 10 + $num * ( ($self->{width}-20) / $num_total);
   my $y = ($side eq 'top') ? ($self->{y}) : ($self->{y} + $self->{height});
   return ($x, $y);
 }
@@ -219,9 +219,9 @@ sub get_min_height
 {
     my $self = shift(@_);
 
-    my ($top, $left, $bottom, $right) = $self->border_insets();
+    my ($top, $left, $down, $right) = $self->border_insets();
 
-    return ($self->{content}->get_min_height() + ($top + $bottom));
+    return ($self->{content}->get_min_height() + ($top + $down));
 }
 
 
@@ -229,7 +229,7 @@ sub get_min_width
 {
     my $self = shift(@_);
 
-    my ($top, $left, $bottom, $right) = $self->border_insets();
+    my ($top, $left, $down, $right) = $self->border_insets();
 
     return ($self->{content}->get_min_width() + ($left + $right));
 }
@@ -322,7 +322,7 @@ here.
 
 =item C<border_insets ()>
 
-Return the C<($top,$left,$bottom,$right)> insets for the border. This
+Return the C<($top,$left,$down,$right)> insets for the border. This
 method may be overridden.
 
 =item C<border_set_x($value)>

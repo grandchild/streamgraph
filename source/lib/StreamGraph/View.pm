@@ -138,15 +138,11 @@ sub remove_item {
 	if (!defined $item || !$self->{graph}->has_item($item)) {
 		croak "Iitem not defined\n";
 	}
-	# remove connections with predecessors
-	my @connections = @{$item->{con_top}};
-	foreach my $connection (@connections) {
-		$self->remove_connection($connection);
-	}
-	# remove connections with successors
-	@connections = @{$item->{con_buttom}};
-	for my $connection (@connections) {
-		$self->remove_connection($connection);
+	# remove connections
+	foreach my $side (qw(top down)) {
+		while ($#{$item->{connections}{$side}}+1) {
+			$self->remove_connection(${$item->{connections}{$side}}[0]);
+		}
 	}
 	$self->{graph}->remove_vertex($item);
 	$item->destroy();
@@ -158,7 +154,7 @@ sub remove_connection {
 	my $predecessor_item = $connection->get('predecessor_item');
 	my $item = $connection->get('item');
 	$self->{graph}->remove_edge($predecessor_item,$item);
-	$predecessor_item->remove_connection('bottom',$connection);
+	$predecessor_item->remove_connection('down',$connection);
 	$item->remove_connection('top',$connection);
 	$connection->disconnect();
 	$connection->destroy();
@@ -215,9 +211,18 @@ sub connect {
 		fill_color=>'darkblue',
 		type=>$type
 	);
-	$connection->signal_connect( event => sub { $connection->connection_event($self,pop @_); } );
+	if ($predecessor_item->isFilter) {
+		for my $side (qw(top down)){
+			$connection->{toggles}{$side} = Gnome2::Canvas::Item->new(
+				$side eq 'top' ? $predecessor_item : $item, 'Gnome2::Canvas::Ellipse',
+				fill_color_gdk    => Gtk2::Gdk::Color->parse('white'),
+				outline_color_gdk => Gtk2::Gdk::Color->parse('gray'),
+			);
+		}
+	}
 	$item->add_connection('top',$connection);
-	$predecessor_item->add_connection('bottom',$connection);
+	$predecessor_item->add_connection('down',$connection);
+	$connection->signal_connect( event => sub { $connection->connection_event($self,pop @_); } );
 	return 1;
 }
 
@@ -236,8 +241,8 @@ sub _update_connection_depths {
 	my ($self) = @_;
 	my @connections;
 	push(@connections, @{$self->{connections}{$_}}) for keys(%{$self->{connections}});
-	map { $_->lower_to_bottom if ($_->get("type") eq "data"); } @connections;
-	map { $_->lower_to_bottom if ($_->get("type") eq "parameter"); } @connections;
+	map { $_->lower_to_down if ($_->get("type") eq "data"); } @connections;
+	map { $_->lower_to_down if ($_->get("type") eq "parameter"); } @connections;
 }
 
 sub _clear_connections {

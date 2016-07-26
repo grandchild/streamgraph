@@ -42,7 +42,7 @@ sub hotspot_enter_notify {
 # $self->hotspot_button_release($item, $event);
 sub hotspot_button_release {
 	my ($self, $item, $event) = @_;
-	unless (defined $item->{view}->{toggleCon}) { return; }
+	if ($self->{side} eq 'top' || !defined $item->{view}->{toggleCon}) { return; }
 	my @coords = $event->coords;
 	$self->end_connection;
 	my $found = $item->{view}->get_item_at($coords[0], $coords[1]);
@@ -65,6 +65,7 @@ sub end_connection {
 
 sub hotspot_button_press {
 	my ($self, $item, $event) = @_;
+	if ($self->{side} eq 'top') { return; }
 	my @items = $item->{graph}->all_non_predecessors($item);
 	foreach my $i (@items) {
 		$i->toggle_available(1) if $item->{view}->{graph}->is_connectable($item,$i);

@@ -46,8 +46,9 @@ sub INIT_INSTANCE {
 	$self->{column}      = undef;
 	$self->{border}      = undef;
 	$self->{hotspots}    = {};
-	$self->{con_buttom}  = ();
-	$self->{con_top}		 = ();
+	$self->{connections} = {};
+	$self->{connections}{top} 		= ();
+	$self->{connections}{down} 	= ();
 	$self->{visible}     = TRUE;
 	$self->{date_time}   = undef;
 	$self->{data}        = undef;
@@ -178,31 +179,19 @@ sub add_hotspot {
 # $item->add_connection($self, $side, $connection)
 sub add_connection {
 	my ($self, $side, $connection) = @_;
-	if ($side eq 'top') {
-		push (@{$self->{con_top}},$connection);
-	} elsif ($side eq 'bottom'){
-		push (@{$self->{con_buttom}},$connection);
-	} else {
-		croak "side must be bottom or top";
-	}
+	unshift (@{$self->{connections}{$side}},$connection);
 	$self->signal_emit('connection_adjust');
 }
 
 # $item->add_connection($self, $side, $connection)
 sub remove_connection {
 	my ($self, $side, $connection) = @_;
-	_remove_connection($self->{con_top},$connection) if ($side eq 'top');
-	_remove_connection($self->{con_buttom},$connection) if ($side eq 'bottom');
-	$self->signal_emit('connection_adjust');
-}
-
-sub _remove_connection {
-	my ($arr, $connection) = @_;
 	my $n = 0;
-	for my $con (@{$arr}){
-		if ($con eq $connection) { splice @{$arr}, $n, 1; return;	}
+	for my $con (@{$self->{connections}{$side}}){
+		if ($con eq $connection) { splice @{$self->{connections}{$side}}, $n, 1; last;	}
 		$n++;
 	}
+	$self->signal_emit('connection_adjust');
 }
 
 # $item->set_data($data);
@@ -238,7 +227,7 @@ sub get_connection_point {
 	unless (defined $connection) {
 			return $self->{border}->get_connection_point($side,0,1);
 	}
-	my $arr = ($side eq 'top') ? $self->{con_top} : $self->{con_buttom};
+	my $arr = $self->{connections}{$side};
 	my $n = 1;
 	for my $con (@{$arr}) {
 		if ($con eq $connection) { return $self->{border}->get_connection_point($side,$n,$#{$arr}+1); }
@@ -248,7 +237,7 @@ sub get_connection_point {
 }
 
 
-# my ($top, $left, $bottom, $right) = $item->get_insets();
+# my ($top, $left, $down, $right) = $item->get_insets();
 sub get_insets {
 	my $self = shift(@_);
 	return $self->{border}->border_insets();
@@ -311,7 +300,7 @@ sub get_parameters {
 		return \@parameters;
 	} else {
 		return \@ps;
-	} 
+	}
 }
 
 # my @predecessors = $item->predecessors();
@@ -341,7 +330,7 @@ sub successors {
 	return () if (!defined $column);
 
 	my $column_no = $column->get('column_no');
-	if ($side eq 'buttom') {
+	if ($side eq 'down') {
 		return grep {$_->get_column_no() >= $column_no } @items;
 	}
 
@@ -363,7 +352,7 @@ sub all_successors {
 	return () if (!defined $column);
 
 	my $column_no = $column->get('column_no');
-	if ($side eq 'buttom') {
+	if ($side eq 'down') {
 		return grep {$_->get_column_no() >= $column_no } @items;
 	}
 
@@ -409,7 +398,7 @@ sub _resize {
 	my $min_height = $self->{border}->get_min_height();
 	my $min_width = $self->{border}->get_min_width();
 	my ($x, $width, $height) = $self->get(qw(x width height));
-	if ($side eq 'buttom') {
+	if ($side eq 'down') {
 		my $new_width = List::Util::max($min_width, ($width + $delta_x));
 		my $new_height = List::Util::max($min_height, ($height + $delta_y));
 		return ($x, $new_width, $new_height);
@@ -608,7 +597,7 @@ also used to detemine where to place the "toggle" hotspots.
 
 =item C<get_insets ()>
 
-Return the C<($top, $left, $bottom, $right)> border insets. The insets
+Return the C<($top, $left, $down, $right)> border insets. The insets
 are used by the Grips and Toggles to position themselves.
 
 =item C<get_min_height()>
@@ -646,7 +635,7 @@ Return an array of successor items of this item.
 =item C<successors ($side)>
 
 Return an array of items that are on one side of this item. The side
-may be 'top' or 'buttom'.
+may be 'top' or 'down'.
 
 =item C<toggle ()>
 

@@ -24,7 +24,7 @@ sub new {
 			fill_color_gdk outline_color_gdk hotspot_color_gdk)
 	);
 	arg_default( $self, 'radius', IMAGE_RADIUS_NORMAL );
-	arg_default( $self, 'enabled', FALSE );
+	arg_default( $self, 'enabled', TRUE );
 	arg_default( $self, 'fill_color_gdk', Gtk2::Gdk::Color->parse('white') );
 	arg_default( $self, 'outline_color_gdk', Gtk2::Gdk::Color->parse('gray') );
 	arg_default( $self, 'hotspot_color_gdk', Gtk2::Gdk::Color->parse('orange') );
