@@ -228,12 +228,12 @@ sub updateNodeName {
 # returns Name as String
 sub getTopologicalConstructName {
 	my $mainFlag = shift;
-	if(!$mainFlag || $mainFlag != 1){
+	if(!defined($mainFlag) || $mainFlag != 1){
 		$mainFlag = 0;
 	}
 	my $splitJoinText = shift;
-	if(!$splitJoinText){
-		$splitJoinText = 0;
+	if(!defined($splitJoinText)){
+		$splitJoinText = "";
 	}
 	my $text = "";
 	if($mainFlag == 1){
