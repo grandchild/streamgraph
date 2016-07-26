@@ -223,6 +223,7 @@ sub connect {
 	$item->add_connection('top',$connection);
 	$predecessor_item->add_connection('down',$connection);
 	$connection->signal_connect( event => sub { $connection->connection_event($self,pop @_); } );
+	$self->_update_connection_depths();
 	return 1;
 }
 
@@ -239,10 +240,13 @@ sub _connection_type {
 
 sub _update_connection_depths {
 	my ($self) = @_;
-	my @connections;
-	push(@connections, @{$self->{connections}{$_}}) for keys(%{$self->{connections}});
-	map { $_->lower_to_down if ($_->get("type") eq "data"); } @connections;
-	map { $_->lower_to_down if ($_->get("type") eq "parameter"); } @connections;
+	my @items = sort {$a->isFilter ? -1 : 1} $self->{graph}->get_items;
+	for my $item (@items) {
+		for my $connection (@{$item->{connections}{down}}) {
+			$connection->lower_to_bottom if $item->isFilter;
+			$connection->lower_to_bottom if $item->isParameter;
+		}
+	}
 }
 
 sub _clear_connections {
