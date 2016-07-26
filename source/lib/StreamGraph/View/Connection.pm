@@ -168,11 +168,12 @@ sub _bpath {
 	my $y1 = $self->{y1};
 	my $x2 = $self->{x2};
 	my $y2 = $self->{y2};
+	$y2 -= 6; # offset by toggle height
 	my ( $predecessor_direction, $item_direction )
 		= _direction( $self->get('predecessor_item'), $self->get('item') );
 	my $c = List::Util::max( 25, abs( ( ( $y2 - $y1 ) / 2 ) ) );
-	my $a = ( $predecessor_direction eq 'down' ) ? $y1 + $c : $y1 - $c;
-	my $b = ( $item_direction eq 'down' ) ? $y2 - $c : $y2 + $c;
+	my $a = $y1 + $c;
+	my $b = $y2 - $c;
 	my @p = ( $x1, $y1, $x1, $a, $x2, $b, $x2, $y2 );
 	my $pathdef = Gnome2::Canvas::PathDef->new();
 	$pathdef->moveto( $p[0], $p[1] );
@@ -180,12 +181,9 @@ sub _bpath {
 	return $pathdef if ($self->get('arrows') eq 'none' );
 	my $h = 4 * $self->get('width-pixels');    # Height of arrow head.
 	my $v = $h / 2;
-	if ($item_direction eq 'down') {
-		@p = ( $x2 - $v, $y2 - $h, $x2 + $v, $y2 - $h, $x2, $y2 );
-	} else {
-		@p = ( $x2 + $h, $y2 + $v, $x2 + $h, $y2 - $v, $x2, $y2 );
-	}
+	@p = ( $x2 - $v, $y2, $x2 + $v, $y2, $x2, $y2 + $h );
 
+	$pathdef->lineto( $p[4], $p[5] );
 	$pathdef->lineto( $p[0], $p[1] );
 	$pathdef->lineto( $p[2], $p[3] );
 	$pathdef->lineto( $p[4], $p[5] );
@@ -210,19 +208,6 @@ sub _bpath {
 		);
 		$image->show;
 	}
-	return $pathdef if ($self->get('arrows') eq 'one-way' );
-
-	my $o = 3;    # offset.
-	$h = $h + $o;
-	$pathdef->moveto( $x1, $y1 );
-	if ($item_direction eq 'top') {
-		@p = ( $x1 - $h, $y1 + $v, $x1 - $h, $y1 - $v, $x1, $y1 );
-	} else {
-		@p = ( $x1 + $h, $y1 + $v, $x1 + $h, $y1 - $v, $x1, $y1 );
-	}
-	$pathdef->lineto( $p[0], $p[1] );
-	$pathdef->lineto( $p[2], $p[3] );
-	$pathdef->lineto( $p[4], $p[5] );
 	return $pathdef;
 }
 
