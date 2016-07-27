@@ -6,6 +6,7 @@ use warnings;
 use strict;
 
 use List::Util;
+use StreamGraph::Model::ConnectionData;
 
 use Gnome2::Canvas;
 
@@ -44,6 +45,7 @@ sub INIT_INSTANCE {
 	$self->{y2} = 0;
 	$self->{predecessor_item} = undef;
 	$self->{predecessor_signal_id} = 0;
+	$self->{connection_data} = StreamGraph::Model::ConnectionData->new();
 	$self->{item} = undef;
 	$self->{item_signal_id} = 0;
 	$self->{type} = 'default';

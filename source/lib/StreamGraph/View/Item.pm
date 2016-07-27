@@ -194,6 +194,32 @@ sub remove_connection {
 	$self->signal_emit('connection_adjust');
 }
 
+# item->get_connection_to($item)
+sub get_connection_to {
+	my ($self, $target) = @_;
+	foreach my $con (@{$self->{connections}{down}}) {
+		if($con->{item} == $target){
+			return $con;
+		}
+	}
+	croak "No connection from " . $self-> {data}->name . " to " . $target->{data}->name . " found\n"; 
+}
+
+# item->get_connection_from($item)
+sub get_connection_from {
+	my ($self, $source) = @_;
+	print("\nTrying to get connection from " . $source->{data}->name . " to " . $self-> {data}->name . "\n");
+	foreach my $con (@{$self->{connections}{top}}) {
+		
+		print("checking connection from " . $con->{predecessor_item}->{data}->name . " to " . $con->{item}->{data}->name . "\n"); 
+		
+		if($con->{predecessor_item} == $source){
+			return $con;
+		}
+	}
+	croak "No connection from " . $source->{data}->name . " to " . $self-> {data}->name . " found\n";
+}
+
 # $item->set_data($data);
 sub set_data {
 	my ($self, $data) = @_;

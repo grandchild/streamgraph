@@ -16,7 +16,7 @@ sub BUILDARGS {
 	
 	my $node = delete $args{node};
 	$node->{data}->{'_generated'} = 1;
-	$args{associatedParameter} = $node->{data};
+	$args{associatedParameter} = $node;
 	$args{outputType} = $node->{data}->outputType;
 	$args{value} = $node->{data}->value;
 	$args{name} = $node->{data}->name;
@@ -29,8 +29,8 @@ sub updateValues {
 	if(!defined($self)){
 		return;
 	}
-	$self->name($self->associatedParameter->name);
-	$self->value($self->associatedParameter->value);
-	$self->outputType($self->associatedParameter->outputType);
+	$self->name($self->associatedParameter->{data}->name);
+	$self->value($self->associatedParameter->{data}->value);
+	$self->outputType($self->associatedParameter->{data}->outputType);
 }
 1;
