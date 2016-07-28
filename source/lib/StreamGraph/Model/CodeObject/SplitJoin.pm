@@ -43,6 +43,51 @@ sub BUILDARGS {
 }
 
 
+sub getSplitCode {
+	my $self = shift;
+	my $splitCode = "split ";
+	my $splitType = $self->split->{data}->splitType;
+	if($splitType eq "void"){
+		$splitCode .= "roundrobin(0)";
+	} elsif($splitType eq "roundrobin") {
+		$splitCode .= "(";
+		my $graph = $self->split->{graph}->{graph}; 
+		# self->codeObjects only has pipelines
+		$splitCode .= join(", ", 
+			map($graph->get_edge_attribute($self->split, $_->codeObjects->[0], 'data')->inputMult
+				, @{$self->codeObjects}
+			)
+		);
+		$splitCode .= ")";
+	} else {
+		$splitCode .= $splitType;
+	}
+	return $splitCode . ";\n";
+}
+
+
+sub getJoinCode{
+	my $self = shift;
+	my $joinCode = "join ";
+	my $joinType = $self->join->{data}->joinType;
+	if($joinType eq "void"){
+		$joinCode .= "roundrobin(0)";
+	} elsif($joinType eq "roundrobin") {
+		$joinCode .= $joinType . "(";
+		# self->codeObjects only has pipelines
+		$joinCode .= join(", ", 
+			map($_->codeObjects->[-1]->{graph}->get_edge_attribute($_->codeObjects->[-1], $self->join, 'data')->outputMult, 
+				@{$self->codeObjects}
+			)
+		);
+		$joinCode .= ")";
+	} else {
+		$joinCode .= $joinType;
+	}
+	return $joinCode . ";\n";
+}
+
+
 sub generate {
 	my ($self) = @_;
 	$self->name(StreamGraph::CodeGen::getTopologicalConstructName(0, $self->split->{data}->name));
@@ -52,7 +97,7 @@ sub generate {
 	if(@{$self->parameters}){
 		$splitJoinCode .= "(" . join(", ", map($_->outputType . " " . $_->name, @{$self->parameters})) . ")";
 	}
-	$splitJoinCode .= "{\n\tsplit " . $self->split()->{data}->splitType . ";\n";
+	$splitJoinCode .= "{\n\t" . $self->getSplitCode;
 	foreach my $codeObject (@{$self->codeObjects}) {
 		if(!($codeObject->{'_generated'})){
 			$codeObject->generate();
@@ -64,7 +109,7 @@ sub generate {
 		}
 		$splitJoinCode .= ";\n";
 	}
-	$splitJoinCode .= "\tjoin " . $self->join()->{data}->joinType . ";\n}\n\n";
+	$splitJoinCode .= "\t" . $self->getJoinCode . "}\n\n";
 	$self->code($splitJoinCode);
 	$self->{'_generated'} = 1;
 }
@@ -75,10 +120,7 @@ sub buildCode {
 	my $splitJoinesCode = shift;
 	$splitJoinesCode .= $self->code;
 	foreach my $codeObject (@{$self->codeObjects}) {
-		# in a splitJoin the codeObjects can only be Pipelines (for the moment)
-		if($codeObject->isa("StreamGraph::Model::CodeObject::Pipeline")){
-			($pipelinesCode, $splitJoinesCode) = $codeObject->buildCode($pipelinesCode, $splitJoinesCode);
-		}
+		($pipelinesCode, $splitJoinesCode) = $codeObject->buildCode($pipelinesCode, $splitJoinesCode);
 	}
 	return ($pipelinesCode, $splitJoinesCode);
 }

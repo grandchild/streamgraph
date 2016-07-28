@@ -8,6 +8,8 @@ use Carp;
 
 use Graph::Directed;
 
+use StreamGraph::Model::ConnectionData;
+
 
 sub new {
 	my $class = shift(@_);
@@ -29,7 +31,7 @@ sub add_vertex {
 
 # $graph->add($predecessor_item,$item);
 sub add_edge {
-	my ($self, $item1, $item2) = @_;
+	my ($self, $item1, $item2, $inputMult, $outputMult) = @_;
 	if ((!defined $item1) or (!defined $item2)) {
 		croak "You must specify two items to connect.\n";
 	}
@@ -39,8 +41,24 @@ sub add_edge {
 	$self->add_vertex($item1) if (!$self->has_item($item1));
 	$self->add_vertex($item2) if (!$self->has_item($item2));
 	$self->{graph}->add_edge($item1, $item2);
+	$inputMult = 1 if (!defined $inputMult);
+	$outputMult = 1 if(!defined $outputMult);
+	$self->set_edge_attribute($item1, $item2, 'data', 
+		StreamGraph::Model::ConnectionData->new(inputMult=>$inputMult, outputMult=>$outputMult)
+		);
 	return 1;
 }
+
+sub get_edge_attribute{
+	my ($self, $item1, $item2, $key) = @_;
+	return $self->{graph}->get_edge_attribute($item1, $item2, $key);
+}
+
+sub set_edge_attribute{
+	my ($self, $item1, $item2, $key, $value) = @_;
+	return $self->{graph}->set_edge_attribute($item1, $item2, $key, $value);
+}
+
 
 sub is_connectable {
 	my ($self, $item1, $item2) = @_;
