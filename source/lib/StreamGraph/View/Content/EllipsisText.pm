@@ -184,7 +184,7 @@ sub _layout_text
     my $width  = $self->{width};
 
     $self->{image}->set(text=>$text);
-
+return;
     my $line_height = $self->{image}->get('text-height');
 
     my @words = split " ", $text;

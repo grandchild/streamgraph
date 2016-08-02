@@ -40,6 +40,7 @@ sub new
 sub update {
   my ($self) = @_;
 
+  $self->{content}->update;
   my ($top, $left, $bottom, $right) = $self->border_insets();
   $self->{width} = $self->{content}->get('width') + ($left + $right);
   $self->{height} = $self->{content}->get('height') + ($top + $bottom);
