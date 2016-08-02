@@ -10,5 +10,7 @@ use StreamGraph::View::Connection;
 # Multiplicities
 has inputMult	=> ( is=>"rw", default=>1 );
 has outputMult	=> ( is=>"rw", default=>1 );
+has inputPrio	=> ( is=>"rw", default=>1 );
+has outputPrio	=> ( is=>"rw", default=>1 );
 
 1;

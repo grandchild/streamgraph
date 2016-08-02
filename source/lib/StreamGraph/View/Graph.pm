@@ -31,7 +31,7 @@ sub add_vertex {
 
 # $graph->add($predecessor_item,$item);
 sub add_edge {
-	my ($self, $item1, $item2, $inputMult, $outputMult) = @_;
+	my ($self, $item1, $item2, $inputMult, $outputMult, $inPrio, $outPrio) = @_;
 	if ((!defined $item1) or (!defined $item2)) {
 		croak "You must specify two items to connect.\n";
 	}
@@ -43,9 +43,11 @@ sub add_edge {
 	$self->{graph}->add_edge($item1, $item2);
 	$inputMult = 1 if (!defined $inputMult);
 	$outputMult = 1 if(!defined $outputMult);
+	$inPrio = 1 if(!defined $inPrio);
+	$outPrio = 1 if(!defined $outPrio);
 	$self->set_edge_attribute($item1, $item2, 'data', 
-		StreamGraph::Model::ConnectionData->new(inputMult=>$inputMult, outputMult=>$outputMult)
-		);
+		StreamGraph::Model::ConnectionData->new(inputMult=>$inputMult, outputMult=>$outputMult, 
+			inputPrio=>$inPrio, outputPrio=>$outPrio));
 	return 1;
 }
 
