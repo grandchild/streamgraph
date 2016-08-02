@@ -266,12 +266,12 @@ sub get_weight {
 	return ($self->get('height') * $self->get('width'));
 }
 
-sub get_edge_multiplicities_to {
+sub get_edge_data_to {
 	my ($self, $target) = @_;
 	return $self->{graph}->get_edge_attribute($self, $target, 'data');
 }
 
-sub get_edge_multiplicities_from {
+sub get_edge_data_from {
 	my ($self, $source) = @_;
 	print("getting edge multiplicities from " . $source->{data}->name . " to " . $self->{data}->name . "\n");
 	return $self->{graph}->get_edge_attribute($source, $self, 'data');	
@@ -287,7 +287,7 @@ sub set_edge_attribute_from {
 	$self->{graph}->set_edge_attribute($source, $self, $key, $value);
 }
 
-sub set_edge_multiplicities_to {
+sub set_edge_data_to {
 	my ($self, $target, $in, $out) = @_;
 	my $previous = $self->get_edge_multiplicities_to($target);
 	if(undef($previous)){
@@ -299,7 +299,7 @@ sub set_edge_multiplicities_to {
 	}
 }
 
-sub set_edge_multiplicities_from {
+sub set_edge_data_from {
 	my ($self, $source, $in, $out) = @_;
 	my $previous = $self->get_edge_multiplicities_from($source);
 	if(undef($previous)){

@@ -53,7 +53,7 @@ sub getSplitCode {
 		$splitCode .= "("; 
 		# self->codeObjects only has pipelines
 		$splitCode .= join(", ", 
-			map($self->split->get_edge_multiplicities_to($_->codeObjects->[0])->inputMult
+			map($self->split->get_edge_data_to($_->codeObjects->[0])->inputMult
 				, @{$self->codeObjects}
 			)
 		);
@@ -75,7 +75,7 @@ sub getJoinCode{
 		$joinCode .= $joinType . "(";
 		# self->codeObjects only has pipelines
 		$joinCode .= join(", ", 
-			map($_->codeObjects->[-1]->get_edge_multiplicities_to($self->join)->outputMult, 
+			map($_->codeObjects->[-1]->get_edge_data_to($self->join)->outputMult, 
 				@{$self->codeObjects}
 			)
 		);
