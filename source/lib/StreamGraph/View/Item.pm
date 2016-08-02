@@ -266,6 +266,51 @@ sub get_weight {
 	return ($self->get('height') * $self->get('width'));
 }
 
+sub get_edge_multiplicities_to {
+	my ($self, $target) = @_;
+	return $self->{graph}->get_edge_attribute($self, $target, 'data');
+}
+
+sub get_edge_multiplicities_from {
+	my ($self, $source) = @_;
+	print("getting edge multiplicities from " . $source->{data}->name . " to " . $self->{data}->name . "\n");
+	return $self->{graph}->get_edge_attribute($source, $self, 'data');	
+}
+
+sub set_edge_attribute_to {
+	my ($self, $target, $key, $value) = @_;
+	$self->{graph}->set_edge_attribute($self, $target, $key, $value);
+}
+
+sub set_edge_attribute_from {
+	my ($self, $source, $key, $value) = @_;
+	$self->{graph}->set_edge_attribute($source, $self, $key, $value);
+}
+
+sub set_edge_multiplicities_to {
+	my ($self, $target, $in, $out) = @_;
+	my $previous = $self->get_edge_multiplicities_to($target);
+	if(undef($previous)){
+		$self->set_edge_attribute_to($target, 'data', 
+			StreamGraph::Model::ConnectionData->new(inputMult=>$in, outputMult=>$out));
+	} else {
+		$previous->inputMult($in);
+		$previous->outputMult($out);
+	}
+}
+
+sub set_edge_multiplicities_from {
+	my ($self, $source, $in, $out) = @_;
+	my $previous = $self->get_edge_multiplicities_from($source);
+	if(undef($previous)){
+		$self->set_edge_attribute_from($source, 'data', 
+			StreamGraph::Model::ConnectionData->new(inputMult=>$in, outputMult=>$out));
+	} else {
+		$previous->inputMult($in);
+		$previous->outputMult($out);
+	}
+}
+
 
 # $item->is_visible();
 sub is_visible {

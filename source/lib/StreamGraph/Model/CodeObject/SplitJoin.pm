@@ -50,11 +50,10 @@ sub getSplitCode {
 	if($splitType eq "void"){
 		$splitCode .= "roundrobin(0)";
 	} elsif($splitType eq "roundrobin") {
-		$splitCode .= "(";
-		my $graph = $self->split->{graph}->{graph}; 
+		$splitCode .= "("; 
 		# self->codeObjects only has pipelines
 		$splitCode .= join(", ", 
-			map($graph->get_edge_attribute($self->split, $_->codeObjects->[0], 'data')->inputMult
+			map($self->split->get_edge_multiplicities_to($_->codeObjects->[0])->inputMult
 				, @{$self->codeObjects}
 			)
 		);
@@ -76,7 +75,7 @@ sub getJoinCode{
 		$joinCode .= $joinType . "(";
 		# self->codeObjects only has pipelines
 		$joinCode .= join(", ", 
-			map($_->codeObjects->[-1]->{graph}->get_edge_attribute($_->codeObjects->[-1], $self->join, 'data')->outputMult, 
+			map($_->codeObjects->[-1]->get_edge_multiplicities_to($self->join)->outputMult, 
 				@{$self->codeObjects}
 			)
 		);
