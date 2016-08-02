@@ -49,6 +49,8 @@ sub INIT_INSTANCE {
 	$self->{connections} = {};
 	$self->{connections}{top} 		= ();
 	$self->{connections}{down} 	= ();
+	$self->{connections}{top_num} = 0;
+	$self->{connections}{down_num} 	= 0;
 	$self->{visible}     = TRUE;
 	$self->{date_time}   = undef;
 	$self->{data}        = undef;
@@ -180,6 +182,8 @@ sub add_hotspot {
 sub add_connection {
 	my ($self, $side, $connection) = @_;
 	unshift (@{$self->{connections}{$side}},$connection);
+	if ($connection->{predecessor_item}->isFilter) {$self->{connections}{$side . "_num"}++;}
+	$self->signal_emit('hotspot_adjust');
 	$self->signal_emit('connection_adjust');
 }
 
@@ -188,9 +192,14 @@ sub remove_connection {
 	my ($self, $side, $connection) = @_;
 	my $n = 0;
 	for my $con (@{$self->{connections}{$side}}){
-		if ($con eq $connection) { splice @{$self->{connections}{$side}}, $n, 1; last;	}
+		if ($con eq $connection) {
+			splice @{$self->{connections}{$side}}, $n, 1;
+			if ($con->{predecessor_item}->isFilter) {$self->{connections}{$side . "_num"}--;}
+			last;
+		}
 		$n++;
 	}
+	$self->signal_emit('hotspot_adjust');
 	$self->signal_emit('connection_adjust');
 }
 
@@ -224,16 +233,23 @@ sub get_column_no {
 # $item->get_connection_point('top');
 sub get_connection_point {
 	my ($self, $side, $connection) = @_;
-	unless (defined $connection) {
-			return $self->{border}->get_connection_point($side,0,1);
+	my $offset = $side eq 'top' ? 2 : 1;
+	if (!$self->isFilter) { return $self->{border}->get_connection_point($side,1,3); }
+	if (!defined $connection) {
+			return $self->{border}->get_connection_point($side,$offset-1,$self->{connections}{$side . "_num"}+$offset);
+	}
+	if (!$connection->{predecessor_item}->isFilter) {
+		return $self->{border}->get_connection_point($side,0,$self->{connections}{$side . "_num"}+$offset);
 	}
 	my $arr = $self->{connections}{$side};
-	my $n = 1;
+	my $n = $offset;
 	for my $con (@{$arr}) {
-		if ($con eq $connection) { return $self->{border}->get_connection_point($side,$n,$#{$arr}+1); }
-		$n++;
+		if ($con eq $connection) {
+			return $self->{border}->get_connection_point($side,$n,$self->{connections}{$side . "_num"}+$offset);
+		}
+		if ($con->{predecessor_item}->isFilter) { $n++; }
 	}
-	return $self->{border}->get_connection_point($side,0,1);
+	return $self->{border}->get_connection_point($side,$offset-1,$self->{connections}{$side . "_num"}+$offset);
 }
 
 

@@ -19,8 +19,8 @@ sub new {
 	my %attributes = @attributes;
 	args_required( \%attributes, qw(item side) );
 	args_store( $self, \%attributes );
-	if ( !grep { $_ eq $self->{side} } qw(buttom top) ) {
-		croak "Unexpected side: $self->{side}. Valid are: 'buttom' and 'top'\n";
+	if ( !grep { $_ eq $self->{side} } qw(down top) ) {
+		croak "Unexpected side: $self->{side}. Valid are: 'down' and 'top'\n";
 	}
 	if ( !$self->{item}->isa('StreamGraph::View::Item') ) {
 		croak "Item argument is not a StreamGraph::View::Item.\n";
@@ -361,10 +361,10 @@ an example of how to get a Gtk2::Gdk::Color:
 
 	 my $red_color = Gtk2::Gdk::Color->parse("red");
 
-=item C<Unexpected side: $self->{side}. Valid are: 'buttom' and 'top'>
+=item C<Unexpected side: $self->{side}. Valid are: 'down' and 'top'>
 
 You have to specify whether this hotspot is on the left or right side
-of the item it is attached to. Choose either 'top' or 'buttom'.
+of the item it is attached to. Choose either 'top' or 'down'.
 
 =item C<Item argument is not a StreamGraph::View::Item.>
 

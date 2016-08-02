@@ -209,7 +209,8 @@ sub set
 sub get_connection_point
 {
   my ($self, $side, $num, $num_total) = @_;
-  my $x = int $self->{x} + 10 + $num * ( ($self->{width}-20) / $num_total);
+  $num_total--;
+  my $x = int $self->{x} + 10 + ($num_total == 0 ? 0 : $num * ( ($self->{width}-20) / $num_total) );
   my $y = ($side eq 'top') ? ($self->{y}) : ($self->{y} + $self->{height});
   return ($x, $y);
 }

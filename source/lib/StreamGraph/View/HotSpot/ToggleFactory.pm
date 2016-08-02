@@ -38,8 +38,8 @@ sub create_toggle {
         croak "Invalid item. Item must be a 'StreamGraph::View::Item'.\n";
     }
     my $side = $attributes{side};
-    if ( !grep { $_ eq $side } qw(buttom top) ) {
-        croak "Invalid side. Must be 'buttom' or 'top'.\n";
+    if ( !grep { $_ eq $side } qw(down top) ) {
+        croak "Invalid side. Must be 'down' or 'top'.\n";
     }
     my $border = $attributes{border};
     my $enabled = defined $attributes{enabled} ? $attributes{enabled} : TRUE;
@@ -182,7 +182,7 @@ to the caller. The side may be C<left> or C<right>.
 
 You must pass in a StreamGraph::View::Item argument.
 
-=item C<Invalid side. Must be 'buttom' or 'top'>
+=item C<Invalid side. Must be 'down' or 'top'>
 
 You must set the side to be either: C<left> or C<right>.
 

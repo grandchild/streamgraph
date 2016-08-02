@@ -117,7 +117,7 @@ sub create_item {
 		my $hotspot_out = $self->{toggle_factory}->create_toggle(
 						item=>$item,
 						border=>$border,
-						side=>'buttom',
+						side=>'down',
 						fill_color_gdk=>$fill_color_gdk,
 						outline_color_gdk=>$outline_color_gdk,
 						hotspot_color_gdk=>$hotspot_color_gdk,
@@ -129,7 +129,6 @@ sub create_item {
 		$item->set_data(StreamGraph::Model::NodeFactory->new
 				->createNode(type=>"StreamGraph::Model::Node::Filter"))
 	);
-
 	return $item;
 }
 

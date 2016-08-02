@@ -24,7 +24,7 @@ sub hotspot_motion_notify {
 		my @coords = $event->coords;
 		my $found = $item->{view}->get_item_at($coords[0], $coords[1]);
 		if (defined $found->{connect_item} && $item->{view}->{graph}->is_connectable($item,$found->{connect_item})) {
-			@coords = $found->{connect_item}->get_connection_point("top");
+			@coords = $found->{connect_item}->get_connection_point("top",$item->{view}->{toggleCon});
 		} else {
 			$coords[0] -= 5;
 			$coords[1] -= 5;
@@ -67,9 +67,11 @@ sub hotspot_button_press {
 	my ($self, $item, $event) = @_;
 	if ($self->{side} eq 'top') { return; }
 	my @items = $item->{graph}->all_non_predecessors($item);
-	foreach my $i (@items) {
-		$i->toggle_available(1) if $item->{view}->{graph}->is_connectable($item,$i);
-	};
+	if ($item->isFilter) {
+		foreach my $i (@items) {
+			$i->toggle_available(1) if $item->{view}->{graph}->is_connectable($item,$i);
+		};
+	}
 	$item->{view}->{toggleCon} = Gnome2::Canvas::Item->new(
 		$item->{view}->root,
 		'StreamGraph::View::Connection',
