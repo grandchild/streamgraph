@@ -4,7 +4,7 @@ use strict;
 use Data::Dump qw(dump);
 use StreamGraph::View::Item;
 use StreamGraph::Util::File;
-use StreamGraph::Util::List;
+use StreamGraph::Util qw(unique filterNodesForType);
 use StreamGraph::Model::CodeObject::Pipeline;
 use StreamGraph::Model::CodeObject::SplitJoin;
 
@@ -29,8 +29,8 @@ sub generateCode {
 	my $programText = generateMultiLineCommentary("Generated code from project $fileName");
 	# build Node list
 	my @nodeList = $graph->topological_sort();
-	@nodeList = StreamGraph::Util::List::unique(@nodeList);
-	@nodeList = @{StreamGraph::Util::List::filterNodesForType(\@nodeList, "StreamGraph::Model::Node::Filter")};
+	@nodeList = unique(@nodeList);
+	@nodeList = @{filterNodesForType(\@nodeList, "StreamGraph::Model::Node::Filter")};
 	# first generate all filter code
 	$programText .= generateSectionCommentary("Section for all Filters");
 	foreach my $filterNode (@nodeList) {
@@ -198,7 +198,7 @@ sub generateFilter {
 	my $globalVariables = $data->{globalVariables};
 	my $filterText = generateCommentary("Filter $name") . "$inputType->$outputType filter $name";
 	my @predecessors = StreamGraph::View::Item::predecessors($filterNode);
-	my @parameters = @{StreamGraph::Util::List::filterNodesForType(\@predecessors, "StreamGraph::Model::Node::Parameter")};
+	my @parameters = @{filterNodesForType(\@predecessors, "StreamGraph::Model::Node::Parameter")};
 	# Todo: make names unique!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	$filterText .= generateParameters(\@parameters);
 	$filterText .= " {\n"; 

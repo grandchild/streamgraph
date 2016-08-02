@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Exporter qw(import);
-our @EXPORT_OK = qw(getNodeWithId getItemWithId);
+our @EXPORT_OK = qw(getNodeWithId getItemWithId unique filterNodesForType);
 
 
 sub getNodeWithId {
@@ -23,6 +23,28 @@ sub getItemWithId {
 		}
 	}
 	return $items[$#items];
+}
+
+sub unique {
+	my %seen;
+	return grep { !$seen{$_}++ } @_;
+}
+
+# filters NodeList for Node with given Type
+sub filterNodesForType {
+	my $listPointer = shift;
+	my $type = shift;
+	if(!defined($type) || !defined($listPointer)){
+		return \();
+	}
+	my @list = @{$listPointer};
+	my @returnList = ();
+	foreach my $listElement (@list) {
+		if ($listElement->{data}->isa($type)) {
+			push(@returnList, $listElement);
+		}
+	}
+	return \@returnList;
 }
 
 

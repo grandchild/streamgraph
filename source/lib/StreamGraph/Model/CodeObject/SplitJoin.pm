@@ -9,6 +9,7 @@ extends "StreamGraph::Model::CodeObject";
 use StreamGraph::Model::CodeObject::Pipeline;
 use StreamGraph::Model::Node;
 use StreamGraph::CodeGen;
+use StreamGraph::Util qw(unique);
 use Data::Dump qw(dump);
 
 
@@ -37,7 +38,7 @@ sub BUILDARGS {
 	$args{next} = $codeObjects[0]->next;
 	$args{join} = $args{next};
 	$args{codeObjects} = \@codeObjects;
-	@parameters = StreamGraph::Util::List::unique(@parameters);
+	@parameters = unique(@parameters);
 	$args{parameters} = \@parameters;
 	return \%args;
 }
