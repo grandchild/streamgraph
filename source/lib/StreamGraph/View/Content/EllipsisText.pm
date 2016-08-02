@@ -54,10 +54,6 @@ sub update {
   $self->{min_height} = $self->{image}->get('text-height');
   $self->{height}     = $self->{image}->get('text-height');
   $self->{width}      = $self->{image}->get('text-width');
-  if ($self->{width} > MAX_WIDTH) {
-    $self->{width} = MAX_WIDTH;
-    _layout_text($self);
-  }
 
   $self->{image}->set(clip=>1);
   $self->{image}->set(clip_height=>$self->{height});
@@ -100,14 +96,9 @@ sub content_set_y
 
 
 # $self->content_set_width($value);
-
-sub content_set_width
-{
-    my ($self, $value) = @_;
-
-    $self->{image}->set('clip-width'=>$value);
-
-    _layout_text($self);
+sub content_set_width {
+  my ($self, $value) = @_;
+  $self->{image}->set('clip-width'=>$value);
 }
 
 
@@ -124,147 +115,31 @@ sub content_set_height
 
 
 # $self->content_set_param($param_name, $value);
-
-sub content_set_param
-{
-    my ($self, $param_name, $value) = @_;
-
-    $self->{image}->set($param_name=>$value);
+sub content_set_param {
+  my ($self, $param_name, $value) = @_;
+  $self->{image}->set($param_name=>$value);
 }
 
 
 # $content->set(x=>0, y=>10, width=>20, height=>30);
-
-sub set
-{
-    my $self = shift(@_);
-
-    my %attributes = @_;
-
-    foreach my $param_name (keys %attributes)
-    {
-	my $value = $attributes{$param_name};
-
-	if ($param_name eq 'text_color_gdk')
-	{
-	    $self->{text_color_gdk} = $value;
-
-	    $self->{image}->set('fill-color-gdk'=>$value);
-
-	    next;
-	}
-
-	if ($param_name eq 'text')
-	{
-	    $self->{text} = $value;
-
-	    _layout_text($self);
-
-	    next;
-	}
-
-	$self->SUPER::set($param_name=>$value);
+sub set {
+  my $self = shift(@_);
+  my %attributes = @_;
+  foreach my $param_name (keys %attributes) {
+    my $value = $attributes{$param_name};
+    if ($param_name eq 'text_color_gdk') {
+      $self->{text_color_gdk} = $value;
+      $self->{image}->set('fill-color-gdk'=>$value);
+      next;
     }
+    if ($param_name eq 'text') {
+      $self->{text} = $value;
+      $self->{image}->set(text=>$value);
+      next;
+    }
+    $self->SUPER::set($param_name=>$value);
+  }
 }
-
-
-# _layout_text: Layout the text to fit into the area defined by the
-# width and height properties.  Append an ellipsis if the text won't
-# fit in the area. This is done because Gnome2::Canvas::Text does not
-# have the hooks we need to get at it's internal layout.
-
-sub _layout_text
-{
-    my $self = shift(@_);
-
-    my $text = $self->{text};
-
-    my $height = $self->{height};
-
-    my $width  = $self->{width};
-
-    $self->{image}->set(text=>$text);
-return;
-    my $line_height = $self->{image}->get('text-height');
-
-    my @words = split " ", $text;
-
-    my $rows = List::Util::max(1, int($height / $line_height));
-
-    my @display_lines = ();
-
-#    print "EllipsisText, line_height: $line_height  height: $height  width: $width  rows: $rows  words: @words\n";
-
-    for my $i (1..$rows)
-    {
-	my $line = "";
-
-	my $word = shift(@words);
-
-	last if (!defined $word);
-
-	my $line_candidate = $word;
-
-        $self->{image}->set(text=>$line_candidate);
-
-	while ($self->{image}->get('text-width') <= $width)
-	{
-	    $line = $line_candidate;
-
-	    $word = shift(@words);
-
-	    last if (!defined $word);
-
-	    $line_candidate = "$line_candidate $word";
-
-            $self->{image}->set(text=>$line_candidate);
-	}
-
-	if ($line eq "") # Couldn't fit a word on the line.
-	{
-	    push @display_lines, $line_candidate;
-	}
-	else
-	{
-	    unshift @words, $word if (defined $word);
-
-	    push @display_lines, $line;
-	}
-    }
-
-    if ((scalar @words) > 0) # Couldn't fit entire text.
-    {
-	my $last_line = pop(@display_lines);
-
-	if (!defined $last_line)
-	{
-	    push @display_lines, " ...";
-	}
-	else
-	{
-            $self->{image}->set(text=>"$last_line ...");
-
-	    while ($self->{image}->get('text-width') > $width)
-	    {
-		my @words = split " ", $last_line;
-
-		pop @words;
-
-		last if ((scalar @words) == 0);
-
-		$last_line = join " ", @words;
-
-                $self->{image}->set(text=>"$last_line ...");
-	    }
-
-	    push @display_lines, "$last_line ...";
-	}
-    }
-
-    $self->{image}->set(text=>(join "\n", @display_lines));
-}
-
-
 
 1; # Magic true value required at end of module
 __END__
