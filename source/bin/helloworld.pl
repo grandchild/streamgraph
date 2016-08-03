@@ -236,10 +236,13 @@ sub addNewFilter {
 		$nodeFactory->createNode(
 			type=>"StreamGraph::Model::Node::Filter",
 			name=>"Filter",
-			workCode=>"println(pop());",
+			workCode=>"push(pop());",
 			inputType=>"int",
 			inputCount=>1,
-			timesPop=>1
+			outputType=>"int",
+			outputCount=>1,
+			timesPop=>1,
+			timesPush=>1
 		),
 		1
 	);
