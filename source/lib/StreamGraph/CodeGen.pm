@@ -17,6 +17,9 @@ my $fileName;
 # gets root (Item) as 1. input parameter, filename as 2.parameter and configFile as 3.parameter
 sub generateCode {
 	my $graph = shift;
+	if(!defined($graph)){
+		return;
+	}
 	$fileName = shift;
 	if(!$fileName){
 		$fileName = "main";
@@ -34,10 +37,10 @@ sub generateCode {
 	# first generate all filter code
 	$programText .= generateSectionCommentary("Section for all Filters");
 	foreach my $filterNode (@nodeList) {
-		$programText .= generateFilter($filterNode);
+		$programText .= generateFilter($filterNode, $graph);
 	}
 	# build data structure for code generation of topographical constructs
-	my $mainPipeline = StreamGraph::Model::CodeObject::Pipeline->new(first=>$nodeList[0]);
+	my $mainPipeline = StreamGraph::Model::CodeObject::Pipeline->new(first=>$nodeList[0], graph=>$graph);
 	$mainPipeline->generate(1);
 	my ($pipelinesCode, $splitJoinesCode) = $mainPipeline->buildCode("", "");
 
@@ -145,15 +148,15 @@ sub generateParameters {
 		foreach my $parameter (@parameters) {
 			my $parameterText = "";
 			$nmbParameters--;
-			my $parameterName = $parameter->{data}->name;
+			my $parameterName = $parameter->name;
 			# check if Type should be included
 			if($typeFlag == 1){
-				my $parameterType = $parameter->{data}->outputType;
+				my $parameterType = $parameter->outputType;
 				$parameterText .= "$parameterType ";
 			}
 			$parameterText .= "$parameterName";
 			if($valueFlag == 1){
-				my $parameterValue = $parameter->{data}->value; 
+				my $parameterValue = $parameter->value; 
 				$parameterText .= " = $parameterValue";	
 			}
 			$workText .= $parameterText;
@@ -178,6 +181,7 @@ sub generateParameters {
 # returns "" if filter is not defined and Filtertext if defined
 sub generateFilter {
 	my $filterNode = shift;
+	my $graph = shift;
 	if (!( defined($filterNode))  ) {
 		print "$filterNode is not defined \n";
 		return "";
@@ -186,19 +190,18 @@ sub generateFilter {
 		print "filterNode->data is not a Filter\n";
 		return "";
 	}
-	if($filterNode->{data}->name eq "__void_sink__" || $filterNode->{data}->name eq "__void_source__"){
+	if($filterNode->name eq "__void_sink__" || $filterNode->name eq "__void_source__"){
 		$filterNode->{'_no_add'} = 1;
 		return "";
 	}
 	updateNodeName($filterNode);
-	my $data = $filterNode->{data};
-	my $inputType = $data->{inputType};
-	my $outputType = $data->{outputType};
-	my $name = $data->{'_gen_name'};
-	my $globalVariables = $data->{globalVariables};
+	my $inputType = $filterNode->{inputType};
+	my $outputType = $filterNode->{outputType};
+	my $name = $filterNode->{'_gen_name'};
+	my $globalVariables = $filterNode->{globalVariables};
 	my $filterText = generateCommentary("Filter $name") . "$inputType->$outputType filter $name";
-	my @predecessors = StreamGraph::View::Item::predecessors($filterNode);
-	my @parameters = @{filterNodesForType(\@predecessors, "StreamGraph::Model::Node::Parameter")};
+	my @parameters = $graph->predecessors($filterNode, "StreamGraph::Model::Node::Parameter");
+	#my @parameters = @{filterNodesForType(\@predecessors, "StreamGraph::Model::Node::Parameter")};
 	# Todo: make names unique!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	$filterText .= generateParameters(\@parameters);
 	$filterText .= " {\n"; 
@@ -206,8 +209,8 @@ sub generateFilter {
 		$globalVariables =~ s/\r?\n/\n\t/g;
 		$filterText .= "\t$globalVariables\n";
 	}
-	$filterText .= generateInit($data);
-	$filterText .= generateWork($data);
+	$filterText .= generateInit($filterNode);
+	$filterText .= generateWork($filterNode);
 	$filterText .= "}\n\n";
 
 	return $filterText;
@@ -220,7 +223,7 @@ sub updateNodeName {
 	if(!$filterNode){
 		return;
 	}
-	$filterNode->{data}{'_gen_name'} = ( $filterNode->{data}->name . $boxNumber);
+	$filterNode->{'_gen_name'} = ( $filterNode->name . $boxNumber);
 	$boxNumber++;
 }
 

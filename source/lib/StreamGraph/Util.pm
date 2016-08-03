@@ -40,7 +40,7 @@ sub filterNodesForType {
 	my @list = @{$listPointer};
 	my @returnList = ();
 	foreach my $listElement (@list) {
-		if ($listElement->{data}->isa($type)) {
+		if ($listElement->isa($type)) {
 			push(@returnList, $listElement);
 		}
 	}

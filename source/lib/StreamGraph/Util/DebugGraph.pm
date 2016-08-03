@@ -11,11 +11,11 @@ sub export_graph {
 	my $g = GraphViz->new();
 	my @V = $graph->{graph}->vertices();
 	for my $item (@V) {
-		$g->add_node( name_id($item->{data}) );
+		$g->add_node( name_id($item) );
 	}
 	my @E = $graph->{graph}->edges();
 	for my $edge (@E) {
-		$g->add_edge( name_id(${$edge}[0]->{data}) , name_id(${$edge}[1]->{data}) );
+		$g->add_edge( name_id(${$edge}[0]) , name_id(${$edge}[1]) );
 	}
 	$g->as_png($dir . "/view.png");
 

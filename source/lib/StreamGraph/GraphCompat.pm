@@ -7,6 +7,7 @@ use parent "StreamGraph::View::Graph";
 
 use StreamGraph::Model::NodeFactory;
 use StreamGraph::View::ItemFactory;
+use Data::Dump qw(dump);
 
 
 sub new {
@@ -17,7 +18,8 @@ sub new {
 	}
 	my $self = {};
 	bless $self, $class;
-	$self->{graph} = $graph->{graph}->copy_graph;
+	$self->{graph} = $graph->{graph}->new;
+	$self->_copyData($graph);
 	$self->{factory} = StreamGraph::Model::NodeFactory->new;
 	$self->{source} = $self->_addVoidSource;
 	$self->{sink} = $self->_addVoidSink;
@@ -42,18 +44,21 @@ sub _addIdentities {
 	foreach my $c ($self->get_connections) {
 		my $pred = $c->[0];
 		my $succ = $c->[1];
-		if ($pred->isFilter && $pred->is_split
-				&& $succ->isFilter && $succ->is_join) {
-			my $identity = _createItem(
-				$self,
-				$self->factory->createIdentity($pred->{data}->outputType)
-			);
+		#print("Does Graph of " . $pred->{data}->name . " have it?: " . $self->{graph}->has_vertex($pred));
+		if ($pred->isFilter && $pred->is_split($self->graph)
+				&& $succ->isFilter && $succ->is_join($self->graph)) {
+			my $identity = $self->factory->createIdentity($pred->outputType); 
 			# print "Should add identity between " . $pred->{data}->name . " and " . $succ->{data}->name . "\n";
 			$pred->{graph} = $self;
 			$self->add_vertex($identity);
-			$self->add_edge($pred, $identity);
+			my $edgeAttr = $self->get_edge_attribute($pred, $succ, 'data');
+			$self->{graph}->add_edge($pred, $identity);
+			$self->set_edge_attribute($pred, $identity, 'data', StreamGraph::Model::ConnectionData->new(
+				inputMult=>$edgeAttr->inputMult, inputPrio=>$edgeAttr->inputPrio));
 			$self->remove_edge($pred, $succ);
-			$self->add_edge($identity, $succ);
+			$self->{graph}->add_edge($identity, $succ);
+			$self->set_edge_attribute($identity, $succ, 'data', StreamGraph::Model::ConnectionData->new(
+				outputMult=>$edgeAttr->outputMult, outputPrio=>$edgeAttr->outputPrio));
 		}
 	}
 }
@@ -82,18 +87,18 @@ sub _addVoidEnd {
 	my @endNodes = $getEndNodes->($self);
 	if (@endNodes >= 1) {
 		my @trueEndNodes = grep {
-			$_->isFilter && $getIOType->($_->{data}) eq "void"
+			$_->isFilter && $getIOType->($_) eq "void"
 		} @endNodes;
 		if (@trueEndNodes > 1) {
-			my $voidEnd = _createItem($self,
-				$self->factory->createVoidEnd($type, scalar @trueEndNodes)
-			);
+			my $voidEnd = $self->factory->createVoidEnd($type, scalar @trueEndNodes);
 			foreach my $end (@trueEndNodes) {
 				if ($type eq "sink") {
 					$end->{graph} = $self;
-					$self->add_edge($end, $voidEnd);
+					$self->{graph}->add_edge($end, $voidEnd);
+					$self->set_edge_attribute($end, $voidEnd, 'data', StreamGraph::Model::ConnectionData->new());
 				} elsif ($type eq "source") {
-					$self->add_edge($voidEnd, $end);
+					$self->{graph}->add_edge($voidEnd, $end);
+					$self->set_edge_attribute($voidEnd, $end, 'data', StreamGraph::Model::ConnectionData->new());
 				} else {
 					print "Wrong type"
 				}
@@ -111,6 +116,15 @@ sub _addVoidEnd {
 	}
 	print " (Looking for ${type}s).\n";
 	return 0;
+}
+
+sub _copyData {
+	my $self = shift;
+	my $graph = shift;
+	foreach my $c ($graph->get_connections) {
+		$self->{graph}->add_edge($c->[0]->{data}, $c->[1]->{data});
+		$self->set_edge_attribute($c->[0]->{data}, $c->[1]->{data}, 'data', $graph->get_edge_attribute($c->[0], $c->[1], 'data')->createCopy)
+	}
 }
 
 1;

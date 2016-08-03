@@ -7,6 +7,7 @@ use strict;
 use Carp;
 
 use Graph::Directed;
+use Data::Dump qw(dump);
 
 use StreamGraph::Model::ConnectionData;
 
@@ -118,8 +119,15 @@ sub num_items {
 
 # @predecessors = $graph->predecessors($item);
 sub predecessors {
-	my ($self, $item) = @_;
-	return $self->{graph}->predecessors($item);
+	my ($self, $item, $type) = @_;
+	if(!defined $self->{graph}){
+		return ();
+	}
+	if(defined $type){
+		return grep { $_->isa($type) } $self->{graph}->predecessors($item);
+	} else {
+		return $self->{graph}->predecessors($item);
+	}
 }
 
 
@@ -201,7 +209,7 @@ sub predecessorless_filters {
 	my ($self) = @_;
 	my @sourceFilters = ();
 	foreach my $item ($self->get_items) {
-		if ($item->predecessors("StreamGraph::Model::Node::Filter") == 0) {
+		if ($self->predecessors($item, "StreamGraph::Model::Node::Filter") == 0) {
 			push @sourceFilters, $item;
 		}
 	}

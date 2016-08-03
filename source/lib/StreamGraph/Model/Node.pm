@@ -7,6 +7,8 @@ use Moo;
 use Digest::MD5 qw(md5_base64);
 use Time::HiRes qw(gettimeofday);
 use YAML qw(Bless Blessed);
+use StreamGraph::Util qw(filterNodesForType);
+use Data::Dump qw(dump);
 
 use StreamGraph::View::Item;
 
@@ -28,6 +30,21 @@ sub yaml_dump {
 	my $self = shift;
 	Bless($self)->keys($self->saveMembers);
 	return Blessed($self);
+}
+
+sub is_split {
+	my $self = shift;
+	my $graph = shift;
+	#print($self->{data}->name . " asking for successors with a " . ref($self->{graph}) . "\n");
+	return $graph->successors($self) > 1;
+}
+
+sub is_join {
+	my $self = shift;
+	my $graph = shift;
+	my @predecessors = $graph->predecessors($self);
+	@predecessors = @{filterNodesForType(\@predecessors, "StreamGraph::Model::Node::Filter")};
+	return @predecessors > 1;
 }
 
 1;

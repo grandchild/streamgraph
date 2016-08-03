@@ -17,33 +17,32 @@ has next		=> ( is=>"rw" );
 has code 		=> ( is=>"rw" );
 has parameters	=> ( is=>"rw", default=>sub{()} );
 has inputType	=> ( is=>"rw" );
+has graph		=> ( is=>"rw" );
 
 
 sub BUILDARGS {
 	my ($class, %args) = @_;
-	
 	my $node = delete $args{first};
-	
 	my $first = $node;
-
+	my $graph = $args{graph};
 	my @codeObjects = ($node);
-	my @successors = $node->successors;
-	my @parameters = @{$node->get_parameters()};
-	while ($successors[0] && !($successors[0]->is_join())) {
-		if($node->is_split()) {
-			my $splitjoin = StreamGraph::Model::CodeObject::SplitJoin->new(first=>$node);
+	my @successors = $graph->successors($node);
+	my @parameters = @{$node->get_parameters($graph)};
+	while ($successors[0] && !($successors[0]->is_join($graph))) {
+		if($node->is_split($graph)) {
+			my $splitjoin = StreamGraph::Model::CodeObject::SplitJoin->new(first=>$node, graph=>$graph);
 			push(@codeObjects, $splitjoin);
 			push(@codeObjects, $splitjoin->next);
 			push(@parameters, @{$splitjoin->parameters});
-			push(@parameters, @{$splitjoin->next->get_parameters()});
+			push(@parameters, @{$splitjoin->next->get_parameters($graph)});
 			$node = $splitjoin->next;
 		} else {
 			push(@codeObjects, $successors[0]);
-			my @p = @{$successors[0]->get_parameters()};
+			my @p = @{$successors[0]->get_parameters($graph)};
 			push(@parameters, @p);
 			$node = $successors[0];
 		}
-		@successors = $node->successors;
+		@successors = $graph->successors($node);
 	}
 	$args{next} = $successors[0];
 	$args{codeObjects} = \@codeObjects;
@@ -63,14 +62,14 @@ sub generate {
 	# CodeObjects may be splitJoin constructs or filters
 	my $codeObjects = $self->codeObjects();
 	if ($codeObjects->[0]->isFilter) {
-	 	$self->inputType($codeObjects->[0]->{data}->{inputType});
+	 	$self->inputType($codeObjects->[0]->{inputType});
 	} else {
 		$codeObjects->[0]->generate();
 		$self->inputType($codeObjects->[0]->inputType);
 	}
 	my @codeObjects = $codeObjects;
 	if($codeObjects->[-1]->isFilter){
-		$self->outputType($codeObjects->[-1]->{data}->{outputType});
+		$self->outputType($codeObjects->[-1]->{outputType});
 	} else {
 		$codeObjects->[-1]->generate();
 		$self->outputType($codeObjects->[-1]->outputType);
@@ -95,7 +94,7 @@ sub generate {
 			# element is Filter
 			if($codeObject->isFilter && !($codeObject->{'_no_add'})){
 				# get Parameters of Filter
-				$pipelineMembers .= "\tadd " . $codeObject->{data}->{'_gen_name'} . StreamGraph::CodeGen::generateParameters($codeObject->get_parameters(0), 0, 1, 0, 0) . ";\n";
+				$pipelineMembers .= "\tadd " . $codeObject->{'_gen_name'} . StreamGraph::CodeGen::generateParameters($codeObject->get_parameters($self->graph, 0), 0, 1, 0, 0) . ";\n";
 			}
 		}
 	}

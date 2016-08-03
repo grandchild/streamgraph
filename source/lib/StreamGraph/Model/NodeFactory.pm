@@ -5,8 +5,8 @@ use strict;
 
 use Moo;
 
-use StreamGraph::View::Item;
-use StreamGraph::View::ItemFactory;
+#use StreamGraph::View::Item;
+#use StreamGraph::View::ItemFactory;
 use StreamGraph::Model::Node::Filter;
 use StreamGraph::Model::Node::Parameter;
 use StreamGraph::Model::Node::Comment;

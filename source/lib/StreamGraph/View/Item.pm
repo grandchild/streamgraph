@@ -10,6 +10,7 @@ use List::Util;
 use Gnome2::Canvas;
 use POSIX qw(DBL_MAX);
 use Glib ':constants';
+use Data::Dump qw(dump);
 
 use Glib::Object::Subclass
 	Gnome2::Canvas::Group::,
@@ -289,7 +290,6 @@ sub get_edge_data_to {
 
 sub get_edge_data_from {
 	my ($self, $source) = @_;
-	print("getting edge multiplicities from " . $source->{data}->name . " to " . $self->{data}->name . "\n");
 	return $self->{graph}->get_edge_attribute($source, $self, 'data');	
 }
 
@@ -309,7 +309,7 @@ sub set_edge_data_to {
 		print("either self or target are undefined or not enough parameters given");
 		return;
 	}
-	my $previous = $self->get_edge_multiplicities_to($target);
+	my $previous = $self->get_edge_data_to($target);
 	if(undef($previous)){
 		$self->set_edge_attribute_to($target, 'data', 
 			StreamGraph::Model::ConnectionData->new(inputMult=>$inMult, outputMult=>$outMult, 
@@ -333,7 +333,7 @@ sub set_edge_data_from {
 		print("either self or source are undefined or not enough parameters given");
 		return;
 	}
-	my $previous = $self->get_edge_multiplicities_from($source);
+	my $previous = $self->get_edge_data_from($source);
 	if(undef($previous)){
 		$self->set_edge_attribute_from($source, 'data', 
 			StreamGraph::Model::ConnectionData->new(inputMult=>$inMult, outputMult=>$outMult, 
@@ -447,6 +447,7 @@ sub all_successors {
 
 sub is_split {
 	my $self = shift;
+	#print($self->{data}->name . " asking for successors with a " . ref($self->{graph}) . "\n");
 	return $self->successors > 1;
 }
 

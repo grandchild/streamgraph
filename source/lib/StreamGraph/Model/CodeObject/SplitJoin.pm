@@ -20,18 +20,19 @@ has next		=> ( is=>"rw" );
 has code 		=> ( is=>"rw" );
 has parameters	=> ( is=>"rw", default=>sub{()} );
 has inputType	=> ( is=>"rw" );
-
+has graph		=> ( is=>"rw" );
 
 sub BUILDARGS {
 	my ($class, %args) = @_;
-	
 	my $node = delete $args{first};
 	$args{split} = $node;
+	my $graph = $args{graph};
 	my @codeObjects = ();
-	my @successors = $node->successors;
+	my @successors = $graph->successors($node);
+	@successors = sort {$a->get_edge_data_from($node, $graph)->inputPrio <=> $b->get_edge_data_from($node, $graph)->inputPrio} @successors;
 	my @parameters = ();
 	foreach my $s (@successors) {
-		my $pipeline = StreamGraph::Model::CodeObject::Pipeline->new(first=>$s);
+		my $pipeline = StreamGraph::Model::CodeObject::Pipeline->new(first=>$s, graph=>$graph);
 		push(@codeObjects, $pipeline);
 		push(@parameters, @{$pipeline->parameters});
 	}
@@ -47,14 +48,14 @@ sub BUILDARGS {
 sub getSplitCode {
 	my $self = shift;
 	my $splitCode = "split ";
-	my $splitType = $self->split->{data}->splitType;
+	my $splitType = $self->split->splitType;
 	if($splitType eq "void"){
 		$splitCode .= "roundrobin(0)";
 	} elsif($splitType eq "roundrobin") {
 		$splitCode .= "("; 
 		# self->codeObjects only has pipelines
 		$splitCode .= join(", ", 
-			map($self->split->get_edge_data_to($_->codeObjects->[0])->inputMult
+			map($self->split->get_edge_data_to($_->codeObjects->[0], $self->graph)->inputMult
 				, @{$self->codeObjects}
 			)
 		);
@@ -69,14 +70,14 @@ sub getSplitCode {
 sub getJoinCode{
 	my $self = shift;
 	my $joinCode = "join ";
-	my $joinType = $self->join->{data}->joinType;
+	my $joinType = $self->join->joinType;
 	if($joinType eq "void"){
 		$joinCode .= "roundrobin(0)";
 	} elsif($joinType eq "roundrobin") {
 		$joinCode .= $joinType . "(";
 		# self->codeObjects only has pipelines
 		$joinCode .= join(", ", 
-			map($_->codeObjects->[-1]->get_edge_data_to($self->join)->outputMult, 
+			map($_->codeObjects->[-1]->get_edge_data_to($self->join, $self->graph)->outputMult, 
 				@{$self->codeObjects}
 			)
 		);
@@ -90,9 +91,9 @@ sub getJoinCode{
 
 sub generate {
 	my ($self) = @_;
-	$self->name(StreamGraph::CodeGen::getTopologicalConstructName(0, $self->split->{data}->name));
-	$self->inputType($self->split()->{data}->outputType);
-	$self->outputType($self->join()->{data}->inputType);
+	$self->name(StreamGraph::CodeGen::getTopologicalConstructName(0, $self->split->name));
+	$self->inputType($self->split()->outputType);
+	$self->outputType($self->join()->inputType);
 	my $splitJoinCode = $self->inputType . "->" . $self->outputType . " splitjoin " . $self->name;
 	if(@{$self->parameters}){
 		$splitJoinCode .= "(" . join(", ", map($_->outputType . " " . $_->name, @{$self->parameters})) . ")";
