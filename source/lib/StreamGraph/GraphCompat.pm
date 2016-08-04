@@ -94,11 +94,9 @@ sub _addVoidEnd {
 			foreach my $end (@trueEndNodes) {
 				if ($type eq "sink") {
 					$end->{graph} = $self;
-					$self->{graph}->add_edge($end, $voidEnd);
-					$self->set_edge_attribute($end, $voidEnd, 'data', StreamGraph::Model::ConnectionData->new());
+					$self->{graph}->add_edge($end, $voidEnd, StreamGraph::Model::ConnectionData->new);
 				} elsif ($type eq "source") {
-					$self->{graph}->add_edge($voidEnd, $end);
-					$self->set_edge_attribute($voidEnd, $end, 'data', StreamGraph::Model::ConnectionData->new());
+					$self->{graph}->add_edge($voidEnd, $end, StreamGraph::Model::ConnectionData->new);
 				} else {
 					print "Wrong type"
 				}
@@ -122,8 +120,7 @@ sub _copyData {
 	my $self = shift;
 	my $graph = shift;
 	foreach my $c ($graph->get_connections) {
-		$self->{graph}->add_edge($c->[0]->{data}, $c->[1]->{data});
-		$self->set_edge_attribute($c->[0]->{data}, $c->[1]->{data}, 'data', $graph->get_edge_attribute($c->[0], $c->[1], 'data')->createCopy)
+		$self->{graph}->add_edge($c->[0]->{data}, $c->[1]->{data}, $graph->get_edge_attribute($c->[0], $c->[1], 'data')->createCopy)
 	}
 }
 

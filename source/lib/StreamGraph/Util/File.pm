@@ -38,13 +38,17 @@ sub save {
 	my ($filename, $graph) = @_;
 	my @nodes =
 		map {
-			# print $_->{data} . "\n";
 			{ type=>ref($_->{data}), data=>$_->{data} }
 		} $graph->get_items;
 	my @connections =
 		map {
-			# print $_->[0]->{data} . " -----> " . $_->[1]->{data} . "\n";
-			{ from=>$_->[0]->{data}->id, to=>$_->[1]->{data}->id }
+			my $pred = $_->[0];
+			my $succ = $_->[1];
+			{
+				from=>$pred->{data}->id,
+				to=>$succ->{data}->id,
+				data=>$pred->{graph}->get_edge_attribute($pred, $succ, "data")
+			}
 		} $graph->get_connections;
 	my $savestruct = { nodes=>\@nodes, connections=>\@connections };
 	Bless($savestruct)->keys(["nodes", "connections"]);  # force this key ordering
@@ -64,7 +68,7 @@ sub load {
 		} @{$obj->{nodes}};
 	my @connections =
 		map {
-			( $_->{from}, $_->{to} )
+			( $_->{from}, $_->{to}, $_->{data} )
 		} @{$obj->{connections}};
 	return (\@nodes, \@{$obj->{connections}});
 }

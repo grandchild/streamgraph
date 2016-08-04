@@ -338,7 +338,8 @@ sub loadFile {
 	map {
 		$view->connect(
 			getItemWithId(\@items, $_->{from}),
-			getItemWithId(\@items, $_->{to})
+			getItemWithId(\@items, $_->{to}),
+			$_->{data}
 		)
 	} @{$connections};
 }

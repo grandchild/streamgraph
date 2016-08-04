@@ -194,9 +194,9 @@ sub successors {
 
 
 sub connect {
-	my ($self, $predecessor_item, $item) = @_;
+	my ($self, $predecessor_item, $item, $connection_data) = @_;
 	my $color = $self->{connection_colors_gdk}{default};
-	if (!$self->{graph}->add_edge($predecessor_item, $item)) {
+	if (!$self->{graph}->add_edge($predecessor_item, $item, $connection_data)) {
 		return 0;
 	}
 	my $type = $self->_connection_type($predecessor_item, $item);
