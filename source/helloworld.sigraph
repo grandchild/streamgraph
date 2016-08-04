@@ -1,54 +1,17 @@
 --- Streamit Graph File
 ---
+formatversion: 0.1
+name: helloworld
+author: jakob
 nodes:
   - data:
-      name: OffsetBuffer
-      id: HgqVkg
-      x: -2
-      y: -26
-      initCode: ''
-      workCode: |-
-        int i = 0;
-        for(i = 0; i < rate; i++){ 
-        	push(pop()+offset);
-        }
-      globalVariables: ''
-      timesPush: rate
-      timesPop: rate
-      timesPeek: 0
-      joinType: roundrobin
-      joinMultiplicities: 0
-      joinRRForAll: 1
-      splitType: duplicate
-      splitMultiplicities: 0
-      splitRRForAll: 1
-      inputType: int
-      inputCount: 1
+      name: rate
+      id: 8C9EUA
+      x: -66
+      y: -213
       outputType: int
-      outputCount: 0
-    type: StreamGraph::Model::Node::Filter
-  - data:
-      name: Filter
-      id: yN6ERA
-      x: 62
-      y: 46
-      initCode: ''
-      workCode: pop();
-      globalVariables: ''
-      timesPush: 0
-      timesPop: 1
-      timesPeek: 0
-      joinType: roundrobin
-      joinMultiplicities: 0
-      joinRRForAll: 1
-      splitType: duplicate
-      splitMultiplicities: 0
-      splitRRForAll: 1
-      inputType: int
-      inputCount: 1
-      outputType: void
-      outputCount: 0
-    type: StreamGraph::Model::Node::Filter
+      value: 5
+    type: StreamGraph::Model::Node::Parameter
   - data:
       name: print
       id: hng2qg
@@ -98,6 +61,28 @@ nodes:
       outputCount: 0
     type: StreamGraph::Model::Node::Filter
   - data:
+      name: Filter
+      id: yN6ERA
+      x: 62
+      y: 46
+      initCode: ''
+      workCode: pop();
+      globalVariables: ''
+      timesPush: 0
+      timesPop: 1
+      timesPeek: 0
+      joinType: roundrobin
+      joinMultiplicities: 0
+      joinRRForAll: 1
+      splitType: duplicate
+      splitMultiplicities: 0
+      splitRRForAll: 1
+      inputType: int
+      inputCount: 1
+      outputType: void
+      outputCount: 0
+    type: StreamGraph::Model::Node::Filter
+  - data:
       name: IntGenerator
       id: X1nHnQ
       x: 50
@@ -120,14 +105,6 @@ nodes:
       outputCount: 1
     type: StreamGraph::Model::Node::Filter
   - data:
-      name: rate
-      id: 8C9EUA
-      x: 25
-      y: -224
-      outputType: int
-      value: 5
-    type: StreamGraph::Model::Node::Parameter
-  - data:
       name: offset
       id: xsU6/w
       x: -139
@@ -135,53 +112,79 @@ nodes:
       outputType: int
       value: 0
     type: StreamGraph::Model::Node::Parameter
+  - data:
+      name: OffsetBuffer
+      id: HgqVkg
+      x: -2
+      y: -26
+      initCode: ''
+      workCode: |-
+        int i = 0;
+        for(i = 0; i < rate; i++){ 
+        	push(pop()+offset);
+        }
+      globalVariables: ''
+      timesPush: rate
+      timesPop: rate
+      timesPeek: 0
+      joinType: roundrobin
+      joinMultiplicities: 0
+      joinRRForAll: 1
+      splitType: duplicate
+      splitMultiplicities: 0
+      splitRRForAll: 1
+      inputType: int
+      inputCount: 1
+      outputType: int
+      outputCount: 0
+    type: StreamGraph::Model::Node::Filter
 connections:
   - data:
       inputMult: 1
-      outputMult: 1
       inputPrio: 1
-      outputPrio: 1
-    from: yv1uSQ
-    to: HgqVkg
-  - data:
-      inputMult: 1
       outputMult: 1
-      inputPrio: 1
-      outputPrio: 1
-    from: 8C9EUA
-    to: yv1uSQ
-  - data:
-      inputMult: 1
-      outputMult: 1
-      inputPrio: 1
-      outputPrio: 1
-    from: 8C9EUA
-    to: HgqVkg
-  - data:
-      inputMult: 1
-      outputMult: 1
-      inputPrio: 1
-      outputPrio: 1
-    from: X1nHnQ
-    to: HgqVkg
-  - data:
-      inputMult: 1
-      outputMult: 1
-      inputPrio: 1
-      outputPrio: 1
-    from: HgqVkg
-    to: hng2qg
-  - data:
-      inputMult: 1
-      outputMult: 1
-      inputPrio: 1
       outputPrio: 1
     from: HgqVkg
     to: yN6ERA
   - data:
       inputMult: 1
-      outputMult: 1
       inputPrio: 1
+      outputMult: 1
+      outputPrio: 1
+    from: X1nHnQ
+    to: HgqVkg
+  - data:
+      inputMult: 1
+      inputPrio: 1
+      outputMult: 1
+      outputPrio: 1
+    from: 8C9EUA
+    to: HgqVkg
+  - data:
+      inputMult: 1
+      inputPrio: 1
+      outputMult: 1
+      outputPrio: 1
+    from: 8C9EUA
+    to: yv1uSQ
+  - data:
+      inputMult: 1
+      inputPrio: 1
+      outputMult: 1
+      outputPrio: 1
+    from: HgqVkg
+    to: hng2qg
+  - data:
+      inputMult: 1
+      inputPrio: 1
+      outputMult: 1
       outputPrio: 1
     from: xsU6/w
+    to: HgqVkg
+  - data:
+      inputMult: 1
+      inputPrio: 1
+      outputMult: 1
+      outputPrio: 1
+    from: yv1uSQ
     to: HgqVkg

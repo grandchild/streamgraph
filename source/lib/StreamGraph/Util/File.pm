@@ -2,6 +2,8 @@ package StreamGraph::Util::File;
 
 use strict;
 use warnings;
+use Carp;
+
 use YAML qw(LoadFile DumpFile Load Dump Bless Blessed);
 use Data::Dump qw(dump);
 
@@ -36,6 +38,12 @@ sub writeStreamitSource {
 # Util::File::save($filename, $graph);
 sub save {
 	my ($filename, $graph) = @_;
+	my @userinfo = getpwuid $<;
+	my %meta = (
+		name=>$filename=~s:(.*/)?([^/]+)(\.sigraph)$:$2:r,
+		author=>$userinfo[0],
+		formatversion=>"0.1"
+	);
 	my @nodes =
 		map {
 			{ type=>ref($_->{data}), data=>$_->{data} }
@@ -50,16 +58,32 @@ sub save {
 				data=>$pred->{graph}->get_edge_attribute($pred, $succ, "data")
 			}
 		} $graph->get_connections;
-	my $savestruct = { nodes=>\@nodes, connections=>\@connections };
-	Bless($savestruct)->keys(["nodes", "connections"]);  # force this key ordering
+	my $savestruct = { %meta, nodes=>\@nodes, connections=>\@connections };
+	Bless($savestruct)->keys( [qw(formatversion name author nodes connections)]);  # force this key ordering
 	DumpFile($filename, ("Streamit Graph File", $savestruct));
 }
 
 # Util::File::load($filename)
 sub load {
 	my ($filename) = @_;
-	my $nodeFactory = StreamGraph::Model::NodeFactory->new;
 	my $obj = LoadFile($filename);
+	my $formatversion = "0.1";
+	if((not defined $obj->{formatversion}) or (not $obj->{formatversion}=~m/^(\d+\.)*\d+$/)) {
+		print "Cannot determine file format version from file, assuming v$formatversion.\n";
+		$formatversion = "v" . $formatversion=~s/\./_/gr;
+	} else {
+		$formatversion = "v" . ($obj->{formatversion}=~s/\./_/gr);
+	}
+	my $dispatch = {
+		# v0_2    => \&load_v0_2,
+		v0_1    => \&load_v0_1
+	};
+	exists $dispatch->{$formatversion} or croak "Unknown file format version: $formatversion.\n";
+	return $dispatch->{$formatversion}->($obj);
+}
+sub load_v0_1 {
+	my ($obj) = @_;
+	my $nodeFactory = StreamGraph::Model::NodeFactory->new;
 	my @nodes =
 		map {
 			my $type = $_->{type};
