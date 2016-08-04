@@ -6,9 +6,7 @@ use strict;
 use Moo;
 use Digest::MD5 qw(md5_base64);
 use Time::HiRes qw(gettimeofday);
-use YAML qw(Bless Blessed);
 use StreamGraph::Util qw(filterNodesForType);
-use Data::Dump qw(dump);
 
 use StreamGraph::View::Item;
 extends "StreamGraph::Model::Saveable";
