@@ -7,11 +7,19 @@ use Moo;
 
 use StreamGraph::View::Connection;
 
+extends "StreamGraph::Model::Saveable";
+
+
 # Multiplicities
 has inputMult	=> ( is=>"rw", default=>1 );
 has outputMult	=> ( is=>"rw", default=>1 );
+
+# Connection pin order
 has inputPrio	=> ( is=>"rw", default=>1 );
 has outputPrio	=> ( is=>"rw", default=>1 );
+
+has saveMembers => ( is=>"ro", default=>sub{[qw(inputMult outputMult inputPrio outputPrio)]} );
+
 
 sub createCopy {
 	my $self = shift;

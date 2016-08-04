@@ -5,13 +5,10 @@ use strict;
 
 use Moo;
 
-#use StreamGraph::View::Item;
-#use StreamGraph::View::ItemFactory;
 use StreamGraph::Model::Node::Filter;
 use StreamGraph::Model::Node::Parameter;
 use StreamGraph::Model::Node::Comment;
 
-# has view            => ( is=>"ro", required=>1 );
 
 sub createNode {
 	my ($self, @attributes) = @_;
@@ -41,12 +38,14 @@ sub createVoidEnd {
 		return StreamGraph::Model::Node::Filter->new(
 			name=>"__void_sink__",
 			joinType=>"roundrobin",
+			joinMultiplicities=>(0),
 			inputCount=>$count,
 		);
 	} elsif ($type eq "source") {
 		return StreamGraph::Model::Node::Filter->new(
 			name=>"__void_source__",
-			splitType=>"duplicate",
+			splitType=>"roundrobin",
+			splitMultiplicities=>(0),
 			outputCount=>$count
 		);
 	} else {
