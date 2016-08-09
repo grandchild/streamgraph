@@ -14,16 +14,13 @@ extends "StreamGraph::Model::Saveable";
 has inputMult	=> ( is=>"rw", default=>1 );
 has outputMult	=> ( is=>"rw", default=>1 );
 
-# Connection pin order
-has priority	=> ( is=>"rw", default=>1 );
 
-has saveMembers => ( is=>"ro", default=>sub{[qw(inputMult outputMult priority)]} );
+has saveMembers => ( is=>"ro", default=>sub{[qw(inputMult outputMult)]} );
 
 
 sub createCopy {
 	my $self = shift;
-	return StreamGraph::Model::ConnectionData->new(inputMult=>$self->inputMult, outputMult=>$self->outputMult, 
-			priority=>$self->priority);
+	return StreamGraph::Model::ConnectionData->new(inputMult=>$self->inputMult, outputMult=>$self->outputMult);
 }
 
 1;

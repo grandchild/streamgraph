@@ -304,7 +304,7 @@ sub set_edge_attribute_from {
 }
 
 sub set_edge_data_to {
-	my ($self, $target, $inMult, $outMult, $priority) = @_;
+	my ($self, $target, $inMult, $outMult) = @_;
 	if(undef($self) || undef($target) || undef($inMult)){
 		print("either self or target are undefined or not enough parameters given");
 		return;
@@ -318,13 +318,10 @@ sub set_edge_data_to {
 	if(!undef($outMult)){
 		$previous->outputMult($outMult);
 	}
-	if(!undef($priority)){
-		$previous->priority($priority);
-	}
 }
 
 sub set_edge_data_from {
-	my ($self, $source, $inMult, $outMult, $priority) = @_;
+	my ($self, $source, $inMult, $outMult) = @_;
 	if(undef($self) || undef($source) || undef($inMult)){
 		print("either self or source are undefined or not enough parameters given");
 		return;
@@ -337,9 +334,6 @@ sub set_edge_data_from {
 	$previous->inputMult($inMult);
 	if(!undef($outMult)){
 		$previous->outputMult($outMult);
-	}
-	if(!undef($priority)){
-		$previous->priority($priority);
 	}
 }
 

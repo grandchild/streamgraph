@@ -54,11 +54,11 @@ sub _addIdentities {
 			my $edgeAttr = $self->get_edge_attribute($pred, $succ, 'data');
 			$self->{graph}->add_edge($pred, $identity);
 			$self->set_edge_attribute($pred, $identity, 'data', StreamGraph::Model::ConnectionData->new(
-				inputMult=>$edgeAttr->inputMult, priority=>$edgeAttr->priority));
+				inputMult=>$edgeAttr->inputMult));
 			$self->remove_edge($pred, $succ);
 			$self->{graph}->add_edge($identity, $succ);
 			$self->set_edge_attribute($identity, $succ, 'data', StreamGraph::Model::ConnectionData->new(
-				outputMult=>$edgeAttr->outputMult, priority=>$edgeAttr->priority));
+				outputMult=>$edgeAttr->outputMult));
 		}
 	}
 }

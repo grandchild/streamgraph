@@ -16,11 +16,9 @@ has timesPeek           => ( is=>"rw", default=>0 );
 
 has joinType            => ( is=>"rw", default=>"roundrobin" );
 has joinMultiplicities  => ( is=>"rw", default=>(0) );
-has joinRRForAll        => ( is=>"rw", default=>1 );
 
 has splitType           => ( is=>"rw", default=>"duplicate" );
 has splitMultiplicities => ( is=>"rw", default=>(0) );
-has splitRRForAll       => ( is=>"rw", default=>1 );
 
 has inputType           => ( is=>"rw", default=>"void" );
 has inputCount          => ( is=>"rw", default=>0 );
@@ -41,10 +39,8 @@ has saveMembers         => ( is=>"ro", default=>sub{[qw(
 	timesPeek
 	joinType
 	joinMultiplicities
-	joinRRForAll
 	splitType
 	splitMultiplicities
-	splitRRForAll
 	inputType
 	inputCount
 	outputType
@@ -114,7 +110,7 @@ sub set_edge_attribute_from {
 }
 
 sub set_edge_data_to {
-	my ($self, $target, $graph, $inMult, $outMult, $priority) = @_;
+	my ($self, $target, $graph, $inMult, $outMult) = @_;
 	if(!defined($graph)){
 		return;
 	}
@@ -131,13 +127,10 @@ sub set_edge_data_to {
 	if(!undef($outMult)){
 		$previous->outputMult($outMult);
 	}
-	if(!undef($priority)){
-		$previous->priority($priority);
-	}
 }
 
 sub set_edge_data_from {
-	my ($self, $source, $graph, $inMult, $outMult, $priority) = @_;
+	my ($self, $source, $graph, $inMult, $outMult) = @_;
 	if(!defined($graph)){
 		return;
 	}
@@ -153,9 +146,6 @@ sub set_edge_data_from {
 	$previous->inputMult($inMult);
 	if(!undef($outMult)){
 		$previous->outputMult($outMult);
-	}
-	if(!undef($priority)){
-		$previous->priority($priority);
 	}
 }
 

@@ -5,6 +5,34 @@ name: simple
 author: florian
 nodes:
   - data:
+      name: print
+      id: hng2qg
+      x: -107
+      y: 34
+      initCode: ''
+      workCode: println(pop());
+      globalVariables: ''
+      timesPush: 0
+      timesPop: 1
+      timesPeek: 0
+      joinType: roundrobin
+      joinMultiplicities: 0
+      splitType: duplicate
+      splitMultiplicities: 0
+      inputType: int
+      inputCount: 1
+      outputType: void
+      outputCount: 0
+    type: StreamGraph::Model::Node::Filter
+  - data:
+      name: rate
+      id: 8C9EUA
+      x: -236
+      y: -154
+      outputType: int
+      value: 5
+    type: StreamGraph::Model::Node::Parameter
+  - data:
       name: IntGenerator
       id: X1nHnQ
       x: -174
@@ -17,10 +45,8 @@ nodes:
       timesPeek: 0
       joinType: roundrobin
       joinMultiplicities: 0
-      joinRRForAll: 1
       splitType: duplicate
       splitMultiplicities: 0
-      splitRRForAll: 1
       inputType: void
       inputCount: 0
       outputType: int
@@ -43,45 +69,13 @@ nodes:
       timesPeek: 0
       joinType: roundrobin
       joinMultiplicities: 0
-      joinRRForAll: 1
       splitType: duplicate
       splitMultiplicities: 0
-      splitRRForAll: 1
       inputType: int
       inputCount: 1
       outputType: int
       outputCount: 0
     type: StreamGraph::Model::Node::Filter
-  - data:
-      name: print
-      id: hng2qg
-      x: -107
-      y: 34
-      initCode: ''
-      workCode: println(pop());
-      globalVariables: ''
-      timesPush: 0
-      timesPop: 1
-      timesPeek: 0
-      joinType: roundrobin
-      joinMultiplicities: 0
-      joinRRForAll: 1
-      splitType: duplicate
-      splitMultiplicities: 0
-      splitRRForAll: 1
-      inputType: int
-      inputCount: 1
-      outputType: void
-      outputCount: 0
-    type: StreamGraph::Model::Node::Filter
-  - data:
-      name: rate
-      id: 8C9EUA
-      x: -236
-      y: -154
-      outputType: int
-      value: 5
-    type: StreamGraph::Model::Node::Parameter
   - data:
       name: offset
       id: xsU6/w
@@ -94,24 +88,20 @@ connections:
   - data:
       inputMult: 1
       outputMult: 1
-      priority: 1
-    from: 8C9EUA
+    from: xsU6/w
     to: HgqVkg
   - data:
       inputMult: 1
       outputMult: 1
-      priority: 1
-    from: HgqVkg
-    to: hng2qg
-  - data:
-      inputMult: 1
-      outputMult: 1
-      priority: 1
     from: X1nHnQ
     to: HgqVkg
   - data:
       inputMult: 1
       outputMult: 1
-      priority: 1
-    from: xsU6/w
+    from: HgqVkg
+    to: hng2qg
+  - data:
+      inputMult: 1
+      outputMult: 1
+    from: 8C9EUA
     to: HgqVkg
