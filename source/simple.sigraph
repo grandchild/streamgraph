@@ -1,28 +1,9 @@
 --- Streamit Graph File
 ---
+formatversion: 0.1
+name: simple
+author: florian
 nodes:
-  - data:
-      name: print
-      id: hng2qg
-      x: -107
-      y: 34
-      initCode: ''
-      workCode: println(pop());
-      globalVariables: ''
-      timesPush: 0
-      timesPop: 1
-      timesPeek: 0
-      joinType: roundrobin
-      joinMultiplicities: 0
-      joinRRForAll: 1
-      splitType: duplicate
-      splitMultiplicities: 0
-      splitRRForAll: 1
-      inputType: int
-      inputCount: 1
-      outputType: void
-      outputCount: 0
-    type: StreamGraph::Model::Node::Filter
   - data:
       name: IntGenerator
       id: X1nHnQ
@@ -45,22 +26,6 @@ nodes:
       outputType: int
       outputCount: 1
     type: StreamGraph::Model::Node::Filter
-  - data:
-      name: offset
-      id: xsU6/w
-      x: -72
-      y: -160
-      outputType: int
-      value: 250
-    type: StreamGraph::Model::Node::Parameter
-  - data:
-      name: rate
-      id: 8C9EUA
-      x: -236
-      y: -154
-      outputType: int
-      value: 5
-    type: StreamGraph::Model::Node::Parameter
   - data:
       name: OffsetBuffer
       id: HgqVkg
@@ -87,12 +52,66 @@ nodes:
       outputType: int
       outputCount: 0
     type: StreamGraph::Model::Node::Filter
+  - data:
+      name: print
+      id: hng2qg
+      x: -107
+      y: 34
+      initCode: ''
+      workCode: println(pop());
+      globalVariables: ''
+      timesPush: 0
+      timesPop: 1
+      timesPeek: 0
+      joinType: roundrobin
+      joinMultiplicities: 0
+      joinRRForAll: 1
+      splitType: duplicate
+      splitMultiplicities: 0
+      splitRRForAll: 1
+      inputType: int
+      inputCount: 1
+      outputType: void
+      outputCount: 0
+    type: StreamGraph::Model::Node::Filter
+  - data:
+      name: rate
+      id: 8C9EUA
+      x: -236
+      y: -154
+      outputType: int
+      value: 5
+    type: StreamGraph::Model::Node::Parameter
+  - data:
+      name: offset
+      id: xsU6/w
+      x: -72
+      y: -160
+      outputType: int
+      value: 250
+    type: StreamGraph::Model::Node::Parameter
 connections:
-  - from: 8C9EUA
+  - data:
+      inputMult: 1
+      outputMult: 1
+      priority: 1
+    from: 8C9EUA
     to: HgqVkg
-  - from: X1nHnQ
-    to: HgqVkg
-  - from: xsU6/w
-    to: HgqVkg
-  - from: HgqVkg
+  - data:
+      inputMult: 1
+      outputMult: 1
+      priority: 1
+    from: HgqVkg
     to: hng2qg
+  - data:
+      inputMult: 1
+      outputMult: 1
+      priority: 1
+    from: X1nHnQ
+    to: HgqVkg
+  - data:
+      inputMult: 1
+      outputMult: 1
+      priority: 1
+    from: xsU6/w
+    to: HgqVkg
