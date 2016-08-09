@@ -320,9 +320,9 @@ sub show_filter {
 	$splitCB->append_text('Void');
 	if ($itemData->{splitType} eq 'roundrobin') {
 		$splitCB->set_active(0);
-	} elsif ($itemData->{splitType} eq 'Duplicate') {
+	} elsif ($itemData->{splitType} eq 'duplicate') {
 	$splitCB->set_active(1);
-	} elsif ($itemData->{splitType} eq 'Void') {
+} elsif ($itemData->{splitType} eq 'void') {
 		$splitCB->set_active(2);
 	} else {
 		$splitCB->set_active(0);
