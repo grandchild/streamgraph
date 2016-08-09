@@ -174,7 +174,7 @@ sub show_filter {
 	$joinCB->append_text('Void');
 	if ($itemData->{joinType} eq 'roundrobin') {
 		$joinCB->set_active(0);
-	} elsif ($itemData->{joinType} eq 'Void') {
+	} elsif ($itemData->{joinType} eq 'void') {
 		$joinCB->set_active(1);
 	} else {
 		$joinCB->set_active(0);
