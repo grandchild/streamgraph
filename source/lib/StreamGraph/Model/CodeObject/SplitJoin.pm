@@ -29,7 +29,7 @@ sub BUILDARGS {
 	my $graph = $args{graph};
 	my @codeObjects = ();
 	my @successors = $graph->successors($node);
-	@successors = sort {$a->get_edge_data_from($node, $graph)->inputPrio <=> $b->get_edge_data_from($node, $graph)->inputPrio} @successors;
+	@successors = sort {$a->get_edge_data_from($node, $graph)->priority <=> $b->get_edge_data_from($node, $graph)->priority} @successors;
 	my @parameters = ();
 	foreach my $s (@successors) {
 		my $pipeline = StreamGraph::Model::CodeObject::Pipeline->new(first=>$s, graph=>$graph);

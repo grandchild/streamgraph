@@ -304,50 +304,42 @@ sub set_edge_attribute_from {
 }
 
 sub set_edge_data_to {
-	my ($self, $target, $inMult, $outMult, $inPrio, $outPrio) = @_;
+	my ($self, $target, $inMult, $outMult, $priority) = @_;
 	if(undef($self) || undef($target) || undef($inMult)){
 		print("either self or target are undefined or not enough parameters given");
 		return;
 	}
 	my $previous = $self->get_edge_data_to($target);
 	if(undef($previous)){
-		$self->set_edge_attribute_to($target, 'data', 
-			StreamGraph::Model::ConnectionData->new(inputMult=>$inMult, outputMult=>$outMult, 
-				inputPrio=>$inPrio, outputPrio=>$outPrio));
+		$previous = StreamGraph::Model::ConnectionData->new();
+		$self->set_edge_attribute_to($target, 'data', $previous);
 	}
 	$previous->inputMult($inMult);
 	if(!undef($outMult)){
 		$previous->outputMult($outMult);
 	}
-	if(!undef($inPrio)){
-		$previous->inputPrio($inPrio);
-	}
-	if(!undef($outPrio)){
-		$previous->outputPrio($outPrio);
+	if(!undef($priority)){
+		$previous->priority($priority);
 	}
 }
 
 sub set_edge_data_from {
-	my ($self, $source, $inMult, $outMult, $inPrio, $outPrio) = @_;
+	my ($self, $source, $inMult, $outMult, $priority) = @_;
 	if(undef($self) || undef($source) || undef($inMult)){
 		print("either self or source are undefined or not enough parameters given");
 		return;
 	}
 	my $previous = $self->get_edge_data_from($source);
 	if(undef($previous)){
-		$self->set_edge_attribute_from($source, 'data', 
-			StreamGraph::Model::ConnectionData->new(inputMult=>$inMult, outputMult=>$outMult, 
-				inputPrio=>$inPrio, outputPrio=>$outPrio));
+		$previous = StreamGraph::Model::ConnectionData->new();
+		$self->set_edge_attribute_from($source, 'data', $previous);
 	}
 	$previous->inputMult($inMult);
 	if(!undef($outMult)){
 		$previous->outputMult($outMult);
 	}
-	if(!undef($inPrio)){
-		$previous->inputPrio($inPrio);
-	}
-	if(!undef($outPrio)){
-		$previous->outputPrio($outPrio);
+	if(!undef($priority)){
+		$previous->priority($priority);
 	}
 }
 

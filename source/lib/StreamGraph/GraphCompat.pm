@@ -54,11 +54,11 @@ sub _addIdentities {
 			my $edgeAttr = $self->get_edge_attribute($pred, $succ, 'data');
 			$self->{graph}->add_edge($pred, $identity);
 			$self->set_edge_attribute($pred, $identity, 'data', StreamGraph::Model::ConnectionData->new(
-				inputMult=>$edgeAttr->inputMult, inputPrio=>$edgeAttr->inputPrio));
+				inputMult=>$edgeAttr->inputMult, priority=>$edgeAttr->priority));
 			$self->remove_edge($pred, $succ);
 			$self->{graph}->add_edge($identity, $succ);
 			$self->set_edge_attribute($identity, $succ, 'data', StreamGraph::Model::ConnectionData->new(
-				outputMult=>$edgeAttr->outputMult, outputPrio=>$edgeAttr->outputPrio));
+				outputMult=>$edgeAttr->outputMult, priority=>$edgeAttr->priority));
 		}
 	}
 }
@@ -121,9 +121,7 @@ sub _addVoidEnd {
 sub _copyData {
 	my $self = shift;
 	my $graph = shift;
-	print("copying Data Self is a " . ref($self) . " and Graph is a " . ref($graph) . "\n");
 	foreach my $c ($graph->get_connections) {
-		print("\nedge Attribute from " . $c->[0]->{data}->name . " to " . $c->[1]->{data}->name . " is: " . ref($graph->get_edge_attribute($c->[0], $c->[1], 'data')) . "\n");
 		$self->{graph}->add_edge($c->[0]->{data}, $c->[1]->{data});
 		$self->{graph}->set_edge_attribute($c->[0]->{data}, $c->[1]->{data}, 'data', $graph->get_edge_attribute($c->[0], $c->[1], 'data')->createCopy)
 	}

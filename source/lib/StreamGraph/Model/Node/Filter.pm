@@ -114,7 +114,7 @@ sub set_edge_attribute_from {
 }
 
 sub set_edge_data_to {
-	my ($self, $target, $graph, $inMult, $outMult, $inPrio, $outPrio) = @_;
+	my ($self, $target, $graph, $inMult, $outMult, $priority) = @_;
 	if(!defined($graph)){
 		return;
 	}
@@ -124,24 +124,20 @@ sub set_edge_data_to {
 	}
 	my $previous = $self->get_edge_data_to($target, $graph);
 	if(undef($previous)){
-		$self->set_edge_attribute_to($target, $graph, 'data', 
-			StreamGraph::Model::ConnectionData->new(inputMult=>$inMult, outputMult=>$outMult, 
-				inputPrio=>$inPrio, outputPrio=>$outPrio));
+		$previous = StreamGraph::Model::ConnectionData->new();
+		$self->set_edge_attribute_to($target, $graph, 'data', $previous);
 	}
 	$previous->inputMult($inMult);
 	if(!undef($outMult)){
 		$previous->outputMult($outMult);
 	}
-	if(!undef($inPrio)){
-		$previous->inputPrio($inPrio);
-	}
-	if(!undef($outPrio)){
-		$previous->outputPrio($outPrio);
+	if(!undef($priority)){
+		$previous->priority($priority);
 	}
 }
 
 sub set_edge_data_from {
-	my ($self, $source, $graph, $inMult, $outMult, $inPrio, $outPrio) = @_;
+	my ($self, $source, $graph, $inMult, $outMult, $priority) = @_;
 	if(!defined($graph)){
 		return;
 	}
@@ -151,19 +147,15 @@ sub set_edge_data_from {
 	}
 	my $previous = $self->get_edge_data_from($source, $graph);
 	if(undef($previous)){
-		$self->set_edge_attribute_from($source, $graph, 'data', 
-			StreamGraph::Model::ConnectionData->new(inputMult=>$inMult, outputMult=>$outMult, 
-				inputPrio=>$inPrio, outputPrio=>$outPrio));
+		$previous = StreamGraph::Model::ConnectionData->new();
+		$self->set_edge_attribute_from($source, $graph, 'data', $previous);
 	}
 	$previous->inputMult($inMult);
 	if(!undef($outMult)){
 		$previous->outputMult($outMult);
 	}
-	if(!undef($inPrio)){
-		$previous->inputPrio($inPrio);
-	}
-	if(!undef($outPrio)){
-		$previous->outputPrio($outPrio);
+	if(!undef($priority)){
+		$previous->priority($priority);
 	}
 }
 

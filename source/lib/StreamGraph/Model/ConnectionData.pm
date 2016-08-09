@@ -15,16 +15,15 @@ has inputMult	=> ( is=>"rw", default=>1 );
 has outputMult	=> ( is=>"rw", default=>1 );
 
 # Connection pin order
-has inputPrio	=> ( is=>"rw", default=>1 );
-has outputPrio	=> ( is=>"rw", default=>1 );
+has priority	=> ( is=>"rw", default=>1 );
 
-has saveMembers => ( is=>"ro", default=>sub{[qw(inputMult outputMult inputPrio outputPrio)]} );
+has saveMembers => ( is=>"ro", default=>sub{[qw(inputMult outputMult priority)]} );
 
 
 sub createCopy {
 	my $self = shift;
 	return StreamGraph::Model::ConnectionData->new(inputMult=>$self->inputMult, outputMult=>$self->outputMult, 
-			inputPrio=>$self->inputPrio, outputPrio=>$self->outputPrio);
+			priority=>$self->priority);
 }
 
 1;
