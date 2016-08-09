@@ -24,6 +24,46 @@ sub show {
 	}
 }
 
+sub show_connection {
+	my ($con) = @_;
+
+	if (defined $con->{dialog}) { return; }
+	my $dialog = Gtk2::Dialog->new(
+		'Property Window',
+		undef,
+		[qw/destroy-with-parent/],
+	);
+	$con->{dialog} = $dialog;
+
+	my $conData = $con->{item}->{graph}->get_edge_attribute($con->{predecessor_item},$con->{item},'data');
+	my $dbox = $dialog->vbox;
+
+	# PARAMETER NAME ENTRY
+	my $inputMultHbox = Gtk2::HBox->new(FALSE,0);
+	$inputMultHbox->pack_start(Gtk2::Label->new("inputMult: "),FALSE,FALSE,0);
+	my $inputMultE = Gtk2::Entry->new();
+	$inputMultE->set_text($conData->{inputMult});
+	$inputMultE->signal_connect(changed => sub{
+		$conData->{inputMult} = $inputMultE->get_text();
+	});
+	$inputMultHbox->pack_start($inputMultE,FALSE,FALSE,0);
+	$dbox->pack_start($inputMultHbox,FALSE,FALSE,0);
+
+	my $outputMultHbox = Gtk2::HBox->new(FALSE,0);
+	$outputMultHbox->pack_start(Gtk2::Label->new("outputMult: "),FALSE,FALSE,0);
+	my $outputMultE = Gtk2::Entry->new();
+	$outputMultE->set_text($conData->{outputMult});
+	$outputMultE->signal_connect(changed => sub{
+	  $conData->{outputMult} = $outputMultE->get_text();
+	});
+	$outputMultHbox->pack_start($outputMultE,FALSE,FALSE,0);
+	$dbox->pack_start($outputMultHbox,FALSE,FALSE,0);
+
+	$dbox->show_all();
+	$dialog->signal_connect('delete-event'=>sub { undef $con->{dialog}; $dialog->destroy(); });
+	$dialog->show();
+}
+
 sub show_comment {
 	my ($item,$dialog) = @_;
 

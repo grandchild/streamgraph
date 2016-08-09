@@ -11,6 +11,7 @@ use Gnome2::Canvas;
 use StreamGraph::View::Graph;
 use StreamGraph::View::Connection;
 use StreamGraph::View::Layout::Balanced;
+use StreamGraph::Util::PropertyWindow;
 
 use POSIX qw(DBL_MAX);
 
@@ -218,6 +219,7 @@ sub connect {
 				fill_color_gdk    => Gtk2::Gdk::Color->parse('white'),
 				outline_color_gdk => Gtk2::Gdk::Color->parse('gray'),
 			);
+			$connection->{toggles}{$side}->signal_connect('event'=>sub {my ($item, $event) = @_; StreamGraph::Util::PropertyWindow::show_connection($connection) if $event->type eq 'button-press';});
 		}
 	}
 	$item->add_connection('top',$connection);
