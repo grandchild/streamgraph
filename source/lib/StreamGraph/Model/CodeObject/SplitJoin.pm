@@ -51,7 +51,7 @@ sub getSplitCode {
 	if($splitType eq "void"){
 		$splitCode .= "roundrobin(0)";
 	} elsif($splitType eq "roundrobin") {
-		$splitCode .= "("; 
+		$splitCode .= "$splitType("; 
 		# self->codeObjects only has pipelines
 		$splitCode .= join(", ", 
 			map($self->split->get_edge_data_to($_->codeObjects->[0], $self->graph)->inputMult

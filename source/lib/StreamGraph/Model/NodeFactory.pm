@@ -37,14 +37,14 @@ sub createVoidEnd {
 	if ($type eq "sink") {
 		return StreamGraph::Model::Node::Filter->new(
 			name=>"__void_sink__",
-			joinType=>"roundrobin",
+			joinType=>"void",
 			joinMultiplicities=>(0),
 			inputCount=>$count,
 		);
 	} elsif ($type eq "source") {
 		return StreamGraph::Model::Node::Filter->new(
 			name=>"__void_source__",
-			splitType=>"roundrobin",
+			splitType=>"void",
 			splitMultiplicities=>(0),
 			outputCount=>$count
 		);
