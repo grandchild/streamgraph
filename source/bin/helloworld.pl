@@ -336,10 +336,14 @@ sub loadFile {
 	$view->clear();
 	my @items = map { addItem($_) } @{$nodes};
 	map {
+		my $data = StreamGraph::Model::ConnectionData->new;
+		if ($_->{data}) {
+			$data = StreamGraph::Model::ConnectionData->new($_->{data});
+		}
 		$view->connect(
 			getItemWithId(\@items, $_->{from}),
 			getItemWithId(\@items, $_->{to}),
-			StreamGraph::Model::ConnectionData->new($_->{data})
+			$data
 		)
 	} @{$connections};
 }
