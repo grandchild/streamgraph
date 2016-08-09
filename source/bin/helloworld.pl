@@ -339,7 +339,7 @@ sub loadFile {
 		$view->connect(
 			getItemWithId(\@items, $_->{from}),
 			getItemWithId(\@items, $_->{to}),
-			$_->{data}
+			StreamGraph::Model::ConnectionData->new($_->{data})
 		)
 	} @{$connections};
 }
