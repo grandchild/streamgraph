@@ -123,7 +123,39 @@ sub _window_handler {
 			$view->{x_prime} = $rcoords[0];
 			$view->{y_prime} = $rcoords[1];
 			$view->deselect;
+		} elsif ($event_type eq 'button-press' && $event->button == 3) {
+			if ($view->{popup}) {	return;	}
+			$view->{x1_rect} = $coords[0];
+			$view->{y1_rect} = $coords[1];
+			$view->{selectBox} = Gnome2::Canvas::Item->new(
+				$view->root,
+				'Gnome2::Canvas::Rect',
+				fill_color_gdk    => Gtk2::Gdk::Color->parse('lightgray'),
+				outline_color_gdk => Gtk2::Gdk::Color->parse('gray'),
+			);
+			$view->{selectBox}->lower_to_bottom;
 		} elsif ($event_type eq 'motion-notify') {
+			if (defined $view->{selectBox}) {
+				my ($fx,$fy,$tx, $ty) = $view->get_scroll_region();
+				$view->{selectBox}->set(x1=>$view->{x1_rect} + $fx);
+				$view->{selectBox}->set(y1=>$view->{y1_rect} + $fy);
+				$view->{selectBox}->set(x2=>$coords[0] + $fx);
+				$view->{selectBox}->set(y2=>$coords[1] + $fy);
+				$view->deselect();
+				for my $it ($view->{graph}->{graph}->vertices()){
+					my ($x1,$x2,$y1,$y2) = $view->{selectBox}->get('x1','x2','y1','y2');
+					($x1,$x2) = $x1 < $x2 ? ($x1,$x2) : ($x2,$x1);
+					($y1,$y2) = $y1 < $y2 ? ($y1,$y2) : ($y2,$y1);
+					my $inside = 	$it->get('x') > $x1 &&
+												$it->get('x') < $x2 &&
+												$it->get('y') > $y1 &&
+												$it->get('y') < $y2;
+					if ( $inside ){
+						unshift (@{$view->{focusItem}},$it);
+						$it->select(1);
+					}
+				}
+			}
 			unless (defined $view->{y_prime}) {return;}
 			my ($cx, $cy) = $view->get_scroll_offsets();
 			my @rcoords = $event->root_coords;
@@ -137,6 +169,12 @@ sub _window_handler {
 			undef $view->{y_prime};
 		}
 		if ($event_type eq 'button-release' && $event->button == 3) {
+			if (defined $view->{selectBox}) {
+				my $returnVal = $view->{selectBox}->get('x1') - $view->{selectBox}->get('x2');
+				$view->{selectBox}->destroy();
+				undef $view->{selectBox};
+				return if $returnVal;
+			}
 			if ($view->{popup}) {	$view->{popup} = 0;	return;	}
 			my @coords = $event->coords;
 			$view->{menuCoordX} =  $coords[0];
