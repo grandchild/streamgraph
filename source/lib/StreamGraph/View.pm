@@ -40,6 +40,7 @@ sub INIT_INSTANCE {
 		parameter => Gtk2::Gdk::Color->parse('lightgray')
 	};
 	$self->{connection_arrows} = 'none';
+	$self->{focusItem} = ();
 	return $self;
 }
 
@@ -262,6 +263,13 @@ sub _clear_connections {
 	$self->{connections} = undef;
 }
 
+sub deselect {
+	my ($self) = @_;
+	while ($#{$self->{focusItem}}+1) {
+		my $it = shift @{$self->{focusItem}};
+		$it->select(0);
+	}
+}
 
 sub _remove_connection {
 	my ($self, $predecessor_item, $item) = @_;

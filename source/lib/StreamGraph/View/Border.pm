@@ -62,6 +62,14 @@ sub border_get_image
     croak "You must supply a border image by overriding 'border_get_image'.\n";
 }
 
+sub select {
+	my ($self,$switch) = @_;
+	if ($switch) {
+    $self->{border}->set('fill-color-gdk' =>  Gtk2::Gdk::Color->parse('lightblue'));
+  } else {
+    $self->{border}->set('fill-color-gdk' =>  Gtk2::Gdk::Color->parse('white'));
+  }
+}
 
 # $self->border_set_x($value);
 

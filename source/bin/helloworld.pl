@@ -29,9 +29,9 @@ my $window   = Gtk2::Window->new('toplevel');
 
 my $uimanager;
 my $menu_edit;
-my $menu_filter;
 my $scroller = Gtk2::ScrolledWindow->new();
 $scroller->signal_connect('event',\&_window_handler);
+$scroller->signal_connect('key-press-event' => \&show_key);
 my $view = StreamGraph::View->new(aa=>1);
 $view->set(connection_arrows=>'one-way');
 $window->set_size_request(900,500);
@@ -90,17 +90,19 @@ sub _test_handler {
 	if ($event_type eq 'button-press' && $event->button == 1) {
 		$item->{x_prime} = $coords[0];
 		$item->{y_prime} = $coords[1];
-		$view->{focusItem} = $item;
+		$view->deselect;
+		$item->select(1);
+		unshift (@{$view->{focusItem}},$item);
 	} elsif ($event_type eq 'motion-notify') {
 		unless (defined $item->{y_prime}) {return;}
 		$item->set(x=>($item->get('x') + ($coords[0] - $item->{x_prime}) ));
 		$item->set(y=>($item->get('y') + ($coords[1] - $item->{y_prime}) ));
 		$item->{x_prime} = $coords[0];
 		$item->{y_prime} = $coords[1];
-	}	elsif ($event_type eq 'button-release' && $event->button == 3) {
-		$view->{focusItem} = $item;
+	}	elsif ($event_type eq 'button-press' && $event->button == 3) {
 		$view->{popup} = 1;
-		$menu_filter->popup (undef, undef, undef, undef, $event->button, $event->time);
+		$item->select(1);
+		unshift (@{$view->{focusItem}},$item);
 	} elsif ($event_type eq '2button-press' && $event->button == 1) {
 		StreamGraph::Util::PropertyWindow::show($item,$window);
 	}
@@ -116,10 +118,11 @@ sub _window_handler {
     my @coords = $event->coords;
 
 		if ($event_type eq 'button-press' && $event->button == 1) {
-			if (defined $view->{focusItem}->{x_prime}) { return; }
+			if ($#{$view->{focusItem}}+1 && defined $view->{focusItem}->[0]->{x_prime}) { return; }
 			my @rcoords = $event->root_coords;
 			$view->{x_prime} = $rcoords[0];
 			$view->{y_prime} = $rcoords[1];
+			$view->deselect;
 		} elsif ($event_type eq 'motion-notify') {
 			unless (defined $view->{y_prime}) {return;}
 			my ($cx, $cy) = $view->get_scroll_offsets();
@@ -223,8 +226,14 @@ sub addComment {
 	return $item;
 }
 
-sub delFilter {
-	$view->remove_item($view->{focusItem});
+sub show_key {
+	my ($widget,$event,$parameter) =  @_;
+	if ($event->keyval eq "65535") {
+		while ($#{$view->{focusItem}}+1) {
+			my $it = shift @{$view->{focusItem}};
+			$view->remove_item($it);
+		}
+	}
 }
 
 sub delConnection {
@@ -369,8 +378,6 @@ sub create_menu {
 		[ "NewC", undef, 'Neuer Kommentar', undef, undef, \&addNewComment ],
 		[ "RunMenu", undef, "_Run"],
 		[ "RunShow", undef, 'Run', "<control>R", undef, \&runShow ],
-		[ "FilterMenu", undef, "_Filter"],
-		[ "DelF",'gtk-delete', undef, undef, undef, \&delFilter ],
 		[ "DebugMenu", undef, "_Debug"],
 		[ "GraphViz", undef, 'Show GraphViz', "<control>D", undef, \&graphViz ],
 		[ "CodeGenShow", undef, 'Show Streamit Code', "<shift><control>D", undef, \&codeGenShow ],
@@ -401,9 +408,6 @@ sub create_menu {
 				<menuitem action='NewP'/>
 				<menuitem action='NewC'/>
 			</menu>
-			<menu action='FilterMenu'>
-				<menuitem action='DelF'/>
-			</menu>
 			<menu action='RunMenu'>
 				<menuitem action='RunShow'/>
 			</menu>
@@ -423,7 +427,6 @@ sub create_menu {
 	my $menubar = $uimanager->get_widget('/MenuBar');
 	my %menus;
 	$menu_edit = $uimanager->get_widget('/MenuBar/EditMenu')->get_submenu;
-	$menu_filter = $uimanager->get_widget('/MenuBar/FilterMenu')->get_submenu;
 	$menus{connection} = $uimanager->get_widget('/UnVisible/Connection')->get_submenu;
 	$view->{menu} = \%menus;
 	$vbox->pack_start($menubar,FALSE,FALSE,0);

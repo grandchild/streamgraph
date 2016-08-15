@@ -230,6 +230,10 @@ sub get_column_no {
 	return $column->get('column_no');
 }
 
+sub select {
+	my ($self,$switch) = @_;
+	$self->{border}->select($switch);
+}
 
 # $item->get_connection_point('top');
 sub get_connection_point {
@@ -290,7 +294,7 @@ sub get_edge_data_to {
 
 sub get_edge_data_from {
 	my ($self, $source) = @_;
-	return $self->{graph}->get_edge_attribute($source, $self, 'data');	
+	return $self->{graph}->get_edge_attribute($source, $self, 'data');
 }
 
 sub set_edge_attribute_to {
