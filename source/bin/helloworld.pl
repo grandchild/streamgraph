@@ -31,10 +31,10 @@ Gtk2->main();
 exit 0;
 
 sub create_window {
-	my ($file) = @_;
+	my ($file, $isSubgraph) = @_;
 	my %main_gui;
-	$main_gui{window}   = Gtk2::Window->new('toplevel');
-
+	$main_gui{window}   = Gtk2::Window->new($isSubgraph ? 'toplevel': 'toplevel');
+	
 	$main_gui{scroller} = Gtk2::ScrolledWindow->new();
 	$main_gui{scroller}->signal_connect('event',sub {_window_handler(\%main_gui,@_);});
 	$main_gui{scroller}->signal_connect('key-press-event' => sub { show_key(\%main_gui,@_); } );
@@ -43,7 +43,11 @@ sub create_window {
 	$main_gui{window}->set_size_request(900,500);
 	$main_gui{menus} = create_menu(\%main_gui);
 	$main_gui{scroller}->add($main_gui{view});
-	$main_gui{window}->signal_connect('destroy'=>sub { _closeapp($main_gui{view}); });
+	if($isSubgraph) {
+		$main_gui{window}->signal_connect('delete-event'=>sub { _closewindow($main_gui{view}); });
+	} else {
+		$main_gui{window}->signal_connect('destroy'=>sub { _closeapp($main_gui{view}); });
+	}
 	$main_gui{window}->set_type_hint('dialog');
 	$main_gui{window}->add($main_gui{menus});
 	$main_gui{menus}->add($main_gui{scroller});
@@ -69,6 +73,11 @@ sub create_window {
 	scroll_to_center(\%main_gui);
 }
 
+sub _closewindow {
+	my ($view) = @_;
+	$view->destroy();
+	return 0;
+}
 sub _closeapp {
 	my ($view) = @_;
 	$view->destroy();
@@ -110,6 +119,10 @@ sub _test_handler {
 		unshift (@{$main_gui->{view}->{focusItem}},$item);
 	} elsif ($event_type eq '2button-press' && $event->button == 1) {
 		StreamGraph::Util::PropertyWindow::show($item,$main_gui->{window});
+	} elsif ($event_type eq '2button-press' && $event->button == 3) {
+		if($item->isSubgraph) {
+			loadSubgraph($item);
+		}
 	}
 	if ($event_type eq 'button-release') {
 		undef $item->{x_prime};
@@ -213,11 +226,11 @@ sub runShow {
 sub addItem {
 	my ($main_gui, $node, $placeUnderMenu) = @_;
 	my $item;
-	if ($node->isa("StreamGraph::Model::Node::Filter")) {
-		$item = addFilter($main_gui,$node);
-	} elsif ($node->isa("StreamGraph::Model::Node::Parameter")) {
+	if ($node->isDataNode) {
+		$item = addDataNode($main_gui,$node);
+	} elsif ($node->isParameter) {
 		$item = addParameter($main_gui,$node);
-	} elsif ($node->isa("StreamGraph::Model::Node::Comment")) {
+	} elsif ($node->isComment) {
 		$item = addComment($main_gui,$node);
 	} else {
 		croak "Unknown node data type " . ref($node) . "\n";
@@ -233,7 +246,7 @@ sub addItem {
 	return $item;
 }
 
-sub addFilter {
+sub addDataNode {
 	my ($main_gui, $node) = @_;
 	my $item = $main_gui->{factory}->create_item(border=>'StreamGraph::View::Border::RoundedRect',
 					content=>'StreamGraph::View::Content::EllipsisText',
@@ -415,6 +428,11 @@ sub loadFile {
 	my ($x, $y, $w, $h) = ($wd->{x}, $wd->{y}, $wd->{w}, $wd->{h});
 	$main_gui->{window}->move($x, $y);
 	$main_gui->{window}->set_size_request($w, $h);
+}
+
+sub loadSubgraph {
+	my ($item) = @_;
+	create_window($item->{data}->filepath, 1);
 }
 
 sub newFile {

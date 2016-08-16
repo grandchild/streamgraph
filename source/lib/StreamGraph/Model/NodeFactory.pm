@@ -6,6 +6,7 @@ use strict;
 use Moo;
 
 use StreamGraph::Model::Node::Filter;
+use StreamGraph::Model::Node::Subgraph;
 use StreamGraph::Model::Node::Parameter;
 use StreamGraph::Model::Node::Comment;
 

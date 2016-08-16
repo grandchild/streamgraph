@@ -8,6 +8,8 @@ extends "StreamGraph::Model::Node";
 
 has filepath            => ( is=>"rw", default=>"" );
 has unsaved             => ( is=>"rw", default=>1 );
+has visible             => ( is=>"rw", default=>1 );
+has graph               => ( is=>"rw" );
 
 has joinType            => ( is=>"rw", default=>"roundrobin" );
 has splitType           => ( is=>"rw", default=>"duplicate" );
