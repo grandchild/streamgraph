@@ -15,10 +15,7 @@ has timesPop            => ( is=>"rw", default=>0 );
 has timesPeek           => ( is=>"rw", default=>0 );
 
 has joinType            => ( is=>"rw", default=>"roundrobin" );
-has joinMultiplicities  => ( is=>"rw", default=>(0) );
-
 has splitType           => ( is=>"rw", default=>"duplicate" );
-has splitMultiplicities => ( is=>"rw", default=>(0) );
 
 has inputType           => ( is=>"rw", default=>"void" );
 has inputCount          => ( is=>"rw", default=>0 );
@@ -38,9 +35,7 @@ has saveMembers         => ( is=>"ro", default=>sub{[qw(
 	timesPop
 	timesPeek
 	joinType
-	joinMultiplicities
 	splitType
-	splitMultiplicities
 	inputType
 	inputCount
 	outputType
