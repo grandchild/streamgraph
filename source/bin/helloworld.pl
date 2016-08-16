@@ -31,9 +31,9 @@ Gtk2->main();
 exit 0;
 
 sub create_window {
-	my ($file, $isSubgraph) = @_;
+	my ($file, $isSubgraph, $parents, $parent_item) = @_;
 	my %main_gui;
-	$main_gui{window}   = Gtk2::Window->new($isSubgraph ? 'toplevel': 'toplevel');
+	$main_gui{window}   = Gtk2::Window->new('toplevel');
 	
 	$main_gui{scroller} = Gtk2::ScrolledWindow->new();
 	$main_gui{scroller}->signal_connect('event',sub {_window_handler(\%main_gui,@_);});
@@ -44,8 +44,11 @@ sub create_window {
 	$main_gui{menus} = create_menu(\%main_gui);
 	$main_gui{scroller}->add($main_gui{view});
 	if($isSubgraph) {
-		$main_gui{window}->signal_connect('delete-event'=>sub { _closewindow($main_gui{view}); });
+		$main_gui{parents} = $parents;
+		$main_gui{parent_item} = $parent_item;
+		$main_gui{window}->signal_connect('delete-event'=>sub { _closewindow(\%main_gui); });
 	} else {
+		$main_gui{parents} = ();
 		$main_gui{window}->signal_connect('destroy'=>sub { _closeapp($main_gui{view}); });
 	}
 	$main_gui{window}->set_type_hint('dialog');
@@ -71,11 +74,15 @@ sub create_window {
 	$main_gui{window}->show_all();
 	$main_gui{view}->set_scroll_region(-1000,-1000,1000,1000);
 	scroll_to_center(\%main_gui);
+	# foreach my $p (@{$main_gui{parents}}) {
+	# 	print("Parent ", $main_gui{saveFile}, ": ", $p->{saveFile}, "\n");
+	# }
 }
 
 sub _closewindow {
-	my ($view) = @_;
-	$view->destroy();
+	my ($main_gui) = @_;
+	$main_gui->{view}->destroy();
+	$main_gui->{parent_item}->{data}->visible(0);
 	return 0;
 }
 sub _closeapp {
@@ -121,7 +128,8 @@ sub _test_handler {
 		StreamGraph::Util::PropertyWindow::show($item,$main_gui->{window});
 	} elsif ($event_type eq '2button-press' && $event->button == 3) {
 		if($item->isSubgraph) {
-			loadSubgraph($item);
+			loadSubgraph($main_gui, $item);
+			$item->{data}->visible(1);
 		}
 	}
 	if ($event_type eq 'button-release') {
@@ -228,6 +236,7 @@ sub addItem {
 	my $item;
 	if ($node->isDataNode) {
 		$item = addDataNode($main_gui,$node);
+		loadSubgraph($main_gui, $item) if($node->isSubgraph and $node->visible);
 	} elsif ($node->isParameter) {
 		$item = addParameter($main_gui,$node);
 	} elsif ($node->isComment) {
@@ -431,8 +440,13 @@ sub loadFile {
 }
 
 sub loadSubgraph {
-	my ($item) = @_;
-	create_window($item->{data}->filepath, 1);
+	my ($main_gui, $item) = @_;
+	my @parents;
+	if ($main_gui->{parents}) {
+		@parents = @{$main_gui->{parents}};
+	}
+	push @parents, $main_gui;
+	create_window($item->{data}->filepath, 1, \@parents, $item);
 }
 
 sub newFile {

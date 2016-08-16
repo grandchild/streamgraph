@@ -26,6 +26,7 @@ has saveMembers         => ( is=>"ro", default=>sub{[qw(
 	x
 	y
 	filepath
+	visible
 	joinType
 	splitType
 	inputType
