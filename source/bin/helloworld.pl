@@ -319,7 +319,7 @@ sub addNewComment {
 
 sub saveFile {
 	unless (defined $view->{saveFile}) {return saveAsFile();}
-	StreamGraph::Util::File::save($view->{saveFile}, $view->{graph});
+	StreamGraph::Util::File::save($view->{saveFile}, $view->{graph}, $window);
 	$window->set_title("StreamGraphView - " . $view->{saveFile});
 }
 
@@ -379,7 +379,7 @@ sub openFile {
 
 sub loadFile {
 	my ($filename) = @_;
-	my ($nodes, $connections) = StreamGraph::Util::File::load($filename);
+	my ($wd, $nodes, $connections) = StreamGraph::Util::File::load($filename);
 	$view->clear();
 	my @items = map { addItem($_) } @{$nodes};
 	map {
@@ -393,6 +393,9 @@ sub loadFile {
 			$data
 		)
 	} @{$connections};
+	my ($x, $y, $w, $h) = ($wd->{x}, $wd->{y}, $wd->{w}, $wd->{h});
+	$window->move($x, $y);
+	$window->set_size_request($w, $h);
 }
 
 sub newFile {

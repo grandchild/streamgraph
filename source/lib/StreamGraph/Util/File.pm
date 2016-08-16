@@ -37,13 +37,16 @@ sub writeStreamitSource {
 
 # Util::File::save($filename, $graph);
 sub save {
-	my ($filename, $graph) = @_;
+	my ($filename, $graph, $window) = @_;
 	my @userinfo = getpwuid $<;
+	my ($w, $h) = $window->get_size;
+	my ($x, $y) = $window->get_position;
 	my %meta = (
 		name=>$filename=~s:(.*/)?([^/]+)(\.sigraph)$:$2:r,
 		author=>$userinfo[0],
-		formatversion=>"0.1"
+		formatversion=>"0.2"
 	);
+	my %windowdata = (w=>$w, h=>$h, x=>$x, y=>$y);
 	my @nodes =
 		map {
 			{ type=>ref($_->{data}), data=>$_->{data} }
@@ -58,8 +61,8 @@ sub save {
 				data=>$pred->{graph}->get_edge_attribute($pred, $succ, "data")
 			}
 		} $graph->get_connections;
-	my $savestruct = { %meta, nodes=>\@nodes, connections=>\@connections };
-	Bless($savestruct)->keys( [qw(formatversion name author nodes connections)]);  # force this key ordering
+	my $savestruct = { %meta, window=>\%windowdata, nodes=>\@nodes, connections=>\@connections };
+	Bless($savestruct)->keys( [qw(formatversion name author window nodes connections)]);  # force this key ordering
 	DumpFile($filename, ("Streamit Graph File", $savestruct));
 }
 
@@ -75,15 +78,17 @@ sub load {
 		$formatversion = "v" . ($obj->{formatversion}=~s/\./_/gr);
 	}
 	my $dispatch = {
-		# v0_2    => \&load_v0_2,
+		# v0_3    => \&load_v0_3,
+		v0_2    => \&load_v0_2,
 		v0_1    => \&load_v0_1
 	};
 	exists $dispatch->{$formatversion} or croak "Unknown file format version: $formatversion.\n";
 	return $dispatch->{$formatversion}->($obj);
 }
-sub load_v0_1 {
+sub load_v0_2 {
 	my ($obj) = @_;
 	my $nodeFactory = StreamGraph::Model::NodeFactory->new;
+	my %windowdata = %{$obj->{window}};
 	my @nodes =
 		map {
 			my $type = $_->{type};
@@ -94,7 +99,23 @@ sub load_v0_1 {
 		map {
 			( $_->{from}, $_->{to}, $_->{data} )
 		} @{$obj->{connections}};
-	return (\@nodes, \@{$obj->{connections}});
+	return (\%windowdata, \@nodes, \@{$obj->{connections}});
+}
+sub load_v0_1 {
+	my ($obj) = @_;
+	my $nodeFactory = StreamGraph::Model::NodeFactory->new;
+	my %windowdata = (w=>900, h=>500, x=>10, y=>10);
+	my @nodes =
+		map {
+			my $type = $_->{type};
+			my $parameters = $_->{data};
+			$nodeFactory->createNode(type=>$type, %{$parameters});
+		} @{$obj->{nodes}};
+	my @connections =
+		map {
+			( $_->{from}, $_->{to}, $_->{data} )
+		} @{$obj->{connections}};
+	return (\%windowdata, \@nodes, \@{$obj->{connections}});
 }
 
 sub _write {

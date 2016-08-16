@@ -1,14 +1,27 @@
 --- Streamit Graph File
 ---
-formatversion: 0.1
+formatversion: 0.2
 name: multipipeline
-author: florian
+author: jakob
+window:
+  h: 469
+  w: 619
+  x: 80
+  y: 145
 nodes:
   - data:
-      name: FilePrinter
-      id: I2dV3A
-      x: 103
-      y: 112
+      name: offset
+      id: xsU6/w
+      x: 14
+      y: -215
+      outputType: int
+      value: 0
+    type: StreamGraph::Model::Node::Parameter
+  - data:
+      name: ForLater
+      id: G9LSHg
+      x: 165
+      y: -136
       initCode: ''
       workCode: println(pop());
       globalVariables: ''
@@ -16,14 +29,20 @@ nodes:
       timesPop: 1
       timesPeek: 0
       joinType: roundrobin
-      joinMultiplicities: 0
       splitType: duplicate
-      splitMultiplicities: 0
       inputType: int
       inputCount: 1
-      outputType: void
+      outputType: int
       outputCount: 0
     type: StreamGraph::Model::Node::Filter
+  - data:
+      name: rate
+      id: 8C9EUA
+      x: -43
+      y: -206
+      outputType: int
+      value: 5
+    type: StreamGraph::Model::Node::Parameter
   - data:
       name: OffsetBuffer
       id: HgqVkg
@@ -40,22 +59,30 @@ nodes:
       timesPop: rate
       timesPeek: 0
       joinType: roundrobin
-      joinMultiplicities: 0
       splitType: duplicate
-      splitMultiplicities: 0
       inputType: int
       inputCount: 1
       outputType: int
       outputCount: 0
     type: StreamGraph::Model::Node::Filter
   - data:
-      name: rate
-      id: 8C9EUA
-      x: -43
-      y: -206
+      name: Extra
+      id: 4xER6w
+      x: -1
+      y: 1
+      initCode: ''
+      workCode: println(pop());
+      globalVariables: ''
+      timesPush: 0
+      timesPop: 1
+      timesPeek: 0
+      joinType: roundrobin
+      splitType: duplicate
+      inputType: int
+      inputCount: 1
       outputType: int
-      value: 5
-    type: StreamGraph::Model::Node::Parameter
+      outputCount: 0
+    type: StreamGraph::Model::Node::Filter
   - data:
       name: IntGenerator
       id: X1nHnQ
@@ -68,13 +95,29 @@ nodes:
       timesPop: 0
       timesPeek: 0
       joinType: roundrobin
-      joinMultiplicities: 0
       splitType: duplicate
-      splitMultiplicities: 0
       inputType: void
       inputCount: 0
       outputType: int
       outputCount: 1
+    type: StreamGraph::Model::Node::Filter
+  - data:
+      name: FilePrinter
+      id: I2dV3A
+      x: 103
+      y: 112
+      initCode: ''
+      workCode: println(pop());
+      globalVariables: ''
+      timesPush: 0
+      timesPop: 1
+      timesPeek: 0
+      joinType: roundrobin
+      splitType: duplicate
+      inputType: int
+      inputCount: 1
+      outputType: void
+      outputCount: 0
     type: StreamGraph::Model::Node::Filter
   - data:
       name: DoOtherThings
@@ -88,97 +131,7 @@ nodes:
       timesPop: 1
       timesPeek: 0
       joinType: roundrobin
-      joinMultiplicities: 0
       splitType: duplicate
-      splitMultiplicities: 0
-      inputType: int
-      inputCount: 1
-      outputType: int
-      outputCount: 0
-    type: StreamGraph::Model::Node::Filter
-  - data:
-      name: offset
-      id: xsU6/w
-      x: 14
-      y: -215
-      outputType: int
-      value: 0
-    type: StreamGraph::Model::Node::Parameter
-  - data:
-      name: Extra
-      id: 4xER6w
-      x: -1
-      y: 1
-      initCode: ''
-      workCode: println(pop());
-      globalVariables: ''
-      timesPush: 0
-      timesPop: 1
-      timesPeek: 0
-      joinType: roundrobin
-      joinMultiplicities: 0
-      splitType: duplicate
-      splitMultiplicities: 0
-      inputType: int
-      inputCount: 1
-      outputType: int
-      outputCount: 0
-    type: StreamGraph::Model::Node::Filter
-  - data:
-      name: Results
-      id: kZ0wIQ
-      x: 85
-      y: 58
-      initCode: ''
-      workCode: println(pop());
-      globalVariables: ''
-      timesPush: 0
-      timesPop: 1
-      timesPeek: 0
-      joinType: roundrobin
-      joinMultiplicities: 0
-      splitType: duplicate
-      splitMultiplicities: 0
-      inputType: int
-      inputCount: 1
-      outputType: int
-      outputCount: 0
-    type: StreamGraph::Model::Node::Filter
-  - data:
-      name: ScreenPrinter
-      id: 6CnQJQ
-      x: -20
-      y: 116
-      initCode: ''
-      workCode: println(pop());
-      globalVariables: ''
-      timesPush: 0
-      timesPop: 1
-      timesPeek: 0
-      joinType: roundrobin
-      joinMultiplicities: 0
-      splitType: duplicate
-      splitMultiplicities: 0
-      inputType: int
-      inputCount: 1
-      outputType: void
-      outputCount: 0
-    type: StreamGraph::Model::Node::Filter
-  - data:
-      name: ForLater
-      id: G9LSHg
-      x: 165
-      y: -136
-      initCode: ''
-      workCode: println(pop());
-      globalVariables: ''
-      timesPush: 0
-      timesPop: 1
-      timesPeek: 0
-      joinType: roundrobin
-      joinMultiplicities: 0
-      splitType: duplicate
-      splitMultiplicities: 0
       inputType: int
       inputCount: 1
       outputType: int
@@ -196,19 +149,63 @@ nodes:
       timesPop: 1
       timesPeek: 0
       joinType: roundrobin
-      joinMultiplicities: 0
       splitType: duplicate
-      splitMultiplicities: 0
       inputType: int
       inputCount: 1
       outputType: int
+      outputCount: 0
+    type: StreamGraph::Model::Node::Filter
+  - data:
+      name: Results
+      id: kZ0wIQ
+      x: 85
+      y: 58
+      initCode: ''
+      workCode: println(pop());
+      globalVariables: ''
+      timesPush: 0
+      timesPop: 1
+      timesPeek: 0
+      joinType: roundrobin
+      splitType: duplicate
+      inputType: int
+      inputCount: 1
+      outputType: int
+      outputCount: 0
+    type: StreamGraph::Model::Node::Filter
+  - data:
+      name: ScreenPrinter
+      id: 6CnQJQ
+      x: -20
+      y: 116
+      initCode: ''
+      workCode: println(pop());
+      globalVariables: ''
+      timesPush: 0
+      timesPop: 1
+      timesPeek: 0
+      joinType: roundrobin
+      splitType: duplicate
+      inputType: int
+      inputCount: 1
+      outputType: void
       outputCount: 0
     type: StreamGraph::Model::Node::Filter
 connections:
   - data:
       inputMult: 1
       outputMult: 1
-    from: X1nHnQ
+    from: xsU6/w
+    to: G9LSHg
+  - data:
+      inputMult: 1
+      outputMult: 1
+    from: HgqVkg
+    to: hng2qg
+  - data:
+      inputMult: 1
+      outputMult: 1
+    from: 8C9EUA
     to: HgqVkg
   - data:
       inputMult: 1
@@ -223,43 +220,8 @@ connections:
   - data:
       inputMult: 1
       outputMult: 1
-    from: X1nHnQ
-    to: kZ0wIQ
-  - data:
-      inputMult: 1
-      outputMult: 1
-    from: 4xER6w
-    to: kZ0wIQ
-  - data:
-      inputMult: 1
-      outputMult: 1
-    from: X1nHnQ
-    to: G9LSHg
-  - data:
-      inputMult: 1
-      outputMult: 1
-    from: hng2qg
-    to: 4xER6w
-  - data:
-      inputMult: 1
-      outputMult: 1
-    from: xsU6/w
-    to: HgqVkg
-  - data:
-      inputMult: 1
-      outputMult: 1
     from: 8C9EUA
-    to: HgqVkg
-  - data:
-      inputMult: 1
-      outputMult: 1
-    from: xsU6/w
-    to: G9LSHg
-  - data:
-      inputMult: 1
-      outputMult: 1
-    from: HgqVkg
-    to: EL5cJg
+    to: hng2qg
   - data:
       inputMult: 1
       outputMult: 1
@@ -268,15 +230,40 @@ connections:
   - data:
       inputMult: 1
       outputMult: 1
+    from: xsU6/w
+    to: HgqVkg
+  - data:
+      inputMult: 1
+      outputMult: 1
+    from: X1nHnQ
+    to: kZ0wIQ
+  - data:
+      inputMult: 1
+      outputMult: 1
+    from: X1nHnQ
+    to: HgqVkg
+  - data:
+      inputMult: 1
+      outputMult: 1
+    from: X1nHnQ
+    to: G9LSHg
+  - data:
+      inputMult: 1
+      outputMult: 1
     from: EL5cJg
     to: 4xER6w
   - data:
       inputMult: 1
       outputMult: 1
-    from: 8C9EUA
-    to: hng2qg
+    from: HgqVkg
+    to: EL5cJg
   - data:
       inputMult: 1
       outputMult: 1
-    from: HgqVkg
-    to: hng2qg
+    from: 4xER6w
+    to: kZ0wIQ
+  - data:
+      inputMult: 1
+      outputMult: 1
+    from: hng2qg
+    to: 4xER6w
