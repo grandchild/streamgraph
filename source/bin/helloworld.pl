@@ -40,7 +40,6 @@ sub create_window {
 	$main_gui{scroller}->signal_connect('key-press-event' => sub { show_key(\%main_gui,@_); } );
 	$main_gui{view} = StreamGraph::View->new(aa=>1);
 	$main_gui{view}->set(connection_arrows=>'one-way');
-	$main_gui{window}->set_size_request(900,500);
 	$main_gui{menus} = create_menu(\%main_gui);
 	$main_gui{scroller}->add($main_gui{view});
 	if($isSubgraph) {
@@ -436,7 +435,7 @@ sub loadFile {
 	} @{$connections};
 	my ($x, $y, $w, $h) = ($wd->{x}, $wd->{y}, $wd->{w}, $wd->{h});
 	$main_gui->{window}->move($x, $y);
-	$main_gui->{window}->set_size_request($w, $h);
+	$main_gui->{window}->resize($w, $h);
 }
 
 sub loadSubgraph {
