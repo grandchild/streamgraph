@@ -67,7 +67,7 @@ sub hotspot_button_press {
 	my ($self, $item, $event) = @_;
 	if ($self->{side} eq 'top') { return; }
 	my @items = $item->{graph}->all_non_predecessors($item);
-	if ($item->isFilter) {
+	if ($item->isDataNode) {
 		foreach my $i (@items) {
 			$i->toggle_available(1) if $item->{view}->{graph}->is_connectable($item,$i);
 		};

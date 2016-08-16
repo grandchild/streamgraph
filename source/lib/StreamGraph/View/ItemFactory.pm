@@ -99,7 +99,7 @@ sub create_item {
 							y=>(defined $attributes{data} ? $attributes{data}->y : 0));
 
 
-	if (!defined($attributes{data}) or $attributes{data}->isFilter) {
+	if (!defined($attributes{data}) or $attributes{data}->isDataNode) {
 		my $hotspot_in = $self->{toggle_factory}->create_toggle(
 						item=>$item,
 						border=>$border,

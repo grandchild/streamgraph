@@ -62,13 +62,13 @@ sub set_edge_attribute{
 
 sub is_connectable {
 	my ($self, $item1, $item2) = @_;
-	if ($item1->isFilter and $item2->isFilter) {
+	if ($item1->isDataNode and $item2->isDataNode) {
 		if ($item1->{data}->outputType ne $item2->{data}->inputType) {
 			print "Output type " . $item1->{data}->outputType .
 					" does not match input type " . $item2->{data}->inputType . ".\n";
 			return 0;
 		}
-	} elsif ($item1->isParameter and $item2->isFilter) {
+	} elsif ($item1->isParameter and $item2->isDataNode) {
 	} else {
 		print "You cannot connect these types of items: " .
 			ref($item1->{data}) . " and " . ref($item2->{data}) . ".\n";

@@ -232,9 +232,9 @@ sub connect {
 
 sub _connection_type {
 	my ($self, $predecessor_item, $item) = @_;
-	if ($predecessor_item->isFilter and $item->isFilter) {
+	if ($predecessor_item->isDataNode and $item->isDataNode) {
 		return "data";
-	} elsif ($predecessor_item->isParameter and $item->isFilter) {
+	} elsif ($predecessor_item->isParameter and $item->isDataNode) {
 		return "parameter";
 	} else {
 		return "default";
@@ -243,10 +243,10 @@ sub _connection_type {
 
 sub _update_connection_depths {
 	my ($self) = @_;
-	my @items = sort {$a->isFilter ? -1 : 1} $self->{graph}->get_items;
+	my @items = sort {$a->isDataNode ? -1 : 1} $self->{graph}->get_items;
 	for my $item (@items) {
 		for my $connection (@{$item->{connections}{down}}) {
-			$connection->lower_to_bottom if $item->isFilter;
+			$connection->lower_to_bottom if $item->isDataNode;
 			$connection->lower_to_bottom if $item->isParameter;
 		}
 	}

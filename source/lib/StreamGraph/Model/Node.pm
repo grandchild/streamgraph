@@ -21,6 +21,8 @@ has saveMembers => ( is=>"ro", default=>sub{[qw(name id x y outputType)]} );
 
 
 sub isFilter { return shift->isa("StreamGraph::Model::Node::Filter"); }
+sub isSubgraph { return shift->isa("StreamGraph::Model::Node::Subgraph"); }
+sub isDataNode { my ($self) = @_; return $self->isFilter || $self->isSubgraph; }
 sub isParameter { return shift->isa("StreamGraph::Model::Node::Parameter"); }
 sub isComment { return shift->isa("StreamGraph::Model::Node::Comment"); }
 

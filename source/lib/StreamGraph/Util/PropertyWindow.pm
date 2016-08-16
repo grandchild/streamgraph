@@ -15,7 +15,7 @@ sub show {
 	);
 	$item->{dialog} = $dialog;
 
-	if ($item->isFilter) {
+	if ($item->isFilter or $item->isSubgraph) {
 		show_filter($item,$dialog);
 	} elsif ($item->isParameter) {
 		show_parameter($item,$dialog);

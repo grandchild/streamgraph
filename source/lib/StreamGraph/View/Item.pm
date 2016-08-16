@@ -167,7 +167,7 @@ sub update {
 
 	$self->{border}->update();
 	$self->set(width=>$self->{border}->get('width'), height=>$self->{border}->get('height'));
-	if ($self->isFilter) {
+	if ($self->isDataNode) {
 		$self->{hotspots}{'toggle_left'}->set(enabled=>$self->{data}->inputType ne "void");
 		$self->{hotspots}{'toggle_right'}->set(enabled=>$self->{data}->outputType ne "void");
 	}
@@ -183,7 +183,7 @@ sub add_hotspot {
 sub add_connection {
 	my ($self, $side, $connection) = @_;
 	unshift (@{$self->{connections}{$side}},$connection);
-	if ($connection->{predecessor_item}->isFilter) {$self->{connections}{$side . "_num"}++;}
+	if ($connection->{predecessor_item}->isDataNode) {$self->{connections}{$side . "_num"}++;}
 	$self->signal_emit('hotspot_adjust');
 	$self->signal_emit('connection_adjust');
 }
@@ -195,7 +195,7 @@ sub remove_connection {
 	for my $con (@{$self->{connections}{$side}}){
 		if ($con eq $connection) {
 			splice @{$self->{connections}{$side}}, $n, 1;
-			if ($con->{predecessor_item}->isFilter) {$self->{connections}{$side . "_num"}--;}
+			if ($con->{predecessor_item}->isDataNode) {$self->{connections}{$side . "_num"}--;}
 			last;
 		}
 		$n++;
@@ -239,11 +239,11 @@ sub select {
 sub get_connection_point {
 	my ($self, $side, $connection) = @_;
 	my $offset = $side eq 'top' ? 2 : 1;
-	if (!$self->isFilter) { return $self->{border}->get_connection_point($side,1,3); }
+	if (!$self->isDataNode) { return $self->{border}->get_connection_point($side,1,3); }
 	if (!defined $connection) {
 			return $self->{border}->get_connection_point($side,$offset-1,$self->{connections}{$side . "_num"}+$offset);
 	}
-	if (!$connection->{predecessor_item}->isFilter) {
+	if (!$connection->{predecessor_item}->isDataNode) {
 		return $self->{border}->get_connection_point($side,0,$self->{connections}{$side . "_num"}+$offset);
 	}
 	my $arr = $self->{connections}{$side};
@@ -252,7 +252,7 @@ sub get_connection_point {
 		if ($con eq $connection) {
 			return $self->{border}->get_connection_point($side,$n,$self->{connections}{$side . "_num"}+$offset);
 		}
-		if ($con->{predecessor_item}->isFilter) { $n++; }
+		if ($con->{predecessor_item}->isDataNode) { $n++; }
 	}
 	return $self->{border}->get_connection_point($side,$offset-1,$self->{connections}{$side . "_num"}+$offset);
 }
@@ -447,6 +447,8 @@ sub is_join {
 }
 
 sub isFilter { return shift->{data}->isa("StreamGraph::Model::Node::Filter"); }
+sub isSubgraph { return shift->{data}->isa("StreamGraph::Model::Node::Subgraph"); }
+sub isDataNode { return shift->{data}->isDataNode; }
 sub isParameter { return shift->{data}->isa("StreamGraph::Model::Node::Parameter"); }
 sub isComment { return shift->{data}->isa("StreamGraph::Model::Node::Comment"); }
 
