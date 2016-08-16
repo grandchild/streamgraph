@@ -32,23 +32,15 @@ sub source { return shift->{source}; }
 sub sink { return shift->{sink}; }
 sub factory { return shift->{factory}; }
 
-sub _createItem {
-	my ($graph, $data) = @_;
-	# Fake-bless a simple hash into View::Item class, because we don't want the
-	# whole view in here, but need View::Graph vertices to be View::Items.
-	return bless({data=>$data, graph=>$graph}, "StreamGraph::View::Item");
-}
 
 sub _addIdentities {
 	my $self = shift;
 	foreach my $c ($self->get_connections) {
 		my $pred = $c->[0];
 		my $succ = $c->[1];
-		#print("Does Graph of " . $pred->{data}->name . " have it?: " . $self->{graph}->has_vertex($pred));
 		if ($pred->isFilter && $pred->is_split($self->graph)
 				&& $succ->isFilter && $succ->is_join($self->graph)) {
 			my $identity = $self->factory->createIdentity($pred->outputType); 
-			# print "Should add identity between " . $pred->{data}->name . " and " . $succ->{data}->name . "\n";
 			$pred->{graph} = $self;
 			$self->add_vertex($identity);
 			my $edgeAttr = $self->get_edge_attribute($pred, $succ, 'data');
