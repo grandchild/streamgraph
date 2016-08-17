@@ -138,7 +138,7 @@ sub remove_item {
 		croak "You may only remove a StreamGraph::View::Item.\n";
 	}
 	if (!defined $item || !$self->{graph}->has_item($item)) {
-		croak "Iitem not defined\n";
+		croak "Item not defined\n";
 	}
 	# remove connections
 	foreach my $side (qw(top down)) {
@@ -147,6 +147,10 @@ sub remove_item {
 		}
 	}
 	$self->{graph}->remove_vertex($item);
+	if(defined $item->{gui}) {
+		$item->{gui}->{view}->destroy;
+		$item->{gui}->{window}->destroy;
+	}
 	$item->destroy();
 }
 

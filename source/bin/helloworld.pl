@@ -45,6 +45,7 @@ sub create_window {
 	if($isSubgraph) {
 		$main_gui{parents} = $parents;
 		$main_gui{parent_item} = $parent_item;
+		$parent_item->{gui} = \%main_gui;
 		$main_gui{window}->signal_connect('delete-event'=>sub { _closewindow(\%main_gui); });
 	} else {
 		$main_gui{parents} = ();
