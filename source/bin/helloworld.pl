@@ -54,23 +54,25 @@ sub create_window {
 	$main_gui{window}->set_type_hint('dialog');
 	$main_gui{window}->add($main_gui{menus});
 	$main_gui{menus}->add($main_gui{scroller});
-
+	
 	$main_gui{factory} = StreamGraph::View::ItemFactory->new(view=>$main_gui{view});
 	$main_gui{nodeFactory} = StreamGraph::Model::NodeFactory->new();
 	$main_gui{config} = StreamGraph::Util::Config->new();
-
-	die "Usage: perl bin/helloworld.pl [filename]\n" if !defined $file;
+	
+	die "Usage: perl bin/helloworld.pl [filename]\n" if($isSubgraph and !defined($file));
 	$main_gui{saveFile} = $file;
-	loadFile(\%main_gui);
-
+	if($file) {
+		loadFile(\%main_gui);
+	}
+	
 	# codeGenShow();
 	# runShow();
-
+	
 	$main_gui{window}->signal_connect('leave-notify-event',
 		sub { if (defined $main_gui{view}->{toggleCon}) {
 				$main_gui{view}->{toggleCon}->{predecessor_item}->{hotspots}->{'toggle_right'}->end_connection;
 		}	} );
-
+	
 	$main_gui{window}->show_all();
 	$main_gui{view}->set_scroll_region(-1000,-1000,1000,1000);
 	scroll_to_center(\%main_gui);
@@ -328,6 +330,29 @@ sub addNewFilter {
 	);
 }
 
+sub addNewSubgraph {
+	my ($main_gui) = @_;
+	my $filepath = $main_gui->{saveFile} ? $main_gui->{saveFile} : "";
+	my $item = addItem(
+		$main_gui,
+		$main_gui->{nodeFactory}->createNode(
+			type=>"StreamGraph::Model::Node::Subgraph",
+			name=>"Subgraph",
+			filepath=>$filepath,
+			inputType=>"void",
+			inputCount=>0,
+			outputType=>"void",
+			outputCount=>0
+		),
+		1
+	);
+}
+sub addNewSubgraphFile {
+	my ($main_gui) = @_;
+	$main_gui->{saveFile} = openFile($main_gui);
+	addNewSubgraph($main_gui);
+}
+
 sub addNewParameter {
 	my ($main_gui) = @_;
 	addItem(
@@ -356,7 +381,7 @@ sub addNewComment {
 
 sub saveFile {
 	my ($main_gui) = @_;
-	unless (defined $main_gui->{saveFile}) {return saveAsFile($main_gui);}
+	unless ($main_gui->{saveFile}) {return saveAsFile($main_gui);}
 	StreamGraph::Util::File::save($main_gui->{saveFile}, $main_gui->{view}->{graph}, $main_gui->{window});
 	$main_gui->{window}->set_title("StreamGraphView - " . $main_gui->{saveFile});
 }
@@ -413,6 +438,12 @@ sub openFile {
 		$filename = $file_chooser->get_filename;
 	}
 	$file_chooser->destroy;
+	return $filename;
+}
+
+sub openGraph {
+	my ($main_gui) = @_;
+	my $filename = openFile($main_gui);
 	unless (defined $filename){ return; }
 	$main_gui->{saveFile} = $filename;
 	loadFile($main_gui);
@@ -461,15 +492,17 @@ sub create_menu {
 	my @entries = (
 		[ "FileMenu",undef,"_Datei"],
 		[ "New", 'gtk-new', undef,  "<control>N", undef, sub { newFile($main_gui); } ],
-		[ "Open", 'gtk-open', undef,  "<control>O", undef, sub { openFile($main_gui); } ],
+		[ "Open", 'gtk-open', undef,  "<control>O", undef, sub { openGraph($main_gui); } ],
 		[ "Save", 'gtk-save', undef,  "<control>S", undef, sub { saveFile($main_gui); } ],
 		[ "SaveAs", 'gtk-save-as', undef,  "<shift><control>S", undef, sub { saveAsFile($main_gui); } ],
 		[ "Quit", 'gtk-quit', undef,  "<control>Q", undef, undef ],
 		[ "Close", 'gtk-close', undef,  "<shift>W", undef, undef ],
 		[ "EditMenu",'gtk-edit'],
-		[ "NewF", undef, 'Neuer Filter', undef, undef, sub { addNewFilter($main_gui); } ],
-		[ "NewP", undef, 'Neuer Parameter', undef, undef, sub { addNewParameter($main_gui); } ],
-		[ "NewC", undef, 'Neuer Kommentar', undef, undef, sub { addNewComment($main_gui); } ],
+		[ "NewF", undef, 'New Filter', undef, undef, sub { addNewFilter($main_gui); } ],
+		[ "NewS", undef, 'New Subgraph', undef, undef, sub { addNewSubgraph($main_gui); } ],
+		[ "NewSF", undef, 'New Subgraph from file', undef, undef, sub { addNewSubgraphFile($main_gui); } ],
+		[ "NewP", undef, 'New Parameter', undef, undef, sub { addNewParameter($main_gui); } ],
+		[ "NewC", undef, 'New Comment', undef, undef, sub { addNewComment($main_gui); } ],
 		[ "RunMenu", undef, "_Run"],
 		[ "RunShow", undef, 'Run', "<control>R", undef, sub { runShow($main_gui); } ],
 		[ "DebugMenu", undef, "_Debug"],
@@ -499,6 +532,8 @@ sub create_menu {
 			</menu>
 			<menu action='EditMenu'>
 				<menuitem action='NewF'/>
+				<menuitem action='NewS'/>
+				<menuitem action='NewSF'/>
 				<menuitem action='NewP'/>
 				<menuitem action='NewC'/>
 			</menu>
