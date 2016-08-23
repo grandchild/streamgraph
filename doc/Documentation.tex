@@ -446,7 +446,9 @@ The abstract goes here.
 \IEEEPARstart{H}{ere} stands the Intrudoction
 % You must have at least 2 lines in the paragraph with the drop letter
 % (should never be an issue)
-
+\subsection{StreamIt Language}
+\subsubsection{StreamIt topology}
+\label{StreamItTopology}
 % needed in second column of first page if using \IEEEpubid
 %\IEEEpubidadjcol
 
@@ -454,14 +456,28 @@ The abstract goes here.
 
 \section{Reasoning?}
 \noindent Here comes the scientific part
-
-\section{Developer documentation}
-\noindent Here comes in depth documentation to the different parts of the project
 \subsection{View}
 
 \subsection{Model}
 
-\subsection{Codegeneration and GraphCompat}
+\subsection{GraphCompat}
+\noindent The GraphCompat class ensures that a given graph, which normally comes from the data structure of the view component, is compatible with the StreamIt topology. The StreamIt topology is, as discussed in \ref{StreamItTopology}, not only a directed Graph but has additional restrictions. As such the class copies on creaton of an object the given graph's data objects and the connections between the nodes, while making minor corections to the topology, like adding identity-nodes, void ends or void starts.\\
+StreamIt does not allow direct connections between a split and a join without a filter or a pipeline. The StreamGraph graph however allows such a connection. In this case the GraphCompat class adds an identity filter/node on the direct connection between the split and the join. This filter copies his input to his output without changing the content in any way.\\
+The Streamgraph infrastructure allows a graph wiht multiple sources and sinks if the sources all have a void input and the sinks all have a void output type. In that case the GraphCompat class adds a void split/start or respectivly a void join/end to ensure the StreamIt restriction that every construct has exactly one input and one output, as long as adding these does not violate the other rules of StreamIt.\\
+
+\subsection{Code generation}
+
+
+\section{Developer documentation}
+\noindent In this section you can find in depth documentation to the different parts of the StreamGraph project.
+\subsection{View}
+
+\subsection{Model}
+
+\subsection{GraphCompat}
+
+
+\subsection{Code generation}
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
