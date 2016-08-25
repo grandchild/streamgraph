@@ -483,16 +483,19 @@ The Streamgraph infrastructure allows a graph wiht multiple sources and sinks if
 \end{figure}
 
 \subsection{CodeObject}
-\noindent The CodeObject is a interface class which is extended by the Pipline class, the SplitJoin class and the Parameter class. It is a general class for all implemented topological constructs of the StreamIt language. 
+\noindent The CodeObject is a interface class which is extended by the Pipline class, the SplitJoin class and the Parameter class. It is a general class for all implemented topological constructs of the StreamIt language. CodeObjects except for Parameters reference to other CodeObjects or Filters. As such a single CodeObject can have an entire graph ready for code generation stored in a manner that already has the necessary order and hierarchical structure of a StreamIt program.
 \subsubsection{Parameter}
-\noindent The Parameter class is an approximation of the way Parameters are handled in the StreamIt language. Parameters are an exception in the sense that they are not topological constructs.
+\noindent The Parameter class is an approximation of the way parameters are handled in the StreamIt language. Parameters are an exception in the sense that they are not topological constructs. In the viewable graph they are represented by nodes. Parameters do not reference to other CodeObjects or filters. They only are referenced from other objects (filters or CodeObjects). Every parameter as a CodeObject exists exactly one time.\\
 
 \subsubsection{Pipeline}
+\noindent Every StreamIt program contains at least on pipeline, which is the main-pipeline that encompasses all other constructs and filters in a StreamIt program. A CodeObject that is a pipeline has an array in which the encompassed objects are stored in order. Encompassed objects may be other CodeObjects like split-join-constructs or filters. If the need for a split-join-construct while creating the pipeline is detected the creation of a split-join -construct is started. As soon as it is created the pipeline continues its creation and eventually ends.\\
 
 \subsubsection{SplitJoin}
+\noindent Split-join-constructs are the most obvious parallel construct in the StreamIt language. A split-join-construct has at least two parallel paths which are saved. Every path in a split-join is modeled as a pipeline. As such when a split-join is created for every path the creation of a pipeline is started.\\
+
 
 \subsection{Code generation}
-
+\noindent The code generation takes the CodeObjects and 
 
 \section{Developer documentation}
 \noindent In this section you can find in depth documentation to the different parts of the StreamGraph project.
