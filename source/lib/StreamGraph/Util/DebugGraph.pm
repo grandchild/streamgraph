@@ -27,7 +27,9 @@ sub export_graph {
 	);
 
 	my $dbox = $dialog->vbox;
-	my $image = Gtk2::Image->new_from_file ($dir . "/view.png");
+	my $pixbuf = Gtk2::Gdk::Pixbuf->new_from_file ($dir . "/view.png");
+	$pixbuf = $pixbuf->scale_simple($pixbuf->get_width/2, $pixbuf->get_height/2, 'bilinear');
+	my $image = Gtk2::Image->new_from_pixbuf($pixbuf);
 	$view->{DebugGraph} = $image;
 	$dbox->pack_start($image,FALSE,FALSE,0);
 	$dbox->show_all();
