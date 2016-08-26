@@ -331,8 +331,8 @@ sub addNewFilter {
 }
 
 sub addNewSubgraph {
-	my ($main_gui) = @_;
-	my $filepath = $main_gui->{saveFile} ? $main_gui->{saveFile} : "";
+	my ($main_gui, $filepath) = @_;
+	$filepath = $filepath ? $filepath : "";
 	my $item = addItem(
 		$main_gui,
 		$main_gui->{nodeFactory}->createNode(
@@ -346,11 +346,6 @@ sub addNewSubgraph {
 		),
 		1
 	);
-}
-sub addNewSubgraphFile {
-	my ($main_gui) = @_;
-	$main_gui->{saveFile} = pickFile($main_gui);
-	addNewSubgraph($main_gui);
 }
 
 sub addNewParameter {
@@ -419,7 +414,6 @@ sub saveAsFile {
 }
 
 sub pickFile {
-	my ($main_gui) = @_;
 	my $filter = Gtk2::FileFilter->new();
 	$filter->set_name("StreamGraph");
 	$filter->add_pattern("*.sigraph");
@@ -443,7 +437,7 @@ sub pickFile {
 
 sub openFile {
 	my ($main_gui) = @_;
-	my $filename = pickFile($main_gui);
+	my $filename = pickFile();
 	unless (defined $filename){ return; }
 	$main_gui->{saveFile} = $filename;
 	loadFile($main_gui);
@@ -500,7 +494,7 @@ sub create_menu {
 		[ "EditMenu",'gtk-edit'],
 		[ "NewF", undef, 'New Filter', undef, undef, sub { addNewFilter($main_gui); } ],
 		[ "NewS", undef, 'New Subgraph', undef, undef, sub { addNewSubgraph($main_gui); } ],
-		[ "NewSF", undef, 'New Subgraph from file', undef, undef, sub { addNewSubgraphFile($main_gui); } ],
+		[ "NewSF", undef, 'New Subgraph from file', undef, undef, sub { addNewSubgraph($main_gui, pickFile()); } ],
 		[ "NewP", undef, 'New Parameter', undef, undef, sub { addNewParameter($main_gui); } ],
 		[ "NewC", undef, 'New Comment', undef, undef, sub { addNewComment($main_gui); } ],
 		[ "RunMenu", undef, "_Run"],
