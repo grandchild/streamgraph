@@ -349,7 +349,7 @@ sub addNewSubgraph {
 }
 sub addNewSubgraphFile {
 	my ($main_gui) = @_;
-	$main_gui->{saveFile} = openFile($main_gui);
+	$main_gui->{saveFile} = pickFile($main_gui);
 	addNewSubgraph($main_gui);
 }
 
@@ -418,7 +418,7 @@ sub saveAsFile {
 	saveFile();
 }
 
-sub openFile {
+sub pickFile {
 	my ($main_gui) = @_;
 	my $filter = Gtk2::FileFilter->new();
 	$filter->set_name("StreamGraph");
@@ -441,9 +441,9 @@ sub openFile {
 	return $filename;
 }
 
-sub openGraph {
+sub openFile {
 	my ($main_gui) = @_;
-	my $filename = openFile($main_gui);
+	my $filename = pickFile($main_gui);
 	unless (defined $filename){ return; }
 	$main_gui->{saveFile} = $filename;
 	loadFile($main_gui);
@@ -492,7 +492,7 @@ sub create_menu {
 	my @entries = (
 		[ "FileMenu",undef,"_Datei"],
 		[ "New", 'gtk-new', undef,  "<control>N", undef, sub { newFile($main_gui); } ],
-		[ "Open", 'gtk-open', undef,  "<control>O", undef, sub { openGraph($main_gui); } ],
+		[ "Open", 'gtk-open', undef,  "<control>O", undef, sub { openFile($main_gui); } ],
 		[ "Save", 'gtk-save', undef,  "<control>S", undef, sub { saveFile($main_gui); } ],
 		[ "SaveAs", 'gtk-save-as', undef,  "<shift><control>S", undef, sub { saveAsFile($main_gui); } ],
 		[ "Quit", 'gtk-quit', undef,  "<control>Q", undef, undef ],
