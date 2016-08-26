@@ -1,4 +1,3 @@
-
 %% bare_jrnl.tex
 %% V1.4b
 %% 2015/08/26
@@ -448,12 +447,15 @@ The abstract goes here.
 
 
 \section{Introduction}
-\IEEEPARstart{H}{ere} stands the Intrudoction
-% You must have at least 2 lines in the paragraph with the drop letter
-% (should never be an issue)
+\IEEEPARstart{T}{he} StreamGraph project aims to present the language simplified in a graphical environment. As such it is intended to be used by people who have little programming experience or people who do not wish to engage with the internal specifics of the StreamIt language and alleviates the amount of StreamIt specific semantics knowledge needed. StreamGraph does not contain every construct or possibility that StreamIt provides since it does not aim to rebuild the language in a graphical environment.
+
 \subsection{StreamIt Language}
+\noindent StreamIt is a language specificly build for applications which process a continuous stream of data. To achieve good performance on multi-core or multi-processsor machines StreamIt enables highly parallel programming and programs, while trying to keep the programming as simple as possible.\\
+The language features specific basic modules. Since this paper is the documentation of the StreamGraph project only modules which within the capabilities of StreamGraph are included and briefly explained. For further documentation on StreamIt see \cite{streamIt}.\\
+The most basic module of the StreamIt language and the only module that processes data is the filter. A filter, just as any other StreamIt construct, has exactly one input and exactly one output for data. Additionaly it has a work and an init function. The init function describes the initial condition, for example initial values of variables, of the filter. The work function describes the steps taken in one excecution of the filter and is called every time that the preconditions are fulfilled. These preconditions are described by the pop, peek and push values. The pop value describes how many data packages are taken from the input of the filter in a single execution of the work funktion. Analogous the pop value describes the how many data packages are put in the output of the filter in a single execution of the work function. The peek value describes how long the input queue has to be at the least, since any value that should be peeked has to be processed to through the previous filters.
 \subsubsection{StreamIt topology}
 \label{StreamItTopology}
+\noindent StreamIt has
 % needed in second column of first page if using \IEEEpubid
 %\IEEEpubidadjcol
 
@@ -462,6 +464,28 @@ The abstract goes here.
 \section{Reasoning?}
 \noindent Here comes the scientific part
 \subsection{View}
+\subsubsection{Filter}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.2\textwidth]{FilterBoxGraphic}
+	\caption{A node in the StreamGraph}
+	\label{fig_filter_node}
+\end{figure}
+\subsubsection{Paramter}
+\subsubsection{Pipeline}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.1\textwidth]{PipelineGraphic}
+	\caption{A node in the StreamGraph}
+	\label{fig_filter_node}
+\end{figure}
+\subsubsection{Split-Join}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.1\textwidth]{SplitJoinGraphic}
+	\caption{A node in the StreamGraph}
+	\label{fig_filter_node}
+\end{figure}
 
 \subsection{Model}
 
@@ -474,7 +498,7 @@ StreamIt does not allow direct connections between a split and a join without a 
 	\caption{Example of adding an identity filter}
 	\label{fig_split_join_identity}
 \end{figure}
-The Streamgraph infrastructure allows a graph wiht multiple sources and sinks if the sources all have a void input and the sinks all have a void output type. In that case the GraphCompat class adds a void split/start or respectivly a void join/end to ensure the StreamIt restriction that every construct has exactly one input and one output, as long as adding these does not violate the other rules of StreamIt. An example can be viewed in Fig. \ref{fig_void_end}. The addition of void-starts/splits is handled in an equivalent manner.\\
+\noindent The Streamgraph infrastructure allows a graph wiht multiple sources and sinks if the sources all have a void input and the sinks all have a void output type. In that case the GraphCompat class adds a void split/start or respectivly a void join/end to ensure the StreamIt restriction that every construct has exactly one input and one output, as long as adding these does not violate the other rules of StreamIt. An example can be viewed in Fig. \ref{fig_void_end}. The addition of void-starts/splits is handled in an equivalent manner.\\
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.5\textwidth]{VoidEnd}
@@ -483,7 +507,7 @@ The Streamgraph infrastructure allows a graph wiht multiple sources and sinks if
 \end{figure}
 
 \subsection{CodeObject}
-\noindent The CodeObject is a interface class which is extended by the Pipline class, the SplitJoin class and the Parameter class. It is a general class for all implemented topological constructs of the StreamIt language. CodeObjects except for Parameters reference to other CodeObjects or Filters. As such a single CodeObject can have an entire graph ready for code generation stored in a manner that already has the necessary order and hierarchical structure of a StreamIt program.
+\noindent The CodeObject is a interface class which is extended by the Pipline class, the SplitJoin class and the Parameter class. It is a general class for all implemented topological constructs of the StreamIt language. Filters are not CodeObjects since they do not describe the structure of the graph but rather are the nodes of the Graph. While Parameters also do not describe the structure of the graph, they may be needed by multiple CodeObjects and are needed in different configurations while the code is generated. As such the parameters are an exception to the general rule that CodeObjects describe the structure of the graph. CodeObjects except for parameters reference to other CodeObjects or filters. As such a single CodeObject can have an entire graph ready for code generation stored in a manner that already has the necessary order and hierarchical structure of a StreamIt program.
 \subsubsection{Parameter}
 \noindent The Parameter class is an approximation of the way parameters are handled in the StreamIt language. Parameters are an exception in the sense that they are not topological constructs. In the viewable graph they are represented by nodes. Parameters do not reference to other CodeObjects or filters. They only are referenced from other objects (filters or CodeObjects). Every parameter as a CodeObject exists exactly one time.\\
 
@@ -491,11 +515,13 @@ The Streamgraph infrastructure allows a graph wiht multiple sources and sinks if
 \noindent Every StreamIt program contains at least on pipeline, which is the main-pipeline that encompasses all other constructs and filters in a StreamIt program. A CodeObject that is a pipeline has an array in which the encompassed objects are stored in order. Encompassed objects may be other CodeObjects like split-join-constructs or filters. If the need for a split-join-construct while creating the pipeline is detected the creation of a split-join -construct is started. As soon as it is created the pipeline continues its creation and eventually ends.\\
 
 \subsubsection{SplitJoin}
-\noindent Split-join-constructs are the most obvious parallel construct in the StreamIt language. A split-join-construct has at least two parallel paths which are saved. Every path in a split-join is modeled as a pipeline. As such when a split-join is created for every path the creation of a pipeline is started.\\
+\noindent Split-join-constructs are the most obvious parallel construct in the StreamIt language. A split-join-construct has at least two parallel paths which are saved. Every path in a split-join is modeled as a pipeline. As such when a split-join is created for every path the creation of a pipeline is started. In StreamIt it is not necessary to create a pipeline if there is exactly one filter on a path between a split-join pair. StreamGraph creates a pipeline on every path of a split-join pair for the sake of convenience. The implementation of this feature would require forward checking or a similar method. The approach to generate a pipeline in every case should not increase the execution time significantly and does not change the order of execution. Because of these reasons it was decided to not include the discussed feature.\\
 
 
 \subsection{Code generation}
-\noindent The code generation takes the CodeObjects and 
+\noindent The code generation as a first step generates the code for every filter in the graph. This is made possible, because filters are the basic modules of StreamIt and due to the fact that every meaningfull StreamIt program has at least a Pipeline.  As such StreamIt as a language does not allow programs consisting only of filters because without a pipeline no connection between these filters can be made (see \ref{StreamItTopology} for further explanation).\\
+After generating all filters the code generation continues with the main CodeObject which is a pipeline. While generating the code of a topological construct (a pipeline or a split-join-pair) it may be necessary to generate the code of another such topological construct since it is a part of the first construct. In that case the code generation of the current construct is paused and the code generation of the contained construct is started. By the time the code generation of the contained construct is finished the code generation of the containing construct is continued.\\
+The code generation arranges filters and topological constructs according to their type. Thus a StreamGraph output file first lists all filters, then all pipelines and last all split-join-constructs.\\
 
 \section{Developer documentation}
 \noindent In this section you can find in depth documentation to the different parts of the StreamGraph project.
@@ -666,9 +692,9 @@ The Streamgraph infrastructure allows a graph wiht multiple sources and sinks if
 % (used to reserve space for the reference number labels box)
 \begin{thebibliography}{1}
 
-\bibitem{IEEEhowto:kopka}
-H.~Kopka and P.~W. Daly, \emph{A Guide to \LaTeX}, 3rd~ed.\hskip 1em plus
-  0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
+\bibitem{streamIt}
+William~Thies, Michael~Karczmarek, and Saman~Amarasinghe, \emph{StreamIt: A Language for Streaming Applications},\hskip 1em plus
+  0.5em minus 0.4em\relax Laboratory for Computer Science, Massachusetts Institute of Technology, Cambridge, MA 02139.
 
 \end{thebibliography}
 
