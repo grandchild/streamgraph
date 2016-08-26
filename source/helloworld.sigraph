@@ -62,7 +62,7 @@ nodes:
       id: 9O1CFA
       x: -68
       y: -75
-      filepath: /home/jakob/dev/streamit/streamgraph/source/outside.sigraph
+      filepath: outside.sigraph
       visible: 1
       joinType: roundrobin
       splitType: duplicate
