@@ -41,4 +41,10 @@ sub is_join {
 	return @predecessors > 1;
 }
 
+sub resetId {
+	my $self = shift;
+	$self->{id} = substr(md5_base64(gettimeofday),-6);
+}
+
+
 1;

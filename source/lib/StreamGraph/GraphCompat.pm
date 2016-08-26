@@ -6,12 +6,14 @@ use warnings;
 use parent "StreamGraph::View::Graph";
 
 use StreamGraph::Model::NodeFactory;
-use StreamGraph::View::ItemFactory;
-use Data::Dump qw(dump);
+use StreamGraph::Model::ConnectionData;
+use StreamGraph::Model::Namespace;
+use StreamGraph::Util::File;
+use StreamGraph::Util qw(getNodeWithId);
 
 
 sub new {
-	my ($class, $graph) = @_;
+	my ($class, $graph, $noSubgraphs) = @_;
 	if (!defined $graph || !$graph->isa("StreamGraph::View::Graph")) {
 		print __PACKAGE__."::new(): expected '\$graph' parameter, got '$graph'.\n";
 		return;
@@ -21,8 +23,12 @@ sub new {
 	$self->{graph} = $graph->{graph}->new;
 	$self->_copyData($graph);
 	$self->{factory} = StreamGraph::Model::NodeFactory->new;
+	unless (defined($noSubgraphs) and $noSubgraphs) {
+		$self->_subgraphs;
+	}
 	$self->{source} = $self->_addVoidSource;
 	$self->{sink} = $self->_addVoidSink;
+	$self->{success} &&= not ($self->{source} == 0 or $self->{sink} == 0);
 	$self->_addIdentities;
 	return $self;
 }
@@ -31,6 +37,7 @@ sub graph { return shift->{graph}; }
 sub source { return shift->{source}; }
 sub sink { return shift->{sink}; }
 sub factory { return shift->{factory}; }
+sub success { return shift->{success}; }
 
 
 sub _addIdentities {
@@ -110,6 +117,86 @@ sub _addVoidEnd {
 	return 0;
 }
 
+sub _subgraphs {
+	my ($self) = @_;
+	foreach my $n ($self->graph->vertices) {
+		if ($n->isSubgraph) {
+			$self->_subgraph($n);
+		}
+	}
+}
+
+sub _subgraph {
+	my ($self, $n) = @_;
+	my $checkGraph = _loadFile($n->filepath);
+	if (not defined $checkGraph) {
+		print("Failed to load subgraph '", $n->name, "'\n");
+		$self->{success} = 0;
+		return;
+	}
+	my @sources = grep { not $_->inputType eq "void" } $checkGraph->predecessorless_filters;
+	my @sinks = grep { not $_->outputType eq "void" } $checkGraph->successorless_filters;
+	if (@sources + @sinks <= 2 and @sources + @sinks >= 1) {
+		my (@incoming, @outgoing);
+		if (@sources) {
+			if (not $sources[0]->inputType eq $n->inputType) {
+				print("Input type '", $n->inputType, "' of Subgraph node '", $n->name, "' doesn't match inner source input type '", $sources[0]->inputType, "'.\n");
+				$self->{success} = 0;
+			}
+			@incoming = map { {node=>$_, data=>$self->graph->get_edge_attribute($_, $n, 'data')} } $self->predecessors($n);
+		}
+		if (@sinks) {
+			if (not $sinks[0]->outputType eq $n->outputType) {
+				print("Output type '", $n->outputType, "' of Subgraph node '", $n->name, "' doesn't match inner sink output type '", $sinks[0]->outputType, "'.\n");
+				$self->{success} = 0;
+			}
+			@outgoing = map { {node=>$_, data=>$self->graph->get_edge_attribute($n, $_, 'data')} } $self->successors($n);
+		}
+		$self->remove_vertex($n);
+		
+		my @subsubgraphs = ();
+		map {
+			$self->graph->add_vertex($_);
+			push(@subsubgraphs, $_) if ($_->isSubgraph);
+		} $checkGraph->get_items;
+		map {
+			my ($from, $to) = @$_;
+			$self->graph->add_edge($from, $to);
+			$self->graph->set_edge_attribute($from, $to, 'data', $checkGraph->get_edge_attribute($from, $to, 'data'));
+		} $checkGraph->get_connections;
+		
+		if (@sources) {
+			map {
+				$self->graph->add_edge($_->{node}, $sources[0]);
+				$self->graph->set_edge_attribute($_->{node}, $sources[0], 'data', $_->{data});
+			} @incoming;
+		}
+		if (@sinks) {
+			map {
+				$self->graph->add_edge($sinks[0], $_->{node});
+				$self->graph->set_edge_attribute($sinks[0], $_->{node}, 'data', $_->{data});
+			} @outgoing;
+		}
+		map { $self->_subgraph($_); } @subsubgraphs;
+	} elsif (@sources==0 or @sinks==0) {
+		print("Subgraph is empty or has no none-void sources or sinks. Trying to continue by removing the subgraph...\n");
+		$self->remove_vertex($n);
+		# FIXME:
+		# Check now if all successors and predecessors still have other nodes
+		# connected in the same direction.
+		# If not throw an error, as this would leave them with empty pins.
+	} else {
+		print("Multiple sources (" . @sources . ") and/or sinks (" . @sinks . ") in subgraph. Only a single source and/or a single sink may be used.\n");
+		foreach my $s (@sources) {
+			print $s->name, " (", $s->id, ")\n";
+		}
+		foreach my $s (@sinks) {
+			print $s->name, " (", $s->id, ")\n";
+		}
+		$self->{success} = 0;
+	}
+}
+
 sub _copyData {
 	my $self = shift;
 	my $graph = shift;
@@ -117,6 +204,39 @@ sub _copyData {
 		$self->{graph}->add_edge($c->[0]->{data}, $c->[1]->{data});
 		$self->{graph}->set_edge_attribute($c->[0]->{data}, $c->[1]->{data}, 'data', $graph->get_edge_attribute($c->[0], $c->[1], 'data')->createCopy)
 	}
+}
+
+sub _loadFile {
+	my ($filepath) = @_;
+	# if (not defined($graph) or not $graph->isa("StreamGraph::GraphCompat")) {
+	# }
+	my $graph = StreamGraph::View::Graph->new();
+	return if not defined $graph;
+	my ($wd, $nodes, $connections) = StreamGraph::Util::File::load($filepath);
+	my $nodeFactory = StreamGraph::Model::NodeFactory->new;
+	map {
+		$graph->add_vertex($_);
+	} @{$nodes};
+	map {
+		my $data = $_->{data} ?
+			StreamGraph::Model::ConnectionData->new($_->{data}) :
+			StreamGraph::Model::ConnectionData->new;
+		my @graphnodes = $graph->get_items;
+		my $from = getNodeWithId(\@graphnodes, $_->{from});
+		my $to = getNodeWithId(\@graphnodes, $_->{to});
+		$graph->{graph}->add_edge($from, $to);
+		$graph->{graph}->set_edge_attribute($from, $to, 'data', $data);
+	} @{$connections};
+	my $namespace = StreamGraph::Model::Namespace->new(filepath=>$filepath);
+	foreach my $n ($graph->get_items) {
+		$n->resetId;
+		if ($n->isParameter) {
+			$namespace->register($n->name);
+			$n->name($namespace->newname($n->name));
+		}
+	}
+	$namespace->replaceAll($graph);
+	return $graph;
 }
 
 1;
