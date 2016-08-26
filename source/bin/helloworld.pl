@@ -51,6 +51,8 @@ sub create_window {
 		$main_gui{parents} = ();
 		$main_gui{window}->signal_connect('destroy'=>sub { _closeapp($main_gui{view}); });
 	}
+	my $top = $isSubgraph ? "" : "MAIN - ";
+	$main_gui{window}->set_title($file =~ s:.*?([^/]+?)(\.sigraph)?$:$top$1 - StreamGraph:ri);
 	$main_gui{window}->set_type_hint('dialog');
 	$main_gui{window}->add($main_gui{menus});
 	$main_gui{menus}->add($main_gui{scroller});
