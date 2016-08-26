@@ -206,8 +206,10 @@ sub predecessorless_filters {
 	my ($self) = @_;
 	my @sourceFilters = ();
 	foreach my $item ($self->get_items) {
-		if ($self->predecessors($item, "StreamGraph::Model::Node::Filter") == 0) {
-			push @sourceFilters, $item;
+		if ($item->isa("StreamGraph::Model::Node::Filter")) {
+			if ($self->predecessors($item, "StreamGraph::Model::Node::Filter") == 0) {
+				push @sourceFilters, $item;
+			}
 		}
 	}
 	return @sourceFilters;
@@ -325,7 +327,7 @@ StreamGraph::View.
 
 =over
 
-=item C<StreamGraph::View::Graph-E<gt>new()>
+=item C<StreamGraph::View::Graph-<gt>new()>
 
 Create a StreamGraph::View::Graph.
 
