@@ -40,7 +40,7 @@ sub create_window {
 	$main_gui{scroller}->signal_connect('key-press-event' => sub { show_key(\%main_gui,@_); } );
 	$main_gui{view} = StreamGraph::View->new(aa=>1);
 	$main_gui{view}->set(connection_arrows=>'one-way');
-	$main_gui{menus} = create_menu(\%main_gui);
+	$main_gui{menus} = create_menu(\%main_gui,$isSubgraph);
 	$main_gui{scroller}->add($main_gui{view});
 	if($isSubgraph) {
 		$main_gui{parents} = $parents;
@@ -488,7 +488,7 @@ sub newFile {
 }
 
 sub create_menu {
-	my ($main_gui) = @_;
+	my ($main_gui,$isSubgraph) = @_;
 	my $vbox = Gtk2::VBox->new(FALSE,5);
 	my @entries = (
 		[ "FileMenu",undef,"_Datei"],
@@ -537,11 +537,12 @@ sub create_menu {
 				<menuitem action='NewSF'/>
 				<menuitem action='NewP'/>
 				<menuitem action='NewC'/>
-			</menu>
-			<menu action='RunMenu'>
+			</menu>" .
+			($isSubgraph ? '' :
+			"<menu action='RunMenu'>
 				<menuitem action='RunShow'/>
-			</menu>
-			<menu action='DebugMenu'>
+			</menu>") .
+			"<menu action='DebugMenu'>
 				<menuitem action='GraphViz'/>
 				<menuitem action='CodeGenShow'/>
 			</menu>
