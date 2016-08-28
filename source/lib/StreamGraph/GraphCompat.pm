@@ -13,7 +13,7 @@ use StreamGraph::Util qw(getNodeWithId);
 
 
 sub new {
-	my ($class, $graph, $noSubgraphs) = @_;
+	my ($class, $graph) = @_;
 	if (!defined $graph || !$graph->isa("StreamGraph::View::Graph")) {
 		print __PACKAGE__."::new(): expected '\$graph' parameter, got '$graph'.\n";
 		return;
@@ -21,11 +21,9 @@ sub new {
 	my $self = {};
 	bless $self, $class;
 	$self->{graph} = $graph->{graph}->new;
-	$self->_copyData($graph);
 	$self->{factory} = StreamGraph::Model::NodeFactory->new;
-	unless (defined($noSubgraphs) and $noSubgraphs) {
-		$self->_subgraphs;
-	}
+	$self->_copyData($graph);
+	$self->_subgraphs;
 	$self->{source} = $self->_addVoidSource;
 	$self->{sink} = $self->_addVoidSink;
 	$self->{success} &&= not ($self->{source} == 0 or $self->{sink} == 0);
