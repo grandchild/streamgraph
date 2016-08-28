@@ -38,7 +38,6 @@ sub show_connection {
 	my $conData = $con->{item}->{graph}->get_edge_attribute($con->{predecessor_item},$con->{item},'data');
 	my $dbox = $dialog->vbox;
 
-	# PARAMETER NAME ENTRY
 	my $inputMultHbox = Gtk2::HBox->new(FALSE,0);
 	$inputMultHbox->pack_start(Gtk2::Label->new("inputMult: "),FALSE,FALSE,0);
 	my $inputMultE = Gtk2::Entry->new();

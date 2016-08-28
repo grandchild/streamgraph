@@ -34,7 +34,7 @@ sub create_window {
 	my ($file, $isSubgraph, $parents, $parent_item) = @_;
 	my %main_gui;
 	$main_gui{window}   = Gtk2::Window->new('toplevel');
-	
+
 	$main_gui{scroller} = Gtk2::ScrolledWindow->new();
 	$main_gui{scroller}->signal_connect('event',sub {_window_handler(\%main_gui,@_);});
 	$main_gui{scroller}->signal_connect('key-press-event' => sub { show_key(\%main_gui,@_); } );
@@ -56,25 +56,25 @@ sub create_window {
 	$main_gui{window}->set_type_hint('dialog');
 	$main_gui{window}->add($main_gui{menus});
 	$main_gui{menus}->add($main_gui{scroller});
-	
+
 	$main_gui{factory} = StreamGraph::View::ItemFactory->new(view=>$main_gui{view});
 	$main_gui{nodeFactory} = StreamGraph::Model::NodeFactory->new();
 	$main_gui{config} = StreamGraph::Util::Config->new();
-	
+
 	die "Usage: perl bin/helloworld.pl [filename]\n" if($isSubgraph and !defined($file));
 	$main_gui{saveFile} = $file;
 	if($file) {
 		loadFile(\%main_gui);
 	}
-	
+
 	# codeGenShow();
 	# runShow();
-	
+
 	$main_gui{window}->signal_connect('leave-notify-event',
 		sub { if (defined $main_gui{view}->{toggleCon}) {
 				$main_gui{view}->{toggleCon}->{predecessor_item}->{hotspots}->{'toggle_right'}->end_connection;
 		}	} );
-	
+
 	$main_gui{window}->show_all();
 	$main_gui{view}->set_scroll_region(-1000,-1000,1000,1000);
 	scroll_to_center(\%main_gui);
@@ -301,6 +301,11 @@ sub addComment {
 sub show_key {
 	my ($main_gui, $widget, $event, $parameter) =  @_;
 	if ($event->keyval eq "65535") {
+		if ($main_gui->{view}->{focusCon}){
+			$main_gui->{view}->remove_connection($main_gui->{view}->{focusCon});
+			undef $main_gui->{view}->{focusCon};
+			return;
+		}
 		while ($#{$main_gui->{view}->{focusItem}}+1) {
 			my $it = shift @{$main_gui->{view}->{focusItem}};
 			$main_gui->{view}->remove_item($it);
@@ -541,17 +546,11 @@ sub create_menu {
 				<menuitem action='CodeGenShow'/>
 			</menu>
 		</menubar>
-		<menubar name='UnVisible'>
-			<menu action='Connection'>
-				<menuitem action='DelC'/>
-			</menu>
-		</menubar>
 	</ui>"
 	);
 
 	$main_gui->{menu}->{menu_bar} = $uimanager->get_widget('/MenuBar');
 	$main_gui->{menu}->{menu_edit} = $uimanager->get_widget('/MenuBar/EditMenu')->get_submenu;
-	$main_gui->{view}->{menu}->{connection} = $uimanager->get_widget('/UnVisible/Connection')->get_submenu;
 	$vbox->pack_start($main_gui->{menu}->{menu_bar},FALSE,FALSE,0);
 
 	$vbox->show_all();
