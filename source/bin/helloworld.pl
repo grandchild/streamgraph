@@ -76,10 +76,6 @@ sub create_window {
 	if($file) {
 		loadFile(\%main_gui);
 	}
-
-	# codeGenShow();
-	# runShow();
-
 	$main_gui{window}->signal_connect('leave-notify-event',
 		sub { if (defined $main_gui{view}->{toggleCon}) {
 				$main_gui{view}->{toggleCon}->{predecessor_item}->{hotspots}->{'toggle_right'}->end_connection;
@@ -248,9 +244,11 @@ sub runShow {
 sub addItem {
 	my ($main_gui, $node, $placeUnderMenu) = @_;
 	my $item;
-	if ($node->isDataNode) {
-		$item = addDataNode($main_gui,$node);
+	if ($node->isSubgraph) {
+		$item = addSubgraph($main_gui,$node);
 		loadSubgraph($main_gui, $item) if($node->isSubgraph and $node->visible);
+	} elsif ($node->isFilter) {
+		$item = addFilter($main_gui,$node);
 	} elsif ($node->isParameter) {
 		$item = addParameter($main_gui,$node);
 	} elsif ($node->isComment) {
@@ -269,14 +267,23 @@ sub addItem {
 	return $item;
 }
 
-sub addDataNode {
+sub addSubgraph {
+	my ($main_gui, $node) = @_;
+	my $item = $main_gui->{factory}->create_item(border=>'StreamGraph::View::Border::Rectangle',
+					content=>'StreamGraph::View::Content::EllipsisText',
+					text=>$node->name,
+					font_desc=>Gtk2::Pango::FontDescription->from_string("Vera Sans italic 8"),
+					fill_color_gdk =>Gtk2::Gdk::Color->parse('white'),
+					data=>$node);
+	return $item;
+}
+
+sub addFilter {
 	my ($main_gui, $node) = @_;
 	my $item = $main_gui->{factory}->create_item(border=>'StreamGraph::View::Border::RoundedRect',
 					content=>'StreamGraph::View::Content::EllipsisText',
 					text=>$node->name,
 					font_desc=>Gtk2::Pango::FontDescription->from_string("Vera Sans italic 8"),
-					hotspot_color_gdk=>Gtk2::Gdk::Color->parse('lightgreen'),
-					# outline_color_gdk=>Gtk2::Gdk::Color->parse('blue'),
 					fill_color_gdk =>Gtk2::Gdk::Color->parse('white'),
 					data=>$node);
 	return $item;
@@ -288,7 +295,6 @@ sub addParameter {
 					content=>'StreamGraph::View::Content::EllipsisText',
 					text=>$node->value,
 					font_desc=>Gtk2::Pango::FontDescription->from_string("Vera Sans 8"),
-					hotspot_color_gdk=>Gtk2::Gdk::Color->parse('lightgreen'),
 					outline_color_gdk=>Gtk2::Gdk::Color->parse('lightgray'),
 					fill_color_gdk   =>Gtk2::Gdk::Color->parse('white'),
 					data=>$node);
@@ -301,7 +307,6 @@ sub addComment {
 					content=>'StreamGraph::View::Content::EllipsisText',
 					text=>$node->string,
 					font_desc=>Gtk2::Pango::FontDescription->from_string("Vera Sans 8"),
-					hotspot_color_gdk=>Gtk2::Gdk::Color->parse(''),
 					outline_color_gdk=>Gtk2::Gdk::Color->parse('#dfdfdf'),
 					fill_color_gdk   =>Gtk2::Gdk::Color->parse('#eee'),
 					data=>$node);
