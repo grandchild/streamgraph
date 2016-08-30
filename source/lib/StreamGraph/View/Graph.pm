@@ -75,7 +75,7 @@ sub is_connectable {
 		return 0;
 	}
 	if ($self->is_predecessor($item1, $item2) || $item1 eq $item2) {
-		print "Trying to form a cicle.\n";
+		$item1->{view}->println("Trying to form a cicle.",'dialog-error');
 		return 0;
 	}
 	return 1;

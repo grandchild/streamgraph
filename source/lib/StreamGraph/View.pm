@@ -198,6 +198,16 @@ sub successors {
 	return $self->{graph}->successors($item);
 }
 
+sub println {
+	my ($self,$str,$type) = @_;
+	if (!defined $self->{terminal}) {return;}
+	my $buf = $self->{terminal}->get_buffer();
+	$buf->insert($buf->get_start_iter," " . $str . "\n");
+	if (!defined $type) {}
+	else {
+		$buf->insert_pixbuf($buf->get_start_iter,Gtk2::Button->new->render_icon('gtk-'.$type,'small-toolbar'));
+	}
+}
 
 sub connect {
 	my ($self, $predecessor_item, $item, $connection_data) = @_;
