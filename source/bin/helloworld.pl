@@ -56,7 +56,7 @@ sub create_window {
 	$main_gui{window}->set_type_hint('dialog');
 	$main_gui{window}->add($main_gui{menus});
 	$main_gui{menus}->pack_start($main_gui{scroller},TRUE,TRUE,0);
-	if ($isSubgraph) {
+	if (!$isSubgraph) {
 		my $terminal = Gtk2::TextView->new();
 		my $terminal_scroller = Gtk2::ScrolledWindow->new();
 		$main_gui{menus}->pack_start($terminal_scroller,FALSE,TRUE,0);
