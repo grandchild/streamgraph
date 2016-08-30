@@ -249,7 +249,9 @@ sub addItem {
 	my $item;
 	if ($node->isSubgraph) {
 		$item = addSubgraph($main_gui,$node);
-		loadSubgraph($main_gui, $item) if($node->isSubgraph and $node->visible);
+		if ($node->visible) {
+			loadSubgraph($main_gui, $item);
+		}
 	} elsif ($node->isFilter) {
 		$item = addFilter($main_gui,$node);
 	} elsif ($node->isParameter) {
