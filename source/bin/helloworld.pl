@@ -432,7 +432,7 @@ sub saveAsFile {
 		$filename .= ".sigraph";
 	}
 	$main_gui->{saveFile} = $filename;
-	saveFile();
+	saveFile($main_gui);
 }
 
 sub pickFile {
