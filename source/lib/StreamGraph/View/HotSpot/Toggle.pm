@@ -22,12 +22,20 @@ sub hotspot_motion_notify {
 	my ($self, $item, $event) = @_;
 	if (defined $item->{view}->{toggleCon}) {
 		my @coords = $event->coords;
+		$coords[0] -= 5;
+		$coords[1] -= 5;
 		my $found = $item->{view}->get_item_at($coords[0], $coords[1]);
-		if (defined $found->{connect_item} && $item->{view}->{graph}->is_connectable($item,$found->{connect_item})) {
-			@coords = $found->{connect_item}->get_connection_point("top",$item->{view}->{toggleCon});
+		if (defined $found->{connect_item}) {
+			my ($isConnectable, $err) = $item->{view}->{graph}->connectable($item,$found->{connect_item});
+			if ($isConnectable) {
+				@coords = $found->{connect_item}->get_connection_point("top",$item->{view}->{toggleCon});
+				$item->{view}->println("");
+			} else {
+				$item->{view}->println($err, "dialog-warning");
+			}
 		} else {
-			$coords[0] -= 5;
-			$coords[1] -= 5;
+			# $coords[0] -= 5;
+			# $coords[1] -= 5;
 		}
 		$item->{view}->{toggleCon}->{x2} = shift @coords;
 		$item->{view}->{toggleCon}->{y2} = shift @coords;
@@ -69,7 +77,8 @@ sub hotspot_button_press {
 	my @items = $item->{graph}->all_non_predecessors($item);
 	if ($item->isDataNode) {
 		foreach my $i (@items) {
-			$i->toggle_available(1) if $item->{view}->{graph}->is_connectable($item,$i);
+			my ($isConnectable, $err) = $item->{view}->{graph}->connectable($item,$i);
+			$i->toggle_available(1) if $isConnectable;
 		};
 	}
 	$item->{view}->{toggleCon} = Gnome2::Canvas::Item->new(
