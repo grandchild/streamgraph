@@ -51,8 +51,6 @@ sub create_window {
 		$main_gui{parents} = ();
 		$main_gui{window}->signal_connect('destroy'=>sub { _closeapp($main_gui{view}); });
 	}
-	my $top = $isSubgraph ? "" : "MAIN - ";
-	$main_gui{window}->set_title($file =~ s:.*?([^/]+?)(\.sigraph)?$:$top$1 - StreamGraph:ri);
 	$main_gui{window}->set_type_hint('dialog');
 	$main_gui{window}->add($main_gui{menus});
 	$main_gui{menus}->pack_start($main_gui{scroller},TRUE,TRUE,0);
@@ -74,7 +72,12 @@ sub create_window {
 	die "Usage: perl bin/helloworld.pl [filename]\n" if($isSubgraph and !defined($file));
 	$main_gui{saveFile} = $file;
 	if($file) {
+		my $top = $isSubgraph ? "" : "MAIN - ";
+		$main_gui{window}->set_title($file =~ s:.*?([^/]+?)(\.sigraph)?$:$top$1 - StreamGraph:ri);
 		loadFile(\%main_gui);
+	} else {
+		$main_gui{window}->set_title("MAIN ~unsaved~ - StreamGraph");
+		$main_gui{window}->resize(700, 450);
 	}
 	$main_gui{window}->signal_connect('leave-notify-event',
 		sub { if (defined $main_gui{view}->{toggleCon}) {
