@@ -201,12 +201,14 @@ sub successors {
 sub println {
 	my ($self,$str,$type) = @_;
 	if (!defined $self->{terminal}) {return;}
+	Glib::Source->remove($self->{printTimer}) if defined $self->{printTimer};
 	my $buf = $self->{terminal}->get_buffer();
-	$buf->insert($buf->get_start_iter," " . $str . "\n");
+	$buf->set_text(" " . $str . "\n");
 	if (!defined $type) {}
 	else {
-		$buf->insert_pixbuf($buf->get_start_iter,Gtk2::Button->new->render_icon('gtk-'.$type,'small-toolbar'));
+		$buf->insert_pixbuf($buf->get_start_iter,Gtk2::Button->new->render_icon('gtk-'.$type,'menu'));
 	}
+	$self->{printTimer} = Glib::Timeout->add(3000, sub { $self->println(""); return FALSE;});
 }
 
 sub connect {
