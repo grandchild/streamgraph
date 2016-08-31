@@ -203,7 +203,7 @@ sub println {
 	if (!defined $self->{terminal}) {return;}
 	Glib::Source->remove($self->{printTimer}) if defined $self->{printTimer};
 	my $buf = $self->{terminal}->get_buffer();
-	$buf->set_text(" " . $str . "\n");
+	$buf->set_text(" " . $str);
 	if (!defined $type) {}
 	else {
 		$buf->insert_pixbuf($buf->get_start_iter,Gtk2::Button->new->render_icon('gtk-'.$type,'menu'));
