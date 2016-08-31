@@ -408,6 +408,9 @@ sub saveFile {
 	unless ($main_gui->{saveFile}) {return saveAsFile($main_gui);}
 	StreamGraph::Util::File::save($main_gui->{saveFile}, $main_gui->{view}->{graph}, $main_gui->{window});
 	$main_gui->{window}->set_title("StreamGraphView - " . $main_gui->{saveFile});
+	$main_gui->{parent_item}->{data}->{name} = _nameFromFilename($main_gui->{saveFile});
+	$main_gui->{parent_item}->{border}->{content}->set(text => _nameFromFilename($main_gui->{saveFile}));
+	$main_gui->{parent_item}->update;
 }
 
 sub saveAsFile {
