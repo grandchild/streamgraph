@@ -227,7 +227,7 @@ sub connect {
 		fill_color=>'darkblue',
 		type=>$type
 	);
-	if ($predecessor_item->isFilter) {
+	if ($predecessor_item->isDataNode) {
 		for my $side (qw(top down)){
 			$connection->{toggles}{$side} = Gnome2::Canvas::Item->new(
 				$side eq 'top' ? $predecessor_item : $item, 'Gnome2::Canvas::Ellipse',
