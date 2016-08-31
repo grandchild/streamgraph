@@ -92,7 +92,7 @@ streamgraph
 ├── streamit-build
 ├── source
 │   ├── bin
-│   │   └── helloworld.pl
+│   │   └── streamgraph.pl
 │   ├── lib
 │   ├── helloworld.sigraph
 │   ├── streamgraph.conf
@@ -105,5 +105,5 @@ streamgraph
 ## Starting StreamGraph
 ```bash
 cd streamgraph/source/
-perl bin/helloworld.pl helloworld.siggraph
+perl bin/streamgraph.pl helloworld.siggraph
 ```
