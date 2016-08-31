@@ -501,8 +501,34 @@ in which a datapacket is processed.\\
 The second construct supported by StreamGraph is the split-join construct. This
 constucts splits the datapackets of its input to multiple data paths on which
 other constructs are placed and joins these paths together at the end of every
-path. All in all a split-join construct has exactly one input and one output.
+path. All in all a split-join construct has exactly one input and one output.\\
+\\
 
+\noindent The StreamIt language generates a pipeline based structure. As such
+it is not possible to connect two filters or constructs in different pipelines (see Fig. 
+\ref{fig_StreamIt_topology}.).\\
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.4\textwidth]{StreamItTopology}
+	\caption{Example for a non permissable connection between pipelines}
+	\label{fig_StreamIt_topology}
+\end{figure}
+\noindent Since split-join-constructs have exactly one input and one output and only appear in pairs it is not
+ possible to have connections from one split-join pair to another pair(see Fig. 
+ \ref{fig_StreamIt_topology_between_SJ}) or to have an unequal numbers of splits and joins (see Fig. 
+ \ref{fig_StreamIt_topology_missing_join}).\\
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.4\textwidth]{StreamItTopologyBetweenSJ}
+	\caption{Example for a non permissable connection between split-join pairs}
+	\label{fig_StreamIt_topology_between_SJ}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.4\textwidth]{StreamItTopologyMissingJoin}
+	\caption{Example for a uneqaul number of splits and joins(inthis case a missing join)}
+	\label{fig_StreamIt_topology_missing_join}
+\end{figure}
 % needed in second column of first page if using \IEEEpubid
 %\IEEEpubidadjcol
 
@@ -526,14 +552,14 @@ path. All in all a split-join construct has exactly one input and one output.
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.1\textwidth]{PipelineGraphic}
-	\caption{A node in the StreamGraph}
+	\caption{A pipeline in StreamGraph}
 	\label{fig_filter_node}
 \end{figure}
 \subsubsection{Split-Join}
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.1\textwidth]{SplitJoinGraphic}
-	\caption{A node in the StreamGraph}
+	\caption{A split-join in StreamGraph}
 	\label{fig_filter_node}
 \end{figure}
 
@@ -541,6 +567,7 @@ path. All in all a split-join construct has exactly one input and one output.
 
 \subsection{Model}
 
+\subsection{Graph hierarchy}
 
 
 \subsection{GraphCompat}
@@ -558,12 +585,12 @@ this case the GraphCompat class adds an identity filter/node on the direct
 connection between the split and the join, as can be seen in Fig.
 \ref{fig_split_join_identity}  This filter copies his input to his output
 without changing the content in any way.\\
-\begin{figure}[h]
+\begin{figure*}[h]
 	\centering
-	\includegraphics[width=0.5\textwidth]{SplitJoinIdentity}
+	\includegraphics[width=0.8\textwidth]{SplitJoinIdentity}
 	\caption{Example of adding an identity filter}
 	\label{fig_split_join_identity}
-\end{figure}
+\end{figure*}
 \noindent The Streamgraph infrastructure allows a graph with multiple sources
 and sinks if the sources all have a void input and the sinks all have a void
 output type. In that case the GraphCompat class adds a void split/start or
@@ -572,12 +599,12 @@ construct has exactly one input and one output, as long as adding these does not
 violate the other rules of StreamIt. An example can be viewed in Fig.
 \ref{fig_void_end}. The addition of void-starts/splits is handled in an
 equivalent manner.\\
-\begin{figure}[h]
+\begin{figure*}[h]
 	\centering
-	\includegraphics[width=0.5\textwidth]{VoidEnd}
+	\includegraphics[width=\textwidth]{VoidEnd}
 	\caption{Example of adding a void-end}
 	\label{fig_void_end}
-\end{figure}
+\end{figure*}
 
 
 
@@ -604,18 +631,18 @@ they are not topological constructs. In the visible graph they are represented
 by nodes. Parameters do not reference other CodeObjects or filters. They only
 are referenced from other objects (filters or CodeObjects). Every parameter as a
 CodeObject exists exactly once.\\
-For better readability in the StreamIt source the file parameters are written as
-global parameters in the main pipeline and are passed through to the other code
+For better readability in the StreamIt source file the parameters are written as
+global variables in the main pipeline and are passed through to the other code
 objects.\\
 
 
 \subsubsection{Pipeline}
 \noindent Every StreamIt program contains at least one pipeline, the main
-pipeline, in which all other constructs and filters in a StreamIt program are
+pipeline, in which all other constructs and filters are
 placed. A pipeline CodeObject has an array which stores the objects in order.
 These objects may be other CodeObjects like split-join constructs or filters. If
 the need for a split-join construct is detected while creating the pipeline a
-split-join construct is created. When it is complete the pipeline continues its
+split-join construct is created. When the creation is complete the pipeline continues its
 creation and eventually returns.\\
 
 
@@ -626,11 +653,11 @@ path in a split-join is modeled as a pipeline. As such when a split-join is
 created for every path the creation of a pipeline is started. In StreamIt it is
 not necessary to create a pipeline if there is exactly one filter on a path
 between a split-join pair. StreamGraph creates a pipeline on every path of a
-split-join pair for the sake of convenience. The implementation of this feature
-would require forward checking or a similar method. The approach to generate a
+split-join pair for the sake of convenience. The approach to generate a
 pipeline in every case should not increase the execution time significantly and
-does not change the order of execution. Because of these reasons it was decided
-to not include the discussed feature.\\
+does not change the order of execution. Because of this reasons it was decided
+to not include the feature to only create pipelines in split-join-constructs 
+when strictly necessary.\\
 
 
 
@@ -654,7 +681,7 @@ The code generation arranges filters and topological constructs according to
 their type. Thus a StreamGraph output file first lists all filters, then all
 pipelines and last all split-join constructs.\\
 
-
+\subsection{Improvment and Extension}
 
 
 \section{Developer documentation}
