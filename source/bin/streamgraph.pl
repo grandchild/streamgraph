@@ -73,10 +73,11 @@ sub create_window {
 	$main_gui{saveFile} = $file;
 	if($file) {
 		my $top = $isSubgraph ? "" : "MAIN - ";
-		$main_gui{window}->set_title($file =~ s:.*?([^/]+?)(\.sigraph)?$:$top$1 - StreamGraph:ri);
+		my $name = _nameFromFilename($file);
+		$main_gui{window}->set_title("$top$name - StreamGraph");
 		loadFile(\%main_gui);
 	} else {
-		$main_gui{window}->set_title("MAIN ~unsaved~ - StreamGraph");
+		$main_gui{window}->set_title("MAIN - ~unsaved~ - StreamGraph");
 		$main_gui{window}->resize(700, 450);
 	}
 	$main_gui{window}->signal_connect('leave-notify-event',
@@ -90,6 +91,10 @@ sub create_window {
 	# foreach my $p (@{$main_gui{parents}}) {
 	# 	print("Parent ", $main_gui{saveFile}, ": ", $p->{saveFile}, "\n");
 	# }
+}
+sub _nameFromFilename {
+	my ($filename) = @_;
+	return $filename =~ s:.*?([^/]+?)(\.sigraph)?$:$1:ri;
 }
 
 sub _closewindow {
@@ -248,7 +253,7 @@ sub addItem {
 	my ($main_gui, $node, $placeUnderMenu) = @_;
 	my $item;
 	if ($node->isSubgraph) {
-		$item = addSubgraph($main_gui,$node);
+		$item = addSubgraph($main_gui, $node, _nameFromFilename($node->filepath));
 		if ($node->visible) {
 			loadSubgraph($main_gui, $item);
 		}
@@ -273,10 +278,10 @@ sub addItem {
 }
 
 sub addSubgraph {
-	my ($main_gui, $node) = @_;
+	my ($main_gui, $node, $name) = @_;
 	my $item = $main_gui->{factory}->create_item(border=>'StreamGraph::View::Border::Rectangle',
 					content=>'StreamGraph::View::Content::EllipsisText',
-					text=>$node->name,
+					text=>$name,
 					font_desc=>Gtk2::Pango::FontDescription->from_string("Vera Sans italic 8"),
 					fill_color_gdk =>Gtk2::Gdk::Color->parse('white'),
 					data=>$node);
