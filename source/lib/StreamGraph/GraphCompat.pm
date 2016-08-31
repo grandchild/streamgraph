@@ -154,7 +154,14 @@ sub _subgraph {
 		
 		my @subsubgraphs = ();
 		map {
-			$self->graph->add_vertex($_);
+			my $item = $_;
+			$self->graph->add_vertex($item);
+			map {
+				my $node = $_->{node};
+				if($node->isParameter) {
+					$self->graph->add_edge($node, $item);
+				}
+			} @incoming;
 			push(@subsubgraphs, $_) if ($_->isSubgraph);
 		} $checkGraph->get_items;
 		map {
