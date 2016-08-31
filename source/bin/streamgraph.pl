@@ -71,13 +71,12 @@ sub create_window {
 
 	die "Usage: perl bin/streamgraph.pl [filename]\n" if($isSubgraph and !defined($file));
 	$main_gui{saveFile} = $file;
+	my $top = $isSubgraph ? "" : "MAIN - ";
+	my $name = _nameFromFilename($file);
+	$main_gui{window}->set_title("$top$name - StreamGraph");
 	if($file) {
-		my $top = $isSubgraph ? "" : "MAIN - ";
-		my $name = _nameFromFilename($file);
-		$main_gui{window}->set_title("$top$name - StreamGraph");
 		loadFile(\%main_gui);
 	} else {
-		$main_gui{window}->set_title("MAIN - ~unsaved~ - StreamGraph");
 		$main_gui{window}->resize(700, 450);
 	}
 	$main_gui{window}->signal_connect('leave-notify-event',
@@ -94,6 +93,7 @@ sub create_window {
 }
 sub _nameFromFilename {
 	my ($filename) = @_;
+	return "~new~" if not $filename;
 	return $filename =~ s:.*?([^/]+?)(\.sigraph)?$:$1:ri;
 }
 
@@ -369,7 +369,6 @@ sub addNewSubgraph {
 		$main_gui,
 		$main_gui->{nodeFactory}->createNode(
 			type=>"StreamGraph::Model::Node::Subgraph",
-			name=>"Subgraph",
 			filepath=>$filepath,
 			inputType=>"void",
 			inputCount=>0,
