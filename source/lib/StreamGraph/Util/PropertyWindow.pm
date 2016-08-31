@@ -15,8 +15,10 @@ sub show {
 	);
 	$item->{dialog} = $dialog;
 
-	if ($item->isFilter or $item->isSubgraph) {
+	if ($item->isFilter) {
 		show_filter($item,$dialog);
+	} elsif ($item->isSubgraph) {
+		show_subgraph($item,$dialog);
 	} elsif ($item->isParameter) {
 		show_parameter($item,$dialog);
 	} elsif ($item->isComment) {
@@ -346,6 +348,94 @@ sub show_filter {
 	$splitTab->pack_start($splitCheck,FALSE,FALSE,0);
 
 	$dbox->add($nb);
+	$dbox->show_all();
+	$dialog->signal_connect('delete-event'=>sub { undef $item->{dialog}; $dialog->destroy(); });
+	$dialog->show();
+}
+
+sub show_subgraph {
+	my ($item,$dialog) = @_;
+
+	my $itemData = $item->{data};
+	my $dbox = $dialog->vbox;
+
+	# JOIN TYPE COMBO BOX
+	my $joinCBhbox = Gtk2::HBox->new(FALSE,0);
+	my $joinCB = Gtk2::ComboBox->new_text;
+	$joinCB->set_title("JoinType");
+	$joinCB->append_text('Round Robin');
+	$joinCB->append_text('Void');
+	if ($itemData->{joinType} eq 'roundrobin') {
+		$joinCB->set_active(0);
+	} elsif ($itemData->{joinType} eq 'void') {
+		$joinCB->set_active(1);
+	} else {
+		$joinCB->set_active(0);
+	}
+	$joinCB->signal_connect(changed => sub{
+		if ($joinCB->get_active_text eq 'Round Robin') {
+			$itemData->{joinType} = "roundrobin";
+		} elsif ($joinCB->get_active_text eq 'Void') {
+			$itemData->{joinType} = "void";
+		}
+	});
+	$joinCBhbox->pack_start(Gtk2::Label->new("JoinType: "),FALSE,FALSE,0);
+	$joinCBhbox->pack_start($joinCB,FALSE,FALSE,0);
+	$dbox->pack_start($joinCBhbox,FALSE,FALSE,0);
+
+	# FILTER INPUT ENTRY
+	my $filterInhbox = Gtk2::HBox->new(FALSE,0);
+	$filterInhbox->pack_start(Gtk2::Label->new("Input: "),FALSE,FALSE,0);
+	my $filteInE = Gtk2::Entry->new();
+	$filteInE->set_text($itemData->{inputType});
+	$filteInE->signal_connect(changed => sub{
+		$itemData->{inputType} = $filteInE->get_text();
+		$item->update;
+	});
+	$filterInhbox->pack_start($filteInE,FALSE,FALSE,0);
+	$dbox->pack_start($filterInhbox,FALSE,FALSE,0);
+
+	# FILTER OUTPUT ENTRY
+	my $filterOuthbox = Gtk2::HBox->new(FALSE,0);
+	$filterOuthbox->pack_start(Gtk2::Label->new("Output: "),FALSE,FALSE,0);
+	my $filteOutE = Gtk2::Entry->new();
+	$filteOutE->set_text($itemData->{outputType});
+	$filteOutE->signal_connect(changed => sub{
+		$itemData->{outputType} = $filteOutE->get_text();
+		$item->update;
+	});
+	$filterOuthbox->pack_start($filteOutE,FALSE,FALSE,0);
+	$dbox->pack_start($filterOuthbox,FALSE,FALSE,0);
+
+	# SPLIT TYPE COMBO BOX
+	my $splitCBhbox = Gtk2::HBox->new(FALSE,0);
+	my $splitCB = Gtk2::ComboBox->new_text;
+	$splitCB->set_title("SplitType");
+	$splitCB->append_text('Round Robin');
+	$splitCB->append_text('Duplicate');
+	$splitCB->append_text('Void');
+	if ($itemData->{splitType} eq 'roundrobin') {
+		$splitCB->set_active(0);
+	} elsif ($itemData->{splitType} eq 'duplicate') {
+	$splitCB->set_active(1);
+} elsif ($itemData->{splitType} eq 'void') {
+		$splitCB->set_active(2);
+	} else {
+		$splitCB->set_active(0);
+	}
+	$splitCB->signal_connect(changed => sub{
+		if ($splitCB->get_active_text eq 'Round Robin') {
+			$itemData->{splitType} = "roundrobin";
+		} elsif ($splitCB->get_active_text eq 'Duplicate') {
+			$itemData->{splitType} = "duplicate";
+		} elsif ($splitCB->get_active_text eq 'Void') {
+			$itemData->{splitType} = "void";
+		}
+	});
+	$splitCBhbox->pack_start(Gtk2::Label->new("SplitType: "),FALSE,FALSE,0);
+	$splitCBhbox->pack_start($splitCB,FALSE,FALSE,0);
+	$dbox->pack_start($splitCBhbox,FALSE,FALSE,0);
+
 	$dbox->show_all();
 	$dialog->signal_connect('delete-event'=>sub { undef $item->{dialog}; $dialog->destroy(); });
 	$dialog->show();
