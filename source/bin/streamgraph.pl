@@ -69,7 +69,7 @@ sub create_window {
 	$main_gui{nodeFactory} = StreamGraph::Model::NodeFactory->new();
 	$main_gui{config} = StreamGraph::Util::Config->new();
 
-	die "Usage: perl bin/helloworld.pl [filename]\n" if($isSubgraph and !defined($file));
+	die "Usage: perl bin/streamgraph.pl [filename]\n" if($isSubgraph and !defined($file));
 	$main_gui{saveFile} = $file;
 	if($file) {
 		my $top = $isSubgraph ? "" : "MAIN - ";
