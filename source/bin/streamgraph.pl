@@ -54,16 +54,14 @@ sub create_window {
 	$main_gui{window}->set_type_hint('dialog');
 	$main_gui{window}->add($main_gui{menus});
 	$main_gui{menus}->pack_start($main_gui{scroller},TRUE,TRUE,0);
-	if (!$isSubgraph) {
-		my $terminal = Gtk2::TextView->new();
-		my $terminal_scroller = Gtk2::ScrolledWindow->new();
-		$main_gui{menus}->pack_start($terminal_scroller,FALSE,TRUE,0);
-		$terminal_scroller->add($terminal);
-		$terminal_scroller->set_size_request(10,25);
-		$main_gui{view}->{terminal} = $terminal;
-		$terminal->set_editable(0);
-		$terminal->set_cursor_visible(0);
-	}
+	my $terminal = Gtk2::TextView->new();
+	my $terminal_scroller = Gtk2::VBox->new();
+	$main_gui{menus}->pack_start($terminal_scroller,FALSE,TRUE,0);
+	$terminal_scroller->add($terminal);
+	$terminal_scroller->set_size_request(10,25);
+	$main_gui{view}->{terminal} = $terminal;
+	$terminal->set_editable(0);
+	$terminal->set_cursor_visible(0);
 
 	$main_gui{factory} = StreamGraph::View::ItemFactory->new(view=>$main_gui{view});
 	$main_gui{nodeFactory} = StreamGraph::Model::NodeFactory->new();
