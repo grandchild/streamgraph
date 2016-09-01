@@ -1,4 +1,17 @@
 
+technische doku
+	problem
+	konkrete tools
+	problem wie geloest
+	usage guide
+	future work
+	hacking guide
+
+akademische doku
+	theorie
+	problem
+	loesung
+
 
 --- TODO
 --- gui
