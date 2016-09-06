@@ -198,7 +198,7 @@ it is not possible to connect two filters or constructs in different pipelines (
 \subsubsection{Pipeline}
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.1\textwidth]{PipelineGraphic}
+	\includegraphics[width=0.2\textwidth]{PipelineGraphic}
 	\caption{A pipeline in StreamGraph}
 	\label{fig_filter_node}
 \end{figure}
@@ -300,7 +300,19 @@ rule that CodeObjects describe the structure of the graph. CodeObjects except
 for parameters reference to other CodeObjects or filters. As such a single
 CodeObject can have an entire graph ready for code generation stored in a manner
 that already has the necessary order and hierarchical structure of a StreamIt
-program.
+program.\\
+Since StreamGraph does not use the concepts of pipelines and split-joines 
+but StreamIt expects these constructs the codeObjects rebuild the graph 
+with pipeplines and split-joines.
+Figure \ref{fig_StreamGraph_To_StreamIt} shows an example of a 
+conversion from a simple StreamGraph graph to a CodeObject structure.
+
+\begin{figure*}[h]
+	\centering
+	\includegraphics[width=0.8\textwidth]{StreamGraphToStreamIt}
+	\caption{Example of StreamGraph to StreamIt conversion}
+	\label{fig_StreamGraph_To_StreamIt}
+\end{figure*}
 
 
 \subsubsection{Parameter}
@@ -317,12 +329,23 @@ objects.\\
 
 \subsubsection{Pipeline}
 \noindent Every StreamIt program contains at least one pipeline, the main
-pipeline, in which all other constructs and filters are
-placed. A pipeline CodeObject has an array which stores the objects in order.
-These objects may be other CodeObjects like split-join constructs or filters. If
-the need for a split-join construct is detected while creating the pipeline a
-split-join construct is created. When the creation is complete the pipeline continues its
-creation and eventually returns.\\
+pipeline, in which all other constructs and filters are placed. A pipeline 
+CodeObject stores the objects in the order in which a data packet in StreamIt 
+will be processed. These objects may be other CodeObjects like split-join 
+constructs or filters. If the need for a split-join construct is detected 
+while creating the pipeline a split-join construct is created. When the 
+creation is complete the pipeline continues its creation and eventually 
+returns.\\
+Pipelines encompass the maximum possible amount of nodes to minimize the 
+amount of needed pipelines. An example of a pipeline can be seen in fig. 
+\ref{fig_Pipeline}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.3\textwidth]{PipelineGraphic}
+	\caption{Example of a pipeline}
+	\label{fig_Pipeline}
+\end{figure}
 
 
 \subsubsection{SplitJoin}
@@ -337,7 +360,22 @@ pipeline in every case should not increase the execution time significantly and
 does not change the order of execution. Because of this reasons it was decided
 to not include the feature to only create pipelines in split-join constructs 
 when strictly necessary.\\
+The generation of split-joines is relatively easy as long as the graph is compatible
+(for StreamIt compatibility see \ref{StreamItTopology}). As soon as the graph is not 
+StreamIt compatible it becomes increasingly difficult to detect and mend. Simple 
+mending methods like copying the node of a cross-connection between paths of a 
+split-join is only possible if the nodes or filters are stateless. Since 
+statelessness and requirements of other mending methods can only be ascertained 
+through parsing and checking of the code from the respective constructs and is beyond 
+the scope of this project, mending is not included in the current version of StreamGraph.\\
+A simple example of a split join is shown in fig. \ref{fig_Split_Join}.\\
 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.3\textwidth]{SplitJoinGraphic}
+	\caption{Example of a pipeline}
+	\label{fig_Split_Join}
+\end{figure}
 
 
 \subsection{Code generation}
