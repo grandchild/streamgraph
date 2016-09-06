@@ -304,7 +304,7 @@ sub addParameter {
 	my ($main_gui, $node) = @_;
 	my $item = $main_gui->{factory}->create_item(border=>'StreamGraph::View::Border::Rectangle',
 					content=>'StreamGraph::View::Content::EllipsisText',
-					text=>$node->value,
+					text=>$node->name ." = ". $node->value,
 					font_desc=>Gtk2::Pango::FontDescription->from_string("Vera Sans 8"),
 					outline_color_gdk=>Gtk2::Gdk::Color->parse('lightgray'),
 					fill_color_gdk   =>Gtk2::Gdk::Color->parse('white'),

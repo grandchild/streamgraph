@@ -106,6 +106,8 @@ sub show_parameter {
 	$filterNameE->set_text($itemData->{name});
 	$filterNameE->signal_connect(changed => sub{
 		$itemData->{name} = $filterNameE->get_text();
+		$item->{border}->{content}->set(text => $itemData->{name} ." = ". $itemData->{value} );
+		$item->update;
 	});
 	$filterNameHbox->pack_start($filterNameE,FALSE,FALSE,0);
 	$dbox->pack_start($filterNameHbox,FALSE,FALSE,0);
@@ -128,7 +130,7 @@ sub show_parameter {
 	$filterValueE->set_text($itemData->{value});
 	$filterValueE->signal_connect(changed => sub{
 		$itemData->{value} = $filterValueE->get_text();
-		$item->{border}->{content}->set(text => $filterValueE->get_text());
+		$item->{border}->{content}->set(text => $itemData->{name} ." = ". $filterValueE->get_text());
 		$item->update;
 	});
 	$filterValueHbox->pack_start($filterValueE,FALSE,FALSE,0);
@@ -192,10 +194,10 @@ sub show_filter {
 	$joinTab->pack_start($joinCBhbox,FALSE,FALSE,0);
 
 	# JOIN UNIFY SLICE COUNTS CHECK BOX
-	my $joinCheck = Gtk2::CheckButton->new("Unify slice counts");
-	$joinCheck->set_active($itemData->{joinRRForAll});
-	$joinCheck->signal_connect(toggled => sub { $itemData->{joinRRForAll} = $joinCheck->get_active(); });
-	$joinTab->pack_start($joinCheck,FALSE,FALSE,0);
+	# my $joinCheck = Gtk2::CheckButton->new("Unify slice counts");
+	# $joinCheck->set_active($itemData->{joinRRForAll});
+	# $joinCheck->signal_connect(toggled => sub { $itemData->{joinRRForAll} = $joinCheck->get_active(); });
+	# $joinTab->pack_start($joinCheck,FALSE,FALSE,0);
 
 	# FILTER TAB
 	my $filterTab = Gtk2::VBox->new(FALSE,0);
@@ -342,10 +344,10 @@ sub show_filter {
 	$splitTab->pack_start($splitCBhbox,FALSE,FALSE,0);
 
 	# SPLIT UNIFY SLICE COUNTS CHECK BOX
-	my $splitCheck = Gtk2::CheckButton->new("Unify slice counts");
-	$splitCheck->set_active($itemData->{splitRRForAll});
-	$splitCheck->signal_connect(toggled => sub { $itemData->{splitRRForAll} = $splitCheck->get_active(); });
-	$splitTab->pack_start($splitCheck,FALSE,FALSE,0);
+	# my $splitCheck = Gtk2::CheckButton->new("Unify slice counts");
+	# $splitCheck->set_active($itemData->{splitRRForAll});
+	# $splitCheck->signal_connect(toggled => sub { $itemData->{splitRRForAll} = $splitCheck->get_active(); });
+	# $splitTab->pack_start($splitCheck,FALSE,FALSE,0);
 
 	$dbox->add($nb);
 	$dbox->show_all();
