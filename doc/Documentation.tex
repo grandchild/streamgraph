@@ -68,7 +68,7 @@
 %\fi
 
 % *** PDF, URL AND HYPERLINK PACKAGES ***
-%\usepackage{url}
+\usepackage{url}
 % Basically, \url{my_url_here}.
 
 % correct bad hyphenation here
@@ -187,26 +187,26 @@ it is not possible to connect two filters or constructs in different pipelines (
 \section{StreamGraph}
 \noindent Here comes the scientific part
 \subsection{View}
-\noindent The GUI of StreamGraph include tree Parts. On the top there is the menu
-bar with the all important functions for the project. At first submenu is like in
+\noindent The GUI of StreamGraph include three Parts. On the top there is the menu
+bar with the all important functions for the project. The first submenu is like in
 other textual editors the File menu with common functions to create new, open, save,
 save as or to quit project. In the Edit submenu it is possible to create new Objects.
 In the Run submenu the project can be executed. The Debug submenu is only for debuging
 the project and is not necessary for the user. \\
 
 % http://search.cpan.org/~hemlock/Gtk2-Ex-MindMapView-0.000001/lib/Gtk2/Ex/MindMapView.pm
-The view take up the main part of the GUI window. It is based on the Gtk2::Ex::MindMapView
-Perl modul \ref{} and shows the Objects and they connections. The view is designed
+The view takes up the main part of the GUI window. It is based on the Gtk2::Ex::MindMapView
+Perl modul \cite{GTK2EXMindMapView} and shows the Objects and they connections. The view is designed
 minimalistic as a plain surface to have a clear design and a simple usability.
 Especially no toolbars or other controll windows were implemented. The graph structure
-can be complitly edited with the mouse. A right click open an pop-up menu with the
-same entrie as in the Edit submenu. It allows to create an object with two mouse
-clicks. The surface can be scrolled with the scrollbars in all four directions.
-But it also can be just draged with pressed left muse click. It allows the user
-to seperate objects in differt areas. \\
+can be completely edited with the mouse. A right click opens a pop-up menu with the
+same entries as in the Edit submenu. This allows the creation of an object with two mouse
+clicks. The surface can be scrolled with the scrollbars in all four directions,
+but can also be draged with pressed left mouse button. It allows the user
+to seperate objects in different areas. \\
 
-On the buttom of the GUI there is a terminal window, which is used to communicate
-with the user. Errors or informations are shown there. \\
+On the bottom of the GUI appears a terminal window for communication with the user. 
+Errors or important information is shown there. \\
 
 \subsubsection{Objects}
 Objects wich are shown on the view surface are nodes of the programm graph. There
@@ -513,7 +513,8 @@ parts of the StreamGraph project.
 \bibitem{streamIt}
 William~Thies, Michael~Karczmarek, and Saman~Amarasinghe, \emph{StreamIt: A Language for Streaming Applications},\hskip 1em plus
   0.5em minus 0.4em\relax Laboratory for Computer Science, Massachusetts Institute of Technology, Cambridge, MA 02139.
-
+\bibitem{GTK2EXMindMapView}
+\url{http://search.cpan.org/~hemlock/Gtk2-Ex-MindMapView-0.000001/lib/Gtk2/Ex/MindMapView.pm}
 \end{thebibliography}
 
 % that's all folks
