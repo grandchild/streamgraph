@@ -234,10 +234,13 @@ sub graphViz {
 sub codeGenShow {
 	my ($main_gui) = @_;
 	my $graphCompat = StreamGraph::GraphCompat->new($main_gui->{view}->{graph});
-	StreamGraph::Util::DebugCode::show_code(
-		$main_gui->{window}, $main_gui->{view},
-		StreamGraph::CodeGen::generateCode($graphCompat, "", $main_gui->{config})
-	);
+	my $generatedCode = StreamGraph::CodeGen::generateCode($main_gui->{view}, $graphCompat, $main_gui->{config});
+	if(!($generatedCode eq "ERROR")){
+		StreamGraph::Util::DebugCode::show_code(
+			$main_gui->{window}, $main_gui->{view},
+			$generatedCode
+		);
+	}
 }
 
 sub runShow {

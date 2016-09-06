@@ -53,7 +53,7 @@ sub BUILDARGS {
 
 # generates the code for the pipeline in the Pipeline Object
 sub generate {
-	my ($self, $mainFlag) = @_;
+	my ($self, $view, $mainFlag) = @_;
 	if(!$mainFlag || $mainFlag != 1){
 		$mainFlag = 0;
 	}
@@ -64,14 +64,18 @@ sub generate {
 	if ($codeObjects->[0]->isFilter) {
 	 	$self->inputType($codeObjects->[0]->{inputType});
 	} else {
-		$codeObjects->[0]->generate();
+		if( $codeObjects->[0]->generate($view) eq "ERROR"){
+			return "ERROR";
+		}
 		$self->inputType($codeObjects->[0]->inputType);
 	}
 	my @codeObjects = $codeObjects;
 	if($codeObjects->[-1]->isFilter){
 		$self->outputType($codeObjects->[-1]->{outputType});
 	} else {
-		$codeObjects->[-1]->generate();
+		if( $codeObjects->[-1]->generate($view) eq "ERROR"){
+			return "ERROR";
+		}
 		$self->outputType($codeObjects->[-1]->outputType);
 	}
 	my $pipelineHeader = $self->inputType . "->" . $self->outputType . " pipeline " . $self->name;
@@ -82,7 +86,9 @@ sub generate {
 		if($codeObject->isa("StreamGraph::Model::CodeObject::SplitJoin")){
 			# generate code for split join if it is not already generated
 			if(!($codeObject->{'_generated'})){
-				$codeObject->generate();
+				if($codeObject->generate($view) eq "ERROR"){
+					return "ERROR";
+				}
 			}
 			$pipelineMembers .= "\tadd " . $codeObject->name;
 			my @params = @{$codeObject->parameters};
@@ -118,7 +124,7 @@ sub generate {
 	}
 	$self->{'_generated'} = 1;
 	$self->code($pipelineHeader . $pipelineMembers);
-	return;
+	return 1;
 }
 
 sub buildCode {

@@ -12,21 +12,29 @@ use StreamGraph::Model::CodeObject::SplitJoin;
 my $boxNumber = 0;
 my $dividingLine = "---------------------------------------------------";
 my $fileName;
+my $view;
 
 # function which generates Code out of Graph from root Node
-# gets root (Item) as 1. input parameter, filename as 2.parameter and configFile as 3.parameter
+# gets View as 1. input parameter, GraphCompat as 2. input parameter, configFile as 3.parameter and filename as 4.parameter
 sub generateCode {
+	$view = shift;
+	if(!defined($view)){
+		return 0;
+	}
 	my $graph = shift;
 	if(!defined($graph)){
-		return;
-	}
-	$fileName = shift;
-	if(!$fileName){
-		$fileName = "main";
+		$view->println("Graph is not valid ", 'dialog-error');
+		return 0;
 	}
 	my $configFile = shift;
 	if(!$configFile){
-		return;
+		$view->println("No config file found", 'dialog-error');
+		return 0;
+	}
+	$fileName = shift;
+	if(!$fileName || !defined($fileName)){
+		$fileName = "main";
+		$view->println("No fileName given. Setting fileName to main", 'dialog-info');
 	}
 	$boxNumber = 0;
 	my $programText = generateMultiLineCommentary("Generated code from project $fileName");
@@ -36,12 +44,20 @@ sub generateCode {
 	@nodeList = @{filterNodesForType(\@nodeList, "StreamGraph::Model::Node::Filter")};
 	# first generate all filter code
 	$programText .= generateSectionCommentary("Section for all Filters");
+	my $tempText;
 	foreach my $filterNode (@nodeList) {
-		$programText .= generateFilter($filterNode, $graph);
+		$tempText = generateFilter($filterNode, $graph);
+		if($tempText eq "ERROR"){
+			return "ERROR";
+		} else {
+			$programText .= $tempText;
+		}
 	}
 	# build data structure for code generation of topographical constructs
 	my $mainPipeline = StreamGraph::Model::CodeObject::Pipeline->new(first=>$nodeList[0], graph=>$graph);
-	$mainPipeline->generate(1);
+	if($mainPipeline->generate($view, 1) eq "ERROR"){
+		return "ERROR";
+	}
 	my ($pipelinesCode, $splitJoinesCode) = $mainPipeline->buildCode("", "");
 
 	$programText .= generateSectionCommentary("Section for all Pipelines") . $pipelinesCode; 
@@ -183,18 +199,20 @@ sub generateFilter {
 	my $filterNode = shift;
 	my $graph = shift;
 	if (!( defined($filterNode))  ) {
-		print "$filterNode is not defined \n";
-		return "";
+		$view->println("$filterNode is not defined", 'dialog-error');
+		return "ERROR";
 	}
 	if(!( $filterNode->isFilter )){
-		print "filterNode->data is not a Filter\n";
-		return "";
+		$view->println($filterNode->name . " is not a Filter", 'dialog-error');
+		return "ERROR";
 	}
 	if($filterNode->name eq "__void_sink__" || $filterNode->name eq "__void_source__"){
 		$filterNode->{'_no_add'} = 1;
 		return "";
 	}
-	updateNodeName($filterNode);
+	if(updateNodeName($filterNode) eq "ERROR"){
+		return "ERROR";
+	}
 	my $inputType = $filterNode->{inputType};
 	my $outputType = $filterNode->{outputType};
 	my $name = $filterNode->{'_gen_name'};
@@ -220,8 +238,9 @@ sub generateFilter {
 # gets a filterNode and updates it to have a Number at end of name.
 sub updateNodeName {
 	my $filterNode = shift;
-	if(!$filterNode){
-		return;
+	if(!defined($filterNode)){
+		$view->println("can not update name of undefined object", 'dialog-error');
+		return "ERROR";
 	}
 	$filterNode->{'_gen_name'} = ( $filterNode->name . $boxNumber);
 	$boxNumber++;
