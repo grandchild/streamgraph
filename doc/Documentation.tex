@@ -513,7 +513,7 @@ it is not possible to connect two filters or constructs in different pipelines (
 	\caption{Example for a non permissable connection between pipelines}
 	\label{fig_StreamIt_topology}
 \end{figure}
-\noindent Since split-join-constructs have exactly one input and one output and only appear in pairs it is not
+\noindent Since split-join constructs have exactly one input and one output and only appear in pairs it is not
  possible to have connections from one split-join pair to another pair(see Fig. 
  \ref{fig_StreamIt_topology_between_SJ}) or to have an unequal numbers of splits and joins (see Fig. 
  \ref{fig_StreamIt_topology_missing_join}).\\
@@ -569,22 +569,54 @@ it is not possible to connect two filters or constructs in different pipelines (
 
 \subsection{Graph hierarchy}
 
+StreamGraph introduces subgraphs as a new feature for compartmentalization of
+code. Subgraphs act like normal filter nodes in the parent graph, but are
+actually a pipeline. This makes use of the fact that pipelines and filters can
+be used in the same context in StreamIt, namely in other pipelines and in
+split-join constructs.
+
 
 \subsection{GraphCompat}
-\noindent The GraphCompat class ensures that a given graph, which normally comes
-from the data structure of the view component, is compatible with the StreamIt
-topology. The StreamIt topology is, as discussed in \ref{StreamItTopology}, not
-only a directed Graph but has additional restrictions. As such the class copies
-on creation of an object the given graph's data objects and the connections
-between the nodes, while making minor corrections to the topology, like adding
-identity-nodes, void ends or void starts.\\
 
-StreamIt does not allow direct connections between a split and a join without a
-filter or a pipeline. The StreamGraph graph however allows such a connection. In
-this case the GraphCompat class adds an identity filter/node on the direct
-connection between the split and the join, as can be seen in Fig.
-\ref{fig_split_join_identity}  This filter copies his input to his output
-without changing the content in any way.\\
+\noindent The StreamIt topology, as discussed in \ref{StreamItTopology}, is not
+only a directed Graph but has additional restrictions. Some of these are not
+strictly necessary and some effort was made in StreamGraph to allow for graphs
+that are not strictly StreamIt-compatible and then automatically convert them.
+
+This task is taken on by the GraphCompat class. It transforms a given
+StreamGraph graph, coming from the user interface, into a new graph which
+is compatible with the StreamIt topology.
+
+At the moment it takes care of the following 3 transformations:
+
+\begin{itemize}
+\item Sources and Sinks
+
+  A StreamIt graph must start and end with exactly one void-typed input and
+  output respectively. StreamGraph also makes the void-typed requirement but
+  does not restrict the graph to just one source and one sink. Multiple sources
+  and sinks are combined by adding "Void Sources" and "Void Sinks" to the ends
+  of the graph when necessary.\\
+
+\item Identities
+
+  StreamIt does not allow direct connections between a split and a join without
+  a filter or a pipeline. In StreamGraph such a connection is allowed. In this
+  case GraphCompat adds an identity filter instead of the direct connection
+  between the split and the join, as can be seen in Fig.
+  \ref{fig_split_join_identity}. This filter copies his input to his output
+  without changing the content in any way.\\
+
+\item Subgraphs
+
+  Subgraphs as they are, are a feature of StreamGraph, and don't make use of
+  StreamIt's joint-compilation features. It essentially does the same though, by
+  flattening the graph hierarchy into one single graph.\\
+
+\end{itemize}
+
+
+
 \begin{figure*}[h]
 	\centering
 	\includegraphics[width=0.8\textwidth]{SplitJoinIdentity}
@@ -656,7 +688,7 @@ between a split-join pair. StreamGraph creates a pipeline on every path of a
 split-join pair for the sake of convenience. The approach to generate a
 pipeline in every case should not increase the execution time significantly and
 does not change the order of execution. Because of this reasons it was decided
-to not include the feature to only create pipelines in split-join-constructs 
+to not include the feature to only create pipelines in split-join constructs 
 when strictly necessary.\\
 
 
