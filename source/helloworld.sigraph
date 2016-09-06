@@ -10,6 +10,28 @@ window:
   y: -4
 nodes:
   - data:
+      name: offset
+      id: xsU6/w
+      x: -173
+      y: -78
+      outputType: int
+      value: 0
+    type: StreamGraph::Model::Node::Parameter
+  - data:
+      name: Subgraph
+      id: 9O1CFA
+      x: 50
+      y: -89
+      filepath: outside.sigraph
+      visible: 1
+      joinType: roundrobin
+      splitType: duplicate
+      inputType: int
+      inputCount: 0
+      outputType: int
+      outputCount: 0
+    type: StreamGraph::Model::Node::Subgraph
+  - data:
       name: rate
       id: 8C9EUA
       x: -66
@@ -17,24 +39,6 @@ nodes:
       outputType: int
       value: 5
     type: StreamGraph::Model::Node::Parameter
-  - data:
-      name: Filter
-      id: yN6ERA
-      x: 62
-      y: 46
-      initCode: ''
-      workCode: push(pop());
-      globalVariables: ''
-      timesPush: 1
-      timesPop: 1
-      timesPeek: 0
-      joinType: roundrobin
-      splitType: duplicate
-      inputType: int
-      inputCount: 1
-      outputType: int
-      outputCount: 0
-    type: StreamGraph::Model::Node::Filter
   - data:
       name: OffsetBuffer
       id: HgqVkg
@@ -58,28 +62,6 @@ nodes:
       outputCount: 0
     type: StreamGraph::Model::Node::Filter
   - data:
-      name: Subgraph
-      id: 9O1CFA
-      x: -68
-      y: -75
-      filepath: outside.sigraph
-      visible: 1
-      joinType: roundrobin
-      splitType: duplicate
-      inputType: int
-      inputCount: 0
-      outputType: int
-      outputCount: 0
-    type: StreamGraph::Model::Node::Subgraph
-  - data:
-      name: offset
-      id: xsU6/w
-      x: -139
-      y: -67
-      outputType: int
-      value: 0
-    type: StreamGraph::Model::Node::Parameter
-  - data:
       name: some_generator
       id: yv1uSQ
       x: -97
@@ -101,12 +83,30 @@ nodes:
       outputType: int
       outputCount: 0
     type: StreamGraph::Model::Node::Filter
+  - data:
+      name: Filter
+      id: yN6ERA
+      x: 62
+      y: 46
+      initCode: ''
+      workCode: push(pop());
+      globalVariables: ''
+      timesPush: 1
+      timesPop: 1
+      timesPeek: 0
+      joinType: roundrobin
+      splitType: duplicate
+      inputType: int
+      inputCount: 1
+      outputType: int
+      outputCount: 0
+    type: StreamGraph::Model::Node::Filter
 connections:
   - data:
       inputMult: 1
       outputMult: 1
     from: 8C9EUA
-    to: yv1uSQ
+    to: HgqVkg
   - data:
       inputMult: 1
       outputMult: 1
@@ -120,20 +120,20 @@ connections:
   - data:
       inputMult: 1
       outputMult: 1
-    from: HgqVkg
-    to: yN6ERA
-  - data:
-      inputMult: 1
-      outputMult: 1
-    from: xsU6/w
-    to: HgqVkg
-  - data:
-      inputMult: 1
-      outputMult: 1
     from: yv1uSQ
     to: HgqVkg
   - data:
       inputMult: 1
       outputMult: 1
     from: 8C9EUA
+    to: yv1uSQ
+  - data:
+      inputMult: 1
+      outputMult: 1
+    from: HgqVkg
+    to: yN6ERA
+  - data:
+      inputMult: 1
+      outputMult: 1
+    from: xsU6/w
     to: HgqVkg
