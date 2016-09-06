@@ -378,6 +378,15 @@ sub get_parameters {
 	}
 }
 
+sub connections {
+	my ($self, $direction) = @_;
+	if ($direction eq "up") {
+		return $self->predecessors;
+	} else {
+		return $self->successors;
+	}
+}
+
 # my @predecessors = $item->predecessors();
 sub predecessors {
 	my ($self, $type) = @_;
@@ -433,6 +442,13 @@ sub all_successors {
 
 	# $side eq 'top'
 	return grep {$_->get_column_no() <= $column_no } @items;
+}
+
+sub all_predecessors {
+	my ($self) = @_;
+	return () if (!defined $self->{graph});
+	my @items = $self->{graph}->all_predecessors($self);
+	return @items;
 }
 
 sub is_split {

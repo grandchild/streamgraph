@@ -10,28 +10,6 @@ window:
   y: 223
 nodes:
   - data:
-      name: gen
-      id: yv1uSQ
-      x: -20
-      y: -138
-      initCode: ''
-      workCode: |-
-        int i = 0;
-        for(i = 0; i< rate; i++){
-        	push(42 + pop());
-        }
-      globalVariables: ''
-      timesPush: rate
-      timesPop: 1
-      timesPeek: 0
-      joinType: roundrobin
-      splitType: duplicate
-      inputType: int
-      inputCount: 1
-      outputType: int
-      outputCount: 0
-    type: StreamGraph::Model::Node::Filter
-  - data:
       name: output
       id: yN6ERA
       x: -24
@@ -79,7 +57,34 @@ nodes:
       outputType: int
       outputCount: 0
     type: StreamGraph::Model::Node::Filter
+  - data:
+      name: gen
+      id: yv1uSQ
+      x: -20
+      y: -138
+      initCode: ''
+      workCode: |-
+        int i = 0;
+        for(i = 0; i< rate; i++){
+        	push(42 + pop());
+        }
+      globalVariables: ''
+      timesPush: rate
+      timesPop: 1
+      timesPeek: 0
+      joinType: roundrobin
+      splitType: duplicate
+      inputType: int
+      inputCount: 1
+      outputType: int
+      outputCount: 0
+    type: StreamGraph::Model::Node::Filter
 connections:
+  - data:
+      inputMult: 1
+      outputMult: 1
+    from: 8C9EUA
+    to: HgqVkg
   - data:
       inputMult: 1
       outputMult: 1
@@ -88,15 +93,10 @@ connections:
   - data:
       inputMult: 1
       outputMult: 1
-    from: yv1uSQ
-    to: HgqVkg
-  - data:
-      inputMult: 1
-      outputMult: 1
     from: HgqVkg
     to: yN6ERA
   - data:
       inputMult: 1
       outputMult: 1
-    from: 8C9EUA
+    from: yv1uSQ
     to: HgqVkg

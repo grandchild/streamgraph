@@ -201,6 +201,7 @@ sub successors {
 sub println {
 	my ($self,$str,$type) = @_;
 	if (!defined $self->{terminal}) {return;}
+	if (!defined $self->{terminal_scroller}) {return;}
 	Glib::Source->remove($self->{printTimer}) if defined $self->{printTimer};
 	my $buf = $self->{terminal}->get_buffer();
 	$buf->set_text(" " . $str);
@@ -208,13 +209,20 @@ sub println {
 	else {
 		$buf->insert_pixbuf($buf->get_start_iter,Gtk2::Button->new->render_icon('gtk-'.$type,'menu'));
 	}
-	$self->{printTimer} = Glib::Timeout->add(3000, sub { $self->println(""); return FALSE;});
+	$self->{terminal_scroller}->set_size_request(10, $str ne "" ? 25 : 0);
+	$self->{printTimer} = Glib::Timeout->add(6000, sub {
+		$self->println("");
+		$self->{terminal_scroller}->set_size_request(10, 0);
+		return FALSE;
+	});
 }
 
 sub connect {
 	my ($self, $predecessor_item, $item, $connection_data) = @_;
 	my $color = $self->{connection_colors_gdk}{default};
-	if (!$self->{graph}->add_edge($predecessor_item, $item, $connection_data)) {
+	my $error = $self->{graph}->add_edge($predecessor_item, $item, $connection_data);
+	if ($error ne "") {
+		$self->println($error, "dialog-error");
 		return 0;
 	}
 	my $type = $self->_connection_type($predecessor_item, $item);

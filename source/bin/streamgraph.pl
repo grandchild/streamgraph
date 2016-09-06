@@ -58,7 +58,8 @@ sub create_window {
 	my $terminal_scroller = Gtk2::VBox->new();
 	$main_gui{menus}->pack_start($terminal_scroller,FALSE,TRUE,0);
 	$terminal_scroller->add($terminal);
-	$terminal_scroller->set_size_request(10,25);
+	$terminal_scroller->set_size_request(10,0);
+	$main_gui{view}->{terminal_scroller} = $terminal_scroller;
 	$main_gui{view}->{terminal} = $terminal;
 	$terminal->set_editable(0);
 	$terminal->set_cursor_visible(0);
@@ -304,7 +305,7 @@ sub addParameter {
 	my ($main_gui, $node) = @_;
 	my $item = $main_gui->{factory}->create_item(border=>'StreamGraph::View::Border::Rectangle',
 					content=>'StreamGraph::View::Content::EllipsisText',
-					text=>$node->value,
+					text=>$node->name ." = ". $node->value,
 					font_desc=>Gtk2::Pango::FontDescription->from_string("Vera Sans 8"),
 					outline_color_gdk=>Gtk2::Gdk::Color->parse('lightgray'),
 					fill_color_gdk   =>Gtk2::Gdk::Color->parse('white'),
