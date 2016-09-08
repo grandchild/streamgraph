@@ -98,11 +98,11 @@ The abstract goes here.
 
 
 \section{Introduction}
-\IEEEPARstart{T}{he} StreamGraph project aims to present the language
+\IEEEPARstart{T}{he} StreamGraph project aims to present the StreamIt language
 simplified in a graphical environment. As such it is intended to be used by
 people who have little programming experience or do not wish to engage with the
 specifics of the StreamIt language and alleviates the amount of StreamIt
-specific semantic knowledge needed. StreamGraph does not contain every construct
+specific semantic knowledge. StreamGraph does not contain every construct
 or possibility that StreamIt provides since it does not aim to rebuild the
 language in a graphical environment.
 
@@ -121,8 +121,8 @@ documentation on StreamIt see \cite{streamIt}.\\
 
 The most basic module of the StreamIt language and the only module that
 processes data is the filter. A filter, just as any other StreamIt construct,
-has exactly one input and exactly one output for data. It consists mainly of a
-work and an init function. The init function describes the filter's initial
+has exactly one input and exactly one output for data. It consists mainly of 
+an init and a work function. The init function describes the filter's initial
 condition (e.g. initial values of variables). The work function describes the
 steps taken in one execution step of the filter and is called every time that
 the preconditions are fulfilled.\\
@@ -133,7 +133,7 @@ a single execution step of the work function. Similarly the pop value describes
 how many data packages are produced in the output of the filter in that
 execution step. The peek value describes how far back the filter needs to read
 in the input data, i.e. the minimum input queue length, since any value read has
-to be processed to by previous filters.
+to be processed by previous filters.
 
 
 \subsubsection{StreamIt topology}
@@ -146,14 +146,32 @@ referred to as topological construct in the further documentation.\\
 One of these constructs is the pipeline. A pipeline connects filters, pipelines
 and split-join constructs in a linear fashion. Each pipline has an init function
 in which the elements of the pipeline are added and which determines the order
-in which a datapacket is processed.\\
+in which a datapacket is processed. Agraphical representation of a pipeline can 
+be seen in fig. \ref{fig_Pipeline}.\\
 \\
 
-The second construct supported by StreamGraph is the split-join construct. This
-constucts splits the datapackets of its input to multiple data paths on which
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.3\textwidth]{PipelineGraphic}
+	\caption{Example of a pipeline}
+	\label{fig_Pipeline}
+\end{figure}
+
+
+\noindent The second construct supported by StreamGraph is the split-join construct. 
+This constucts splits the datapackets of its input to multiple data paths on which
 other constructs are placed and joins these paths together at the end of every
-path. All in all a split-join construct has exactly one input and one output.\\
+path. All in all a split-join construct has exactly one input and one output, as can 
+be seen in fig. \ref{fig_Split_Join}.\\
 \\
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.3\textwidth]{SplitJoinGraphic}
+	\caption{Example of a split-join construct}
+	\label{fig_Split_Join}
+\end{figure}
+
 
 \noindent The StreamIt language generates a pipeline based structure. As such
 it is not possible to connect two filters or constructs in different pipelines (see Fig.
@@ -177,7 +195,7 @@ it is not possible to connect two filters or constructs in different pipelines (
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.4\textwidth]{StreamItTopologyMissingJoin}
-	\caption{Example for a uneqaul number of splits and joins(inthis case a missing join)}
+	\caption{Example for a unequal number of splits and joins (in this case a missing join)}
 	\label{fig_StreamIt_topology_missing_join}
 \end{figure}
 % needed in second column of first page if using \IEEEpubid
@@ -185,9 +203,11 @@ it is not possible to connect two filters or constructs in different pipelines (
 
 
 \section{StreamGraph}
-\noindent Here comes the scientific part
+\noindent The StreamGraph project is composed of multiple parts. In this section the 
+different parts are mentioned and the general idea as well as the reason behind the 
+decisions will be explained.
 \subsection{View}
-\noindent The GUI of StreamGraph include three Parts. On the top there is the menu
+\noindent The GUI of StreamGraph includes three Parts. On the top is the menu
 bar with the all important functions for the project. The first submenu is like in
 other textual editors the File menu with common functions to create new, open, save,
 save as or to quit project. In the Edit submenu it is possible to create new Objects.
@@ -212,21 +232,21 @@ Errors or important information is shown there. \\
 Objects wich are shown on the view surface are nodes of the programm graph. There
 are four different types: Filter, Parameter, Subgraph and Comment. Each type has
 a different geometric form. Connections between the nodes are visualised as lines
-with a direction arrow. Connections has also circle pins at the ends. Pins on nodes
-with no connection line show that this node has an open input or output. By clicking
-on an out pin and draging to another node a new connection can be created. All possible
-connections are visulied with bigger pins. If the mouse is over a node with possible
-connection, the arrow is glued to the available pin. \\
+with a direction arrow. Connections have circular pins at both the beginnig and the end.
+Pins on nodes with no connection line show that this node has an open input or output. 
+By clicking on an out pin and draging to another node a new connection can be created. 
+All possible connections are visualized with bigger pins. If the mouse hovers over a 
+node to which the connection is possible, the arrow is glued to the available pin. \\
 
-A connection can simple be marked with maouse over. This is visualised with much
+A connection can be marked through hovering over it with the mouse. This is visualised with a much
 thicker line. A node can be marked with a left mouse click. To mark more than one
-node a right mouse click on a node adds the node to the marked naodes. Another intuitive
+node a right mouse click on a node adds the node to the marked nodes. Another intuitive
 ways is to draw a select rectangle with a right mouse click on the view surface.
 Marked objects can be deleted with DEL key press. \\
 
 \subsection{Property Window}
 A double left click on a node opens its property window. It contains all the parameters
-from this node. For exaple a filter node has tree tabs: Join, Filter and Split.
+from this node. For example a filter node has three tabs: Join, Filter and Split.
 In the filter tab the user has the possibility to set the input and output types and
 also to edit the filter source code.
 
@@ -298,7 +318,7 @@ At the moment it takes care of the following 3 transformations:
 	\caption{Example of adding an identity filter}
 	\label{fig_split_join_identity}
 \end{figure*}
-\noindent The Streamgraph infrastructure allows a graph with multiple sources
+\noindent The StreamGraph infrastructure allows a graph with multiple sources
 and sinks if the sources all have a void input and the sinks all have a void
 output type. In that case the GraphCompat class adds a void split/start or
 respectively a void join/end to ensure the StreamIt restriction that every
@@ -329,11 +349,17 @@ for parameters reference to other CodeObjects or filters. As such a single
 CodeObject can have an entire graph ready for code generation stored in a manner
 that already has the necessary order and hierarchical structure of a StreamIt
 program.\\
-Since StreamGraph does not use the concepts of pipelines and split-joines 
-but StreamIt expects these constructs the codeObjects rebuild the graph 
-with pipeplines and split-joines.
+Since StreamGraph does not use the concepts of pipelines and split-joines in 
+the way StreamIt expects these constructs the codeObjects rebuild the graph 
+with pipeplines and split-joines in a indirect recursive fashion, that 
+resembles StreamIt's own way of nesting split-joines and pipelines into 
+each other. At the same time this is the reason for creating the 
+codeObjects in this way, since it automaticly generates the needed 
+and desired hierarchical structure of a StreamIt program. This 
+simplifies the generation of the code for a specific codeObject, 
+which demands the names of all directly nested codeObjects.\\
 Figure \ref{fig_StreamGraph_To_StreamIt} shows an example of a 
-conversion from a simple StreamGraph graph to a CodeObject structure.
+conversion from a simple StreamGraph graph to a CodeObject structure.\\
 
 \begin{figure*}[h]
 	\centering
@@ -365,16 +391,9 @@ while creating the pipeline a split-join construct is created. When the
 creation is complete the pipeline continues its creation and eventually 
 returns.\\
 Pipelines encompass the maximum possible amount of nodes to minimize the 
-amount of needed pipelines. An example of a pipeline can be seen in fig. 
-\ref{fig_Pipeline}.
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.3\textwidth]{PipelineGraphic}
-	\caption{Example of a pipeline}
-	\label{fig_Pipeline}
-\end{figure}
-
+amount of needed pipelines and with that minimizes the amount of code 
+that has to be generated. An example of a pipeline can be seen in fig. 
+\ref{fig_Pipeline}.\\
 
 \subsubsection{SplitJoin}
 \noindent Split-join constructs are the most obvious parallel construct in the
@@ -385,7 +404,7 @@ not necessary to create a pipeline if there is exactly one filter on a path
 between a split-join pair. StreamGraph creates a pipeline on every path of a
 split-join pair for the sake of convenience. The approach to generate a
 pipeline in every case should not increase the execution time significantly and
-does not change the order of execution. Because of this reasons it was decided
+does not change the order of execution. Because of these reasons it was decided
 to not include the feature to only create pipelines in split-join constructs
 when strictly necessary.\\
 The generation of split-joines is relatively easy as long as the graph is compatible
@@ -398,22 +417,21 @@ through parsing and checking of the code from the respective constructs and is b
 the scope of this project, mending is not included in the current version of StreamGraph.\\
 A simple example of a split join is shown in fig. \ref{fig_Split_Join}.\\
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.3\textwidth]{SplitJoinGraphic}
-	\caption{Example of a pipeline}
-	\label{fig_Split_Join}
-\end{figure}
-
 
 \subsection{Code generation}
 \noindent The code generation as a first step generates the code for every
 filter in the graph. This is made possible, because filters are the basic
 modules of StreamIt and due to the fact that every meaningful StreamIt program
-has at least a Pipeline.  As such StreamIt as a language does not allow programs
+has at least a Pipeline. As such StreamIt as a language does not allow programs
 consisting only of filters because without a pipeline no connection between
 these filters can be made (see \ref{StreamItTopology} for further
-explanation).\\
+explanation). \\
+The reasons behind generating filters at first are that in this 
+way it is not possible to 'forget' a filter and if a filter is generated that 
+is not needed in the execution of the program it does no harm. Second it 
+simplifies the later utilization in the topological constructs, since these 
+only need the name of the component and not the complete code.\\
+
 After generating all filters the code generation continues with the main
 CodeObject which is a pipeline. While generating the code of a topological
 construct (a pipeline or a split-join-pair) it may be necessary to generate the
@@ -422,6 +440,7 @@ construct. In that case the code generation of the current construct is paused
 and the code generation of the contained construct is started. By the time the
 code generation of the contained construct is finished the code generation of
 the containing construct is continued.\\
+
 The code generation arranges filters and topological constructs according to
 their type. Thus a StreamGraph output file first lists all filters, then all
 pipelines and last all split-join constructs.\\
