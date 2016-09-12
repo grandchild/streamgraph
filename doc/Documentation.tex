@@ -266,7 +266,7 @@ also to edit the filter source code.
 
 \subsection{Graph hierarchy}
 
-StreamGraph introduces subgraphs as a new feature for compartmentalization of
+\noindent StreamGraph introduces Subgraphs as a new feature for structuring
 code. Subgraphs act like normal filter nodes in the parent graph, but are
 actually a pipeline. This makes use of the fact that pipelines and filters can
 be used in the same context in StreamIt, namely in other pipelines and in
@@ -278,7 +278,7 @@ split-join constructs.
 \noindent The StreamIt topology, as discussed in \ref{StreamItTopology}, is not
 only a directed Graph but has additional restrictions. Some of these are not
 strictly necessary and some effort was made in StreamGraph to allow for graphs
-that are not strictly StreamIt-compatible and then automatically convert them.
+that are not strictly StreamIt-compatible and automatically convert them.
 
 This task is taken on by the GraphCompat class. It transforms a given
 StreamGraph graph, coming from the user interface, into a new graph which
@@ -287,16 +287,14 @@ is compatible with the StreamIt topology.
 At the moment it takes care of the following 3 transformations:
 
 \begin{itemize}
-\item Sources and Sinks
-
+\item Sources and Sinks\\
   A StreamIt graph must start and end with exactly one void-typed input and
   output respectively. StreamGraph also makes the void-typed requirement but
   does not restrict the graph to just one source and one sink. Multiple sources
   and sinks are combined by adding "Void Sources" and "Void Sinks" to the ends
   of the graph when necessary.\\
 
-\item Identities
-
+\item Identities\\
   StreamIt does not allow direct connections between a split and a join without
   a filter or a pipeline. In StreamGraph such a connection is allowed. In this
   case GraphCompat adds an identity filter instead of the direct connection
@@ -304,8 +302,7 @@ At the moment it takes care of the following 3 transformations:
   \ref{fig_split_join_identity}. This filter copies his input to his output
   without changing the content in any way.\\
 
-\item Subgraphs
-
+\item Subgraphs\\
   Subgraphs as they are, are a feature of StreamGraph, and don't make use of
   StreamIt's joint-compilation features. It essentially does the same though, by
   flattening the graph hierarchy into one single graph.\\
