@@ -272,13 +272,20 @@ actually a pipeline. This makes use of the fact that pipelines and filters can
 be used in the same context in StreamIt, namely in other pipelines and in
 split-join constructs.
 
+The passing of parameters down through a subgraph hierarchy makes the use of
+namespaces necessary. These are fully automatic though and the user has no
+interaction with them. Any parameters in a subgraph are prepended with the
+name of the subgraph, to differentiate it from possibly identically named
+parameters being passed in from the parent graph.
+
+
 
 \subsection{GraphCompat}
 
 \noindent The StreamIt topology, as discussed in \ref{StreamItTopology}, is not
 only a directed Graph but has additional restrictions. Some of these are not
 strictly necessary and some effort was made in StreamGraph to allow for graphs
-that are not strictly StreamIt-compatible and automatically convert them.
+that are not strictly StreamIt-compatible and to automatically convert them.
 
 This task is taken on by the GraphCompat class. It transforms a given
 StreamGraph graph, coming from the user interface, into a new graph which
@@ -287,13 +294,6 @@ is compatible with the StreamIt topology.
 At the moment it takes care of the following 3 transformations:
 
 \begin{itemize}
-\item Sources and Sinks\\
-  A StreamIt graph must start and end with exactly one void-typed input and
-  output respectively. StreamGraph also makes the void-typed requirement but
-  does not restrict the graph to just one source and one sink. Multiple sources
-  and sinks are combined by adding "Void Sources" and "Void Sinks" to the ends
-  of the graph when necessary.\\
-
 \item Identities\\
   StreamIt does not allow direct connections between a split and a join without
   a filter or a pipeline. In StreamGraph such a connection is allowed. In this
@@ -302,29 +302,21 @@ At the moment it takes care of the following 3 transformations:
   \ref{fig_split_join_identity}. This filter copies his input to his output
   without changing the content in any way.\\
 
-\item Subgraphs\\
-  Subgraphs as they are, are a feature of StreamGraph, and don't make use of
-  StreamIt's joint-compilation features. It essentially does the same though, by
-  flattening the graph hierarchy into one single graph.\\
-
-\end{itemize}
-
-
-
 \begin{figure*}[h]
 	\centering
 	\includegraphics[width=0.8\textwidth]{SplitJoinIdentity}
 	\caption{Example of adding an identity filter}
 	\label{fig_split_join_identity}
 \end{figure*}
-\noindent The StreamGraph infrastructure allows a graph with multiple sources
-and sinks if the sources all have a void input and the sinks all have a void
-output type. In that case the GraphCompat class adds a void split/start or
-respectively a void join/end to ensure the StreamIt restriction that every
-construct has exactly one input and one output, as long as adding these does not
-violate the other rules of StreamIt. An example can be viewed in Fig.
-\ref{fig_void_end}. The addition of void-starts/splits is handled in an
-equivalent manner.\\
+
+\item Sources and Sinks\\
+  A StreamIt graph must start and end with exactly one void-typed input and
+  output respectively. StreamGraph also makes the void-typed requirement but
+  does not restrict the graph to just one source and one sink. Multiple sources
+  and sinks are combined by adding "Void Sources" and "Void Sinks" to the ends
+  of the graph when necessary. See Fig. \ref{fig_void_end} for an illustration
+  of this.\\
+
 \begin{figure*}[h]
 	\centering
 	\includegraphics[width=\textwidth]{VoidEnd}
@@ -332,6 +324,23 @@ equivalent manner.\\
 	\label{fig_void_end}
 \end{figure*}
 
+\item Subgraphs\\
+  Subgraphs as they are, are a feature of StreamGraph, and don't make use of
+  StreamIt's joint-compilation features. The results are essentially the same
+  though: Flattening the graph hierarchy into one single graph is possible
+  because a subgraph is a pipeline and using a subgraph is identical to adding
+  a pipline inline.\\
+  The subgraph transformation also takes care of namespacing the parameters as
+  discussed above.\\
+
+\end{itemize}
+
+If, for one reason or another, the a part of the graph cannot be transformed
+it is simply left out of the transformed graph and thus code generation. This
+feature is quite essential, because otherwise a quick draft on the side of a
+few nodes would quickly invalidate the whole program. But being able to test
+the program as far as possible during development is necessary for a more
+robust process.
 
 
 \subsection{CodeObject}
@@ -378,7 +387,6 @@ CodeObject exists exactly once.\\
 For better readability in the StreamIt source file the parameters are written as
 global variables in the main pipeline and are passed through to the other code
 objects.\\
-
 
 \subsubsection{Pipeline}
 \noindent Every StreamIt program contains at least one pipeline, the main
