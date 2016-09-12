@@ -159,7 +159,7 @@ be seen in fig. \ref{fig_Pipeline}.\\
 
 
 \noindent The second construct supported by StreamGraph is the split-join construct. 
-This constucts splits the datapackets of its input to multiple data paths on which
+This constucts splits the data packets of its input to multiple data paths on which
 other constructs are placed and joins these paths together at the end of every
 path. All in all a split-join construct has exactly one input and one output, as can 
 be seen in fig. \ref{fig_Split_Join}.\\
@@ -246,13 +246,19 @@ node a right mouse click on a node adds the node to the marked nodes. Another in
 way is to draw a selection rectangle with a right mouse click on the view surface.
 Marked objects can be deleted with a DEL key press. \\
 
-\subsection{Property Window}
+\subsubsection{Property Window}
 A double left click on a node opens its property window. It contains all the parameters
 from this node. For example a filter node has three tabs: Join, Filter and Split.
 In the filter tab the user has the possibility to set the input and output types and
 also to edit the filter source code.
 
+
 \subsection{Model}
+
+\noindent The StreamGraph layer on top of StreamIt needs data structures to
+work with. Their details contain much of the design of StreamGraph as an
+abstraction over StreamIt. The various data objects of StreamGraph are now
+examined in further detail:
 
 \subsubsection{Filter}
 \begin{figure}[h]
@@ -261,10 +267,59 @@ also to edit the filter source code.
   \caption{A node in the StreamGraph}
   \label{fig_filter_node}
 \end{figure}
-\subsubsection{Paramter}
+
+A filter in StreamGraph is a combination of two StreamIt constructs, the
+filter and split-join constructs. The combination of the two into one object
+has one important advantage: It allows filters to have more than one input or
+output. The filter part is a very straight wrapper around a StreamIt filter,
+with all the fields exposed in the property window, and a direct assembly into
+a StreamIt filter on code generation.
+
+The split-join part however is reversed and a StreamGraph filter includes a
+join before and a split after. This way the multiple inputs of a filter in
+StreamGraph are joined to form the required single input for a StreamIt
+filter. Similarly the data packages coming from the single output of the
+filter code are spread among the outputs of the StreamGraph filter node. The
+join and split is configured through the filter's property window, along with
+the filter code.
+
+\subsubsection{Subgraph}
+
+Subgraphs are slightly special in that they open another .sigraph file for
+inclusion in the program. From the outside though they behave just like normal
+filters and have the same properties and can be used the same way. They
+encapsulate StreamIt code in a similar way that functions or methods in
+textual code do.
+
+Currently there are limits to their implementation though:
+
+\begin{itemize}
+
+\item Changes aren't reflected in code generation until saved.
+
+\item No synchronization between multiple instances of the same subgraph.
+
+\item Parameters connected to subgraphs are forwarded to \emph{all} nodes in
+the subgraphs, including sub-subgraphs, leading to a lot of potentially
+unnecessary parameter connections.
+
+\end{itemize}
+
+\subsubsection{Parameter}
+
+A parameter is a single static named value that can be used by filters (and
+subgraphs) and is independent of the data stream. Its significance lies in the
+use for a DRY programming style.
+
+\subsubsection{Comment}
+
+A comment is an inactive, unconnectable node that allows to place text
+anywhere on the canvas and thus to document the code rather freely, or to
+otherwise help in understanding the program.
 
 
-\subsection{Graph hierarchy}
+
+\subsection{Graph hierarchy and Namespaces}
 
 \noindent StreamGraph introduces Subgraphs as a new feature for structuring
 code. Subgraphs act like normal filter nodes in the parent graph, but are
