@@ -203,46 +203,48 @@ it is not possible to connect two filters or constructs in different pipelines (
 
 
 \section{StreamGraph}
-\noindent The StreamGraph project is composed of multiple parts. In this section the 
-different parts are mentioned and the general idea as well as the reason behind the 
-decisions will be explained.
+
+\noindent The StreamGraph project is composed of multiple parts. In this
+section they are listed and explained and along with the reason behind the
+individual decisions that led to them.
+
 \subsection{View}
-\noindent The GUI of StreamGraph includes three Parts. On the top is the menu
-bar with the all important functions for the project. The first submenu is like in
-other textual editors the File menu with common functions to create new, open, save,
-save as or to quit project. In the Edit submenu it is possible to create new Objects.
-In the Run submenu the project can be executed. The Debug submenu is only for debuging
-the project and is not necessary for the user. \\
+\noindent The GUI of StreamGraph includes three parts. At the top is the menu
+bar with the important functions for the project. The first submenu is, similar to
+other textual editors, the File menu with common functions to create new, open, save,
+save-as or to quit projects. In the Edit submenu it is possible to create new Objects.
+In the Run submenu the project can be executed. The Debug submenu helps with debugging
+the project. \\
 
 % http://search.cpan.org/~hemlock/Gtk2-Ex-MindMapView-0.000001/lib/Gtk2/Ex/MindMapView.pm
 The view takes up the main part of the GUI window. It is based on the Gtk2::Ex::MindMapView
-Perl modul \cite{GTK2EXMindMapView} and shows the Objects and they connections. The view is designed
-minimalistic as a plain surface to have a clear design and a simple usability.
-Especially no toolbars or other controll windows were implemented. The graph structure
+Perl modul \cite{GTK2EXMindMapView} and shows the Objects and their connections. The view design
+is minimalistic: a plain surface to have a clear view and simple usability.
+There are no toolbars or other control windows. The graph structure
 can be completely edited with the mouse. A right click opens a pop-up menu with the
 same entries as in the Edit submenu. This allows the creation of an object with two mouse
 clicks. The surface can be scrolled with the scrollbars in all four directions,
-but can also be draged with pressed left mouse button. It allows the user
-to seperate objects in different areas. \\
+but can also be dragged with the left mouse button. It gives the user access to a larger
+editing area and to seperate objects into different groups. \\
 
-On the bottom of the GUI appears a terminal window for communication with the user. 
-Errors or important information is shown there. \\
+At the bottom of the GUI is a dynamic status bar for program feedback for the user.
+Errors or important information are shown there. \\
 
 \subsubsection{Objects}
-Objects wich are shown on the view surface are nodes of the programm graph. There
+Objects wich are shown on the view surface are nodes of the program graph. There
 are four different types: Filter, Parameter, Subgraph and Comment. Each type has
-a different geometric form. Connections between the nodes are visualised as lines
+a different geometric form. Connections between the nodes are visualized as lines
 with a direction arrow. Connections have circular pins at both the beginnig and the end.
-Pins on nodes with no connection line show that this node has an open input or output. 
-By clicking on an out pin and draging to another node a new connection can be created. 
-All possible connections are visualized with bigger pins. If the mouse hovers over a 
+Pins on nodes with no connection line show that this node has an open input or output.
+A new connection is created by clicking on an out pin and dragging to another node.
+All possible connections are visualized with bigger pins. If the mouse hovers over a
 node to which the connection is possible, the arrow is glued to the available pin. \\
 
-A connection can be marked through hovering over it with the mouse. This is visualised with a much
+A connection can be marked through hovering over it with the mouse. This is visualized with a much
 thicker line. A node can be marked with a left mouse click. To mark more than one
 node a right mouse click on a node adds the node to the marked nodes. Another intuitive
-ways is to draw a select rectangle with a right mouse click on the view surface.
-Marked objects can be deleted with DEL key press. \\
+way is to draw a selection rectangle with a right mouse click on the view surface.
+Marked objects can be deleted with a DEL key press. \\
 
 \subsection{Property Window}
 A double left click on a node opens its property window. It contains all the parameters
