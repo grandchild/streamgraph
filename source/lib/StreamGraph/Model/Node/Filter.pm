@@ -146,3 +146,62 @@ sub set_edge_data_from {
 
 
 1;
+__END__
+
+=head1 StreamGraph::Model::Node::Filter
+
+The basic code component in StreamGraph. Joins data from its multiple inputs and
+processes it in its work code. Then the data gets distributed over its outputs.
+
+This class is mainly a data structure and holds all properties required to
+generate the filter.
+
+=over
+
+=item C<StreamGraph::Model::Node::Filter-E<gt>new($initCode, $workCode, $globalVariables, $timesPush, $timesPop, $timesPeek, $joinType, $splitType, $inputType, $inputCount, $outputType, $outputCount)>
+
+Create a StreamGraph::Model::Node::Filter.
+
+=item C<get_parameters($graph, $parameterTypeFlag)>
+
+C<return> returnvalue
+
+description
+
+
+=item C<get_edge_data_to($target, $graph)>
+
+C<return> returnvalue
+
+description
+
+
+=item C<get_edge_data_from($source, $graph)>
+
+C<return> returnvalue
+
+description
+
+
+=item C<set_edge_attribute_to($target, $graph, $key, $value)>
+
+Set the generic attribute for the edge to the C<$target>.
+
+
+=item C<set_edge_attribute_from($source, $graph, $key, $value)>
+
+Set the generic attribute for the edge from the C<$source>.
+
+
+=item C<set_edge_data_to($target, $graph, $inMult, $outMult)>
+
+Set the data for the edge to the C<$target>. Requires input and output
+multiplicities for the connection.
+
+
+=item C<set_edge_data_from($source, $graph, $inMult, $outMult)>
+
+Set the data for the edge from the C<$source>. Requires input and output
+multiplicities for the connection.
+
+=back
