@@ -10,7 +10,6 @@ use Gnome2::Canvas;
 
 use StreamGraph::View::Graph;
 use StreamGraph::View::Connection;
-use StreamGraph::View::Layout::Balanced;
 use StreamGraph::Util::PropertyWindow;
 
 use POSIX qw(DBL_MAX);
