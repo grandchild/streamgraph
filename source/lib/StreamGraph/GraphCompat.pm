@@ -213,8 +213,6 @@ sub _copyData {
 
 sub _loadFile {
 	my ($filepath) = @_;
-	# if (not defined($graph) or not $graph->isa("StreamGraph::GraphCompat")) {
-	# }
 	my $graph = StreamGraph::View::Graph->new();
 	return if not defined $graph;
 	my ($wd, $nodes, $connections) = StreamGraph::Util::File::load($filepath);
@@ -245,3 +243,114 @@ sub _loadFile {
 }
 
 1;
+
+__END__
+
+=head1 StreamGraph::GraphCompat
+
+The StreamGraph::GraphCompat class assures that a graph is StreamIt compatible. 
+It inherits from the StreamGraph::View::Graph class.
+
+=head2 Properties
+
+The StreamGraph::GraphCompat class inherits all properties of the 
+StreamGraph::View::Graph and adds none of itself. Therefore all Properties can be
+looked up at the StreamGraph::View::Graph documentation.
+
+=head2 Methods
+
+=over
+
+=item C<StreamGraph::GraphCompat-E<gt>new($graph)>
+
+Create a StreamGraph::GraphCompat out of the given StreamGraph::View::Graph. 
+Essentially a copy of the given $graph only with the necessary data is created.
+
+=item C<graph()>
+
+C<return> Graph property of the StreamGraph::GraphCompat
+
+Simple accessor for the graph property
+
+
+=item C<source()>
+
+C<return> source property of the StreamGraph::GraphCompat 
+
+Simple accessor for the source property
+
+
+=item C<sink()>
+
+C<return> sink property of the StreamGraph::GraphCompat
+
+Simple accessor for the sink property
+
+
+=item C<factory()>
+
+C<return> factory property of the StreamGraph::GraphCompat
+
+Simple accessor for the factory property
+
+
+=item C<success()>
+
+C<return> success property of the StreamGraph::GraphCompat
+
+Simple accessor for the success property
+
+
+=item C<_addIdentities()>
+
+Adds identity nodes on all connections between a spilt and a join node.
+
+
+=item C<_addVoidSource(parameters)>
+
+C<return> returnvalue
+
+description
+
+
+=item C<_addVoidSink(parameters)>
+
+C<return> returnvalue
+
+description
+
+
+=item C<_addVoidEnd(parameters)>
+
+C<return> returnvalue
+
+description
+
+
+=item C<_subgraphs(parameters)>
+
+C<return> returnvalue
+
+description
+
+
+=item C<_subgraph(parameters)>
+
+C<return> returnvalue
+
+description
+
+
+=item C<_copyData($graph)>
+
+Copies the important data(nodes, connections and connection-attributes) 
+from the $graph to the StreamGraph::GraphCompat.
+
+
+=item C<_loadFile(parameters)>
+
+C<return> returnvalue
+
+description
+
+=back
