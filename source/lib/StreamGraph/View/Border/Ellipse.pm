@@ -121,33 +121,12 @@ sub border_set_param
 1; # Magic true value required at end of module
 __END__
 
-=head1 NAME
-
-StreamGraph::View::Border::Ellipse : Create a elliptical border.
-
-
-=head1 VERSION
-
-This document describes StreamGraph::View::Border::Ellipse version
-0.0.1
-
-=head1 HEIRARCHY
-
- StreamGraph::View::Border
- +----StreamGraph::View::Border::Ellipse
-
-=head1 SYNOPSIS
-
-use StreamGraph::View::Border::Ellipse;
-
-=head1 DESCRIPTION
+=head1 StreamGraph::View::Border::Ellipse
 
 This module is internal to StreamGraph::View. It draws a
 elliptical border for a StreamGraph::View::Item. This ellipse
 is instantiated as part of the item creation process in
 StreamGraph::View::ItemFactory.
-
-=head1 INTERFACE
 
 =head2 Properties
 
@@ -234,68 +213,8 @@ This method overrides the border_set_param method defined in
 Border.pm. It sets parameters in the Gnome2::Canvas::Ellipse object
 instantiated by this module.
 
-=back
+=item C<update ()>
 
-=head1 DIAGNOSTICS
-
-=over
-
-None.
+Sets height and width based on the content size.
 
 =back
-
-=head1 DEPENDENCIES
-
-None.
-
-
-=head1 BUGS AND LIMITATIONS
-
-The algorithm for calculating the rectangle internal to the ellipse in
-which to place the content is crude, crude, crude. Currently the
-height and width values are divided by 4 to get insets. Ugh.
-
-The placement of the resize grip(s) could be improved.
-
-No bugs have been reported.
-
-Please report any bugs or feature requests to
-C<bug-gtk2-ex-StreamGraphView@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.
-
-
-=head1 AUTHOR
-
-James Muir  C<< <hemlock@vtlink.net> >>
-
-
-=head1 LICENCE AND COPYRIGHT
-
-Copyright (c) 2006, James Muir C<< <hemlock@vtlink.net> >>. All rights reserved.
-
-This module is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself. See L<perlartistic>.
-
-
-=head1 DISCLAIMER OF WARRANTY
-
-BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
-FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
-OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
-PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
-EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
-ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
-YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
-NECESSARY SERVICING, REPAIR, OR CORRECTION.
-
-IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
-WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
-REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE
-LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL,
-OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
-THE SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
-RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
-FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
-SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
-SUCH DAMAGES.
