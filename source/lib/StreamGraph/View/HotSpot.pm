@@ -219,22 +219,7 @@ sub _event_handler {
 
 __END__
 
-=head1 NAME
-
-StreamGraph::View::HotSpot - Base class for grips and toggles.
-
-
-=head1 VERSION
-
-This document describes StreamGraph::View::HotSpot version 0.0.1
-
-
-=head1 SYNOPSIS
-
-use base 'StreamGraph::View::HotSpot';
-
-
-=head1 DESCRIPTION
+=head1 StreamGraph::View::HotSpot
 
 This module is internal to StreamGraph::View. Four
 StreamGraph::View::HotSpots are created for each
@@ -242,9 +227,6 @@ StreamGraph::View::Item. The hotspots are areas on a mind map item
 that when clicked, cause an action to be performed on an item. These
 hotspots allow the user to expand/collapse the items in the mind map,
 or to resize an item.
-
-
-=head1 INTERFACE
 
 =head2 Properties
 
@@ -335,106 +317,3 @@ This method may optionally be overridden to handle the "motion-notify"
 event.
 
 =back
-
-=head1 DIAGNOSTICS
-
-=over
-
-=item C<set(fill_color_gdk=E<gt>...) expecting a Gtk2::Gdk::Color>
-
-You did not pass in a Gtk2::Gdk::Color for the color argument. Here's
-an example of how to get a Gtk2::Gdk::Color:
-
-	 my $red_color = Gtk2::Gdk::Color->parse("red");
-
-=item C<set(outline_color_gdk=E<gt>...) expecting a Gtk2::Gdk::Color>
-
-You did not pass in a Gtk2::Gdk::Color for the color argument. Here's
-an example of how to get a Gtk2::Gdk::Color:
-
-	 my $red_color = Gtk2::Gdk::Color->parse("red");
-
-=item C<set(hotspot_color_gdk=E<gt>...) expecting a Gtk2::Gdk::Color>
-
-You did not pass in a Gtk2::Gdk::Color for the color argument. Here's
-an example of how to get a Gtk2::Gdk::Color:
-
-	 my $red_color = Gtk2::Gdk::Color->parse("red");
-
-=item C<Unexpected side: $self->{side}. Valid are: 'down' and 'top'>
-
-You have to specify whether this hotspot is on the left or right side
-of the item it is attached to. Choose either 'top' or 'down'.
-
-=item C<Item argument is not a StreamGraph::View::Item.>
-
-Hotspots want to attach themselves to a
-StreamGraph::View::Item. Don't bother trying to hook them up to
-something else. They just won't like it and will complain about it.
-
-=item C<You must supply a handler for the 'hotspot_adjust' event.>
-
-Every hotspot must be subclassed, and the "hotspot_adjust" event
-handler method should be overridden. See
-StreamGraph::View::HotSpot::Grip.pm or
-StreamGraph::View::HotSpot::Toggle.pm for an example of how to do
-this.
-
-=item C<No hotspot image given. Every hotspot must have a Gnome2::Canvas::Item
-for an image.>
-
-Every hotspot should have a visible image associated with it. You must
-override the hotspot_get_image method to supply the image.
-
-=back
-
-
-=head1 DEPENDENCIES
-
-None.
-
-
-=head1 BUGS AND LIMITATIONS
-
-No bugs have been reported.
-
-Please report any bugs or feature requests to
-C<bug-gtk2-ex-StreamGraphView@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.
-
-
-=head1 AUTHOR
-
-James Muir  C<< <hemlock@vtlink.net> >>
-
-
-=head1 LICENCE AND COPYRIGHT
-
-Copyright (c) 2006, James Muir C<< <hemlock@vtlink.net> >>. All rights reserved.
-
-This module is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself. See L<perlartistic>.
-
-
-=head1 DISCLAIMER OF WARRANTY
-
-BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
-FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
-OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
-PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
-EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
-ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
-YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
-NECESSARY SERVICING, REPAIR, OR CORRECTION.
-
-IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
-WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
-REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE
-LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL,
-OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
-THE SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
-RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
-FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
-SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
-SUCH DAMAGES.

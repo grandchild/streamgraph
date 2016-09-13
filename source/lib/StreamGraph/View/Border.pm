@@ -260,27 +260,11 @@ sub _get
 1; # Magic true value required at end of module
 __END__
 
-=head1 NAME
-
-StreamGraph::View::Border: Base class for border objects.
-
-
-=head1 VERSION
-
-This document describes StreamGraph::View::Border version 0.0.1
-
-=head1 SYNOPSIS
-
-use base 'StreamGraph::View::Border';
-
-
-=head1 DESCRIPTION
+=head1 StreamGraph::View::Border
 
 This module is internal to StreamGraph::View. It is the base class
 for objects that draw borders and offers several classes that are to
 be overidden.
-
-=head1 INTERFACE
 
 =head2 Properties
 
@@ -391,98 +375,3 @@ reparent method.
 Sets the value of a property. See the properties list above.
 
 =back
-
-=head1 DIAGNOSTICS
-
-=over
-
-=item C<Unexpected value for group. Valid is: Gnome2::Canvas::Group>
-
-You must pass in a Gnome2::Canvas::Group object on which this border
-will draw itself.
-
-=item C<Unexpected value for content. Valid is:
-StreamGraph::View::Content>
-
-You must pass in a StreamGraph::View::Content object as content.
-
-=item C<You must supply a border image by overriding 'border_get_image'>
-
-You must override the border_get_image method with your own method
-that returns a Gnome2::Canvas::Item that defines the border.
-
-=item C<You must set the border x coordinate by overriding 'border_set_x'.>
-
-You must override the border_set_x method with your own method that
-sets the x-coordinate for the Gnome2::Canvas::Item you created with
-border_get_image.
-
-=item C<You must set the border y coordinate by overriding 'border_set_y'.>
-
-You must override the border_set_y method with your own method that
-sets the y-coordinate for the Gnome2::Canvas::Item you created with
-border_get_image.
-
-=item C<You must set the border width by overriding 'border_set_width'.>
-
-You must override the border_set_width method with your own method
-that sets the width for the Gnome2::Canvas::Item you created with
-border_get_image.
-
-=item C<You must set the border height by overriding 'border_set_height'.>
-
-You must override the border_set_height method with your own method
-that sets the height for the Gnome2::Canvas::Item you created with
-border_get_image.
-
-=back
-
-=head1 DEPENDENCIES
-
-None.
-
-
-=head1 BUGS AND LIMITATIONS
-
-No bugs have been reported.
-
-Please report any bugs or feature requests to
-C<bug-gtk2-ex-StreamGraphView@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.
-
-
-=head1 AUTHOR
-
-James Muir  C<< <hemlock@vtlink.net> >>
-
-
-=head1 LICENCE AND COPYRIGHT
-
-Copyright (c) 2006, James Muir C<< <hemlock@vtlink.net> >>. All rights reserved.
-
-This module is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself. See L<perlartistic>.
-
-
-=head1 DISCLAIMER OF WARRANTY
-
-BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
-FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
-OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
-PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
-EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
-ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
-YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
-NECESSARY SERVICING, REPAIR, OR CORRECTION.
-
-IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
-WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
-REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE
-LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL,
-OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
-THE SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
-RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
-FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
-SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
-SUCH DAMAGES.

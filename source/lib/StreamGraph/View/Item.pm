@@ -554,36 +554,12 @@ sub _set_invisible {
 1; # Magic true value required at end of module
 __END__
 
-=head1 NAME
-
-StreamGraph::View::Item: The border and text entered into the map.
-
-
-=head1 VERSION
-
-This document describes StreamGraph::View::Item version 0.0.1
-
-=head1 HEIRARCHY
-
- Glib::Object
- +----Gtk2::Object
-      +----Gnome2::Canvas::Item
-           +----Gnome2::Canvas::Group
-                +----StreamGraph::View::Item
-
-=head1 SYNOPSIS
-
-use StreamGraph::View::Item;
-
-
-=head1 DESCRIPTION
+=head1 StreamGraph::View::Item
 
 StreamGraph::View::Item items contain the border and content that
 is displayed in the mind map. They may be created using
 StreamGraph::View::ItemFactory and may be placed into
 StreamGraph::View.
-
-=head1 INTERFACE
 
 =head2 Properties
 
@@ -593,12 +569,6 @@ StreamGraph::View.
 
 A reference to the StreamGraph::View::Graph that contains all the
 StreamGraph::View::Item items.
-
-=item C<column> (StreamGraph::View::Layout::Column)
-
-A reference to a StreamGraph::View::Layout::Column that contains
-this item. The column is used to place the item on the
-StreamGraph::View canvas.
 
 =item C<border> (StreamGraph::View::Border)
 
@@ -648,15 +618,11 @@ C<$item-E<gt>set(width=E<gt>100);>
 
 =item C<add_hotspot ($hotspot_type, $hotspot)>
 
-Add a StreamGraph::View::ItemHotSpot to an item. There are four
-types of hotspots ('lower_left', 'lower_right', 'toggle_left',
-'toggle_right').
+Add a StreamGraph::View::ItemHotSpot to an item. There are two
+types of hotspots ('toggle_top','toggle_down').
 
 The "toggle" hotspots correspond to the small circles you see on a
-view item that allow for expansion or collapse of the mind map view.
-
-The "lower" (or "resize") hotspots correspond to the hot spots that
-allow you to resize an item.
+view item that allow for connecting two items.
 
 You should add a hotspot for each hotspot type to an item. If you use
 the StreamGraph::View::ItemFactory to create items, this will be
@@ -665,12 +631,10 @@ done for you.
 When you add a hotspot the hotspot type is used to position the
 hotspot on the item. You may only add one hotspot of each type.
 
-
 =item C<disable_hotspots ()>
 
 This method is used to disable and hide the "toggle" hotspots, which
 only appear on an item if they are needed.
-
 
 =item C<enable_hotspots ($successor_item)>
 
@@ -683,7 +647,7 @@ successor items attached to it.
 Return the column number that this item belongs to. The column number
 is used to determine the relative position of items in the layout.
 
-=item C<get_connection_point ($side)>
+=item C<get_connection_point ($side,$connection)>
 
 Return the x,y coordinates of the point at which a
 StreamGraph::View::Connection may connect to. This coordinate is
@@ -736,104 +700,8 @@ may be 'top' or 'down'.
 Either expand or collapse a subtree of the mind map. Toggle uses a
 time stamp to decide how much of the tree to expand.
 
-=back
+=item C<update ()>
 
-
-=head1 DIAGNOSTICS
-
-=over
-
-=item C<Unexpected border value. You may only assign a
-StreamGraph::View::Border::RoundedRect as a border at this time.>
-
-For the alpha release, only StreamGraph::View::Border::RoundedRect
-objects may be used.
-
-=item C<Cannot set border, no content defined.>
-
-You must supply a StreamGraph::View::Content::EllipsisText object
-as content to be placed inside the border.
-
-=item C<Unexpected column value. You may only assign a
-StreamGraph::View::Layout::Column as a column.>
-
-A StreamGraph::View::Item may only belong to a
-StreamGraph::View::Layout::Column. Don't try to use anything else.
-
-=item C<Unexpected hotspot type: $hotspot_type. Valid are:
-'toggle_right', 'toggle_left', 'lower_left', 'lower_right'>
-
-There are currently four possible hotspot types. These are:
-'toggle_right', 'toggle_left', 'lower_left', 'lower_right'. Use these
-names when referring to the hotspots created by the
-StreamGraph::View::ItemFactory.
-
-=item C<Attempt to get column_no on undefined column>
-
-An item is created, and then it is placed in a column. You have called
-C<get_column_no()> on an item that has not yet been placed into a
-column.
+Sets height and width based on the content size.
 
 =back
-
-=head1 DEPENDENCIES
-
-This module depends on the following modules:
-
-=over
-
-=item Gnome2::Canvas::Group
-
-=item StreamGraph::View::ItemHotSpot
-
-=item StreamGraph::View::Border::RoundedRect
-
-=item StreamGraph::View::Content::EllipsisText
-
-=back
-
-
-=head1 BUGS AND LIMITATIONS
-
-No bugs have been reported.
-
-Please report any bugs or feature requests to
-C<bug-gtk2-ex-StreamGraphView@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.
-
-
-=head1 AUTHOR
-
-James Muir  C<< <hemlock@vtlink.net> >>
-
-
-=head1 LICENCE AND COPYRIGHT
-
-Copyright (c) 2006, James Muir C<< <hemlock@vtlink.net> >>. All rights reserved.
-
-This module is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself. See L<perlartistic>.
-
-
-=head1 DISCLAIMER OF WARRANTY
-
-BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
-FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
-OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
-PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
-EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
-ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
-YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
-NECESSARY SERVICING, REPAIR, OR CORRECTION.
-
-IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
-WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
-REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE
-LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL,
-OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
-THE SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
-RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
-FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
-SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
-SUCH DAMAGES.

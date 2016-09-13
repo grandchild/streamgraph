@@ -47,12 +47,12 @@ sub create_content {
 		= ( defined $attributes{font_desc} )
 		? $attributes{font_desc}
 		: $self->{font_desc};
-	
+
 	my $text_color_gdk
 		= ( defined $attributes{text_color_gdk} )
 		? $attributes{text_color_gdk}
 		: $self->{text_color_gdk};
-	
+
 	if ( $type eq 'StreamGraph::View::Content::EllipsisText' ) {
 		return StreamGraph::View::Content::EllipsisText->new(
 			group          => $self->{view}->root,
@@ -61,14 +61,14 @@ sub create_content {
 			text_color_gdk => $text_color_gdk
 		);
 	}
-	
+
 	if ( $type eq 'StreamGraph::View::Content::Picture' ) {
 		return StreamGraph::View::Content::Picture->new(
 			group  => $self->{view}->root,
 			pixbuf => $pixbuf
 		);
 	}
-	
+
 	if ( $type eq 'StreamGraph::View::Content::Uri' ) {
 		return StreamGraph::View::Content::Uri->new(
 			group          => $self->{view}->root,
@@ -79,29 +79,14 @@ sub create_content {
 			text_color_gdk => $text_color_gdk
 		);
 	}
-	
+
 	croak "Unexpected content type: $type\n";
 }
 
 1;    # Magic true value required at end of module
 __END__
 
-=head1 NAME
-
-StreamGraph::View::ContentFactory - Maker of standard content.
-
-
-=head1 VERSION
-
-This document describes StreamGraph::View::ContentFactory version
-0.0.1
-
-
-=head1 SYNOPSIS
-
-use StreamGraph::View::ContentFactory;
-
-=head1 DESCRIPTION
+=head1 StreamGraph::View::ContentFactory
 
 This module is internal to StreamGraph::View. This factory makes
 content that can be passed to a StreamGraph::View::Border.
@@ -117,8 +102,6 @@ StreamGraph::View::Content::Picture - Displays a picture.
 
 StreamGraph::View::Content::Uri - Displays a URI. User may click
 on the URI.
-
-=head1 INTERFACE 
 
 =head2 Properties
 
@@ -176,68 +159,3 @@ argument.
 Returns a new StreamGraph::View::Content object.
 
 =back
-
-=head1 DIAGNOSTICS
-
-=over
-
-=item C<Invalid StreamGraph::View argument.>
-
-You must pass in a StreamGraph::View argument.
-
-=item C<Unexpected content type: $content_type>
-
-The only content type that is supported are those that are predefined,
-such as StreamGraph::View::Content::EllipsisText.
-
-=back
-
-=head1 DEPENDENCIES
-
-None.
-
-
-=head1 BUGS AND LIMITATIONS
-
-No bugs have been reported.
-
-Please report any bugs or feature requests to
-C<bug-gtk2-ex-StreamGraphView@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.
-
-
-=head1 AUTHOR
-
-James Muir  C<< <hemlock@vtlink.net> >>
-
-
-=head1 LICENCE AND COPYRIGHT
-
-Copyright (c) 2006, James Muir C<< <hemlock@vtlink.net> >>. All rights reserved.
-
-This module is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself. See L<perlartistic>.
-
-
-=head1 DISCLAIMER OF WARRANTY
-
-BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
-FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
-OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
-PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
-EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
-ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
-YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
-NECESSARY SERVICING, REPAIR, OR CORRECTION.
-
-IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
-WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
-REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE
-LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL,
-OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
-THE SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
-RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
-FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
-SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
-SUCH DAMAGES.

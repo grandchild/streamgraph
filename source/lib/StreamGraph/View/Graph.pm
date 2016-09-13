@@ -397,7 +397,7 @@ sub nextSplitJoin {
 # Given two nodes, return true iff there exists any path between a successor of
 # the would-be predecessor node and a predecessor of the would-be successor
 # node.
-# 
+#
 # A   B
 # |\.´|  <- An attempted connection B..D would return true because A and E are
 # | \ C     already connected.
@@ -442,7 +442,7 @@ sub crossConnection {
 	# }
 }
 # Given two nodes, return all nodes that lie between those two. Betweenness is
-# defined here as 'is a successor of node1 as well as a predecessor of node2'. 
+# defined here as 'is a successor of node1 as well as a predecessor of node2'.
 sub _innerNodes {
 	my ($self, $node1, $node2, $direction) = @_;
 	($node1, $node2) = ($node2, $node1) if $direction eq "up";
@@ -474,7 +474,7 @@ sub _outsideConnections {
 sub lca {
 	my ($self, $node1, $node2, $direction) = @_;
 	($node1, $node2) = ($node2, $node1) if $direction eq "up";
-	
+
 	return $node1 if $self->same($node1, $node2);
 	my ($refNode, $searchNode) = ($node1, $node2);
 	my $relatives = set();
@@ -546,28 +546,11 @@ sub _formatNodeTypes { return ref(shift->{data}) . " -> " . ref(shift->{data}); 
 1; # Magic true value required at end of module
 __END__
 
-=head1 NAME
-
-StreamGraph::View::Graph - Manages a directed graph.
-
-
-=head1 VERSION
-
-This document describes StreamGraph::View::Graph
-
-
-=head1 SYNOPSIS
-
-use StreamGraph::View::Graph;
-
-
-=head1 DESCRIPTION
+=head1 StreamGraph::View::Graph
 
 This is internal to StreamGraph::View. It's a wrapper around
 Jarkko Heitaniemi's nice Graph module. This module is instantiated by
 StreamGraph::View.
-
-=head1 INTERFACE
 
 =over
 
@@ -650,61 +633,3 @@ well as the item to the callback. Need to do something about all these
 traversal routines.
 
 =back
-
-=head1 DIAGNOSTICS
-
-=over
-
-=item C<A root has already been defined. Use set_root to change the root>
-
-The C<add()> method may only be used to set the root when the first
-StreamGraph::View::Item is added to the graph.
-
-=item C<You must remove the successors of this item prior to removing this item.>
-
-The C<remove()> method will only remove items that have no successor
-items.
-
-=item C<You must pass in both the predecessor and the item you wish to remove.>
-
-The C<remove()> method tries to remove an edge from the graph. You
-need to specify the predecessor item because each
-StreamGraph::View::Item may have more that one predecessor.
-
-=back
-
-=head1 AUTHOR
-
-James Muir  C<< <hemlock@vtlink.net> >>
-
-
-=head1 LICENCE AND COPYRIGHT
-
-Copyright (c) 2006, James Muir C<< <hemlock@vtlink.net> >>. All rights reserved.
-
-This module is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself. See L<perlartistic>.
-
-
-=head1 DISCLAIMER OF WARRANTY
-
-BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
-FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
-OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
-PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
-EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
-ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
-YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
-NECESSARY SERVICING, REPAIR, OR CORRECTION.
-
-IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
-WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
-REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE
-LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL,
-OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
-THE SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
-RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
-FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
-SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
-SUCH DAMAGES.
