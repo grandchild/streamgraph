@@ -444,3 +444,38 @@ sub show_subgraph {
 }
 
 1;
+
+__END__
+
+=head1 StreamGraph::Util::PropertyWindow
+
+Property Window functions for graph nodes.
+
+=over
+
+=item C<show($item,$window)>
+
+Creates a dialog window, with $window as a parent window.
+Based on $item type a custom function is called.
+
+=item C<show_connection($con)>
+
+Creates a dialog window and Customizes it for the properties of the connection $con.
+
+=item C<show_comment($item,$dialog)>
+
+Customizes the dialog window $dialog for the properties of the comment $item.
+
+=item C<show_parameter($item,$dialog)>
+
+Customizes the dialog window $dialog for the properties of the parameter $item.
+
+=item C<show_filter($item,$dialog)>
+
+Customizes the dialog window $dialog for the properties of the filter $item.
+
+=item C<show_subgraph($item,$dialog)>
+
+Customizes the dialog window $dialog for the properties of the subgraph $item.
+
+=back
