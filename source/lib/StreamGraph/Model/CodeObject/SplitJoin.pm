@@ -157,3 +157,96 @@ sub buildCode {
 }
 
 1;
+
+__END__
+
+=head1 StreamGraph::Model::CodeObject::SplitJoin
+
+The StreamGraph::Model:CodeObject::SplitJoin class implements the split-joines of StreamIt.
+
+=head2 Properties
+
+=over
+
+=item C<codeObjects> (List of StreamGraph::Model::CodeObject)
+
+List of StreamGraph::Model::CodeObject's which are directly nested in the split-join construct.
+
+
+=item C<split> (StreamGraph::Model::Node::Filter)
+
+The filter on which the splitting is occuring. 
+
+
+=item C<join> (StreamGraph::Model::Node::Filter)
+
+The filter on which the splitted streams are converging.
+
+
+=item C<next> (StreamGraph::Model::Node::Filter)
+
+The filter which is the next to be processed after completely building the codeObject.
+
+
+=item C<code> (String)
+
+The StreamIt code for the codeObject.
+
+
+=item C<parameters> (List of StreamGraph::Model::CodeObject::Parameter)
+
+The Parameters of all filters nested in the codeObject.
+
+
+=item C<inputType> (String)
+
+The type(a type in StreamIt) in which the input of the codeObject is given.
+
+
+=item C<graph> (StreamGraph::GraphCompat)
+
+The graph in which the split-join is located.
+
+
+=back
+
+=head2 Methods
+
+=over
+
+=item C<StreamGraph::Model::CodeObject::SplitJoin-E<gt>new($first, $graph)>
+
+Create a StreamGraph::Model::CodeObject::SplitJoin starting on $first(a StreamGraph::Model::Node::Filter) 
+in the $graph (a StreamGraph::GraphCompat). While creating the split-join it is necessary to create all nested
+CodeObjects within it. Therefore these are also created which assures the StreamIt typical hierarchical structure,
+as well as the complete generation of all necessary codeObjects.
+
+
+=item C<getSplitCode($view)>
+
+C<return> Code for the split or Error if a failure occured.
+
+Generates the code for the split part of the split-join including all necessary multiplicities.
+
+
+=item C<getJoinCode($view)>
+
+C<return> Code for the join or Error if a failure occured.
+
+Generates the code for the join part of the split-join including all necessary multiplicities.
+
+
+=item C<generate($view)>
+
+C<return> 1 if no error occured, otherwise Error 
+
+Generates the code for the split-join, as well as all nested CodeObjects and fills the code property.
+
+
+=item C<buildCode($pipelinesCode, $splitJoinesCode)>
+
+C<return> The complete code for the codeObject and all nested codeObjects as a tuple of code for pipelines and splitJoines.
+
+Gets all the code necessary for a StreamIt program out of the codeObject and all nested codeObjects.
+
+=back
