@@ -65,7 +65,6 @@ sub generateCode {
 		$programText .= generateSectionCommentary("Section for all Split-Joines") . $splitJoinesCode;
 	}
 	
-	### TODO: write to file in extra Util function
 	StreamGraph::Util::File::writeStreamitSource($programText, $configFile->get("streamgraph_tmp") . $fileName);
 	return $programText;
 }
@@ -96,7 +95,6 @@ sub generateSectionCommentary {
 sub generateWork {
 	my $data = shift;
 	my $workText = "\twork";
-	# needs finished when Datastructure is there
 	my $timesPop = $data->{timesPop};
 	my $timesPush = $data->{timesPush};
 	my $timesPeek = $data->{timesPeek};
@@ -194,7 +192,7 @@ sub generateParameters {
 
 
 # gets Node as 1.parameter
-# returns "" if filter is not defined and Filtertext if defined
+# returns "ERROR" if filter is not defined and Filtertext if defined
 sub generateFilter {
 	my $filterNode = shift;
 	my $graph = shift;
@@ -219,8 +217,6 @@ sub generateFilter {
 	my $globalVariables = $filterNode->{globalVariables};
 	my $filterText = generateCommentary("Filter $name") . "$inputType->$outputType filter $name";
 	my @parameters = $graph->predecessors($filterNode, "StreamGraph::Model::Node::Parameter");
-	#my @parameters = @{filterNodesForType(\@predecessors, "StreamGraph::Model::Node::Parameter")};
-	# Todo: make names unique!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	$filterText .= generateParameters(\@parameters);
 	$filterText .= " {\n"; 
 	if(!($globalVariables eq "")){
@@ -271,5 +267,99 @@ sub getTopologicalConstructName {
 	return $text;
 }
 
-
 1;
+
+__END__
+
+=head1 StreamGraph::CodeGen
+
+Wrapper file for the code generation into StreamIt
+
+=over
+
+=item C<generateCode($view, $graph, $configFile, $fileName)>
+
+C<return> Generated code or Error message if the generation failed.
+
+This is a wrapper function for the code generation which gets the $view to print error messages, 
+the $graph for which the code should be generated, the $configFile to write into the tmp directory
+and optionally the $fileName. If the $fileName is not given the name main is assumed.
+
+
+=item C<generateCommentary($commentaryText)>
+
+C<return> comment text
+
+Generates a comment in StreamIt code with the given text.
+
+
+=item C<generateMultiLineCommentary($commentaryText)>
+
+C<return> comment text
+
+Generates a multiline commentary in StreamIt code with the given (multiline) text.
+
+
+=item C<generateSectionCommentary($commentText)>
+
+C<return> comment text
+
+Generates a Section heading as a StreamIt commentary with the given text.
+
+
+=item C<generateWork($data)>
+
+C<return> code for the work function of the given filter
+
+Expects a StreamGraph::Model::Node::Filter as input. 
+Generates the code for the work function of the given filter.
+
+
+=item C<generateInit($data)>
+
+C<return> code for the init function of a filter
+
+Expects a StreamGraph::Model::Node::Filter as input. 
+Generates the code for the init function of a filter
+
+
+=item C<generateParameters($parameterListPointer, $typeFlag, $bracketFlag, $valueFlag, $listFlag)>
+
+C<return> string or list of parameter names, types and values as specified through parameters 
+
+Expects a pointer to a list of StreamGraph::Model::Node::Parameter as first parameter.
+The $listFlag specifies if the returned value should be a list if the flag is true or a complete string. 
+If the $typeFlag is true then the type of the parameters in the list of parameters($parameterListPointer)
+is included in the returned value. The $bracketFlag enables brackets in the begin and the end of the 
+returned string when the listFlag is false, otherwise it is irrelevant. The $valueFlag if true adds 
+the value of the parameters of the list($parameterListPointer) to the returned value. 
+
+
+
+=item C<generateFilter($filterNode, $graph)>
+
+C<return> code of the filter in StreamIt or error message.
+
+Expects a StreamGraph::Model::Node::Filter and a StreamGraph::GraphCompat as input parameters.
+Generates the complete code of a filter including it's parameters, the init-function, the work-function 
+and it's filter-global variables.
+
+
+=item C<updateNodeName($filterNode)>
+
+C<return> Error or nothing
+
+Expects a StreamGraph::Model::Node::Filter as input. Updates the name of the Node to be unique 
+through adding a '_gen_name' field with the updated name. 
+
+
+=item C<getTopologicalConstructName($mainFlag, $splitJoinText)>
+
+C<return> name of the topological construct.
+
+Generates the name of a construct. If $mainFlag is true returns name of the file, since StreamIt 
+expects a construct with the name of the file as the main construct. The $splitJoinText is optional, 
+but the function assumes that without an input of it ($splitJoinText) the construct for which the 
+name should be generated is a pipeline. Otherwise the function assumes it is a split-join .
+
+=back
