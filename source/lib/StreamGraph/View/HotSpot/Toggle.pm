@@ -95,38 +95,11 @@ sub hotspot_button_press {
 1; # Magic true value required at end of module
 __END__
 
-=head1 NAME
-
-StreamGraph::View::HotSpot::Toggle - Manage a toggle type "hot
-spot" on a view item.
-
-
-=head1 VERSION
-
-This document describes StreamGraph::View::HotSpot::Toggle version 0.0.1
-
-=head1 HEIRARCHY
-
-=head1 SYNOPSIS
-
-use base 'StreamGraph::View::HotSpot::Toggle';
-
-
-=head1 DESCRIPTION
+=head1 StreamGraph::View::HotSpot::Toggle
 
 The StreamGraph::View::HotSpot::Toggle defines toggle type
-hotspots. This kind of hot spot is used to expand and collapse
+hotspots. This kind of hot spot is used to connect
 StreamGraph::View::Items.
-
-=head1 INTERFACE
-
-=head2 Properties
-
-=over
-
-No properties defined.
-
-=back
 
 =head2 Methods
 
@@ -142,69 +115,23 @@ Overrides method defined in StreamGraph::View::HotSpot. This
 method sets the proper state of the toggle when a "hotspot_adjust"
 event occurs.
 
-
-=item C<hotspot_button_release>
+=item C<hotspot_button_release ($item, $event)>
 
 Overrides method defined in StreamGraph::View::HotSpot. This
-method actually toggles items in the mind map view.
+method actually destroys temporal conencion line and creates
+a new connection if a mouse is over a connectible item.
+
+=item C<hotspot_button_press ($item, $event)>
+
+Overrides method defined in StreamGraph::View::HotSpot. This
+method actually creates a temporal connecion line and marks
+all connectible items.
+
+=item C<hotspot_motion_notify ($item, $event)>
+
+Overrides method defined in StreamGraph::View::HotSpot. This
+method actually set the coordinates of the temporal connection
+arrow to the mouse coordinates. If the mouse is over a connectible
+item, the coordinates are set to connection point of the item.
 
 =back
-
-=head1 DIAGNOSTICS
-
-=over
-
-No Diagnostics
-
-=back
-
-
-=head1 DEPENDENCIES
-
-None.
-
-
-=head1 BUGS AND LIMITATIONS
-
-No bugs have been reported.
-
-Please report any bugs or feature requests to
-C<bug-gtk2-ex-StreamGraphView@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.
-
-
-=head1 AUTHOR
-
-James Muir  C<< <hemlock@vtlink.net> >>
-
-
-=head1 LICENCE AND COPYRIGHT
-
-Copyright (c) 2006, James Muir C<< <hemlock@vtlink.net> >>. All rights reserved.
-
-This module is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself. See L<perlartistic>.
-
-
-=head1 DISCLAIMER OF WARRANTY
-
-BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
-FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
-OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
-PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
-EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
-ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
-YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
-NECESSARY SERVICING, REPAIR, OR CORRECTION.
-
-IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
-WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
-REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE
-LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL,
-OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
-THE SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
-RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
-FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
-SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
-SUCH DAMAGES.

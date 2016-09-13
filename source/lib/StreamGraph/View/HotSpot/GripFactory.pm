@@ -113,22 +113,9 @@ sub create_grip
 1; # Magic true value required at end of module
 __END__
 
-=head1 NAME
+=head1 StreamGraph::View::HotSpot::GripFactory
 
-StreamGraph::View::HotSpot::GripFactory - Maker of standard grips.
-
-
-=head1 VERSION
-
-This document describes StreamGraph::View::HotSpot::GripFactory
-version 0.0.1
-
-
-=head1 SYNOPSIS
-
-use StreamGraph::View::HotSpot::GripFactory;
-  
-=head1 DESCRIPTION
+Not used now.
 
 This factory makes grips that are used to resize StreamGraph::View::Items.
 
@@ -144,7 +131,7 @@ StreamGraph::View::HotSpot::Grip::EllipseRound - A special round grip for ellips
 
 This factory is used by the StreamGraph::View::ItemFactory.
 
-=head1 INTERFACE 
+=head1 INTERFACE
 
 =head2 Properties
 
@@ -165,7 +152,7 @@ The side of the item to attach to. May be: C<left> or C<right>.
 =item 'fill_color_gdk' (Gtk2::Gdk::Color)
 
 The color of the grip.
- 
+
 =item 'hotspot_color_gdk' (Gtk2::Gdk::Color)
 
 The color of the grip when it is engaged.
@@ -188,72 +175,3 @@ StreamGraph::View::Border is used to determine what grip to return
 to the caller. The side may be C<left> or C<right>.
 
 =back
-
-=head1 DIAGNOSTICS
-
-=over
-
-=item C<Invalid item. Item must be a 'StreamGraph::View::Item'>
-
-You must pass in a StreamGraph::View::Item argument.
-
-=item C<Invalid side. Must be 'right' or 'left'>
-
-You must set the side to be either: C<left> or C<right>.
-
-=item C<Unexpected border: $border>
-
-You must give one of the known border types at this time.
-
-=back
-
-
-=head1 DEPENDENCIES
-
-None.
-
-
-=head1 BUGS AND LIMITATIONS
-
-No bugs have been reported.
-
-Please report any bugs or feature requests to
-C<bug-gtk2-ex-StreamGraphView@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.
-
-
-=head1 AUTHOR
-
-James Muir  C<< <hemlock@vtlink.net> >>
-
-
-=head1 LICENCE AND COPYRIGHT
-
-Copyright (c) 2006, James Muir C<< <hemlock@vtlink.net> >>. All rights reserved.
-
-This module is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself. See L<perlartistic>.
-
-
-=head1 DISCLAIMER OF WARRANTY
-
-BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
-FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
-OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
-PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
-EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
-ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
-YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
-NECESSARY SERVICING, REPAIR, OR CORRECTION.
-
-IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
-WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
-REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE
-LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL,
-OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
-THE SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
-RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
-FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
-SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
-SUCH DAMAGES.
