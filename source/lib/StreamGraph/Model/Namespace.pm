@@ -61,3 +61,62 @@ sub _fileToPrefix {
 
 
 1;
+__END__
+
+=head1 StreamGraph::Model::Namespace
+
+Namespaces are used by StreamGraph::GraphCompat to separate potentially
+identically named parameters in subgraphs from those passed in from the parent
+graph. Instances of this module let you C<register> names and then, given a
+graph, will replace all references to this parameter in all filters inside
+that graph.
+
+=head2 Properties
+
+=over
+
+=item C<$filepath> (String)
+
+The subgraph filename, used to uniquely identify and prefix a namespace.
+
+=item C<$names> (list[String])
+
+The list of parameters to replace. This list is used internally and while you
+could set this in the constructor, it's probably more useful to use
+C<register($name)> for adding parameters.
+
+=back
+
+=head2 Methods
+
+=over
+
+=item C<StreamGraph::Model::Namespace-E<gt>new($filepath)>
+
+Create a StreamGraph::Model::Namespace.
+
+=item C<register($name)>
+
+Registers one string parameter C<$name> into the namespace.
+
+
+=item C<newname($name)>
+
+C<return> a string with the namespace-prefixed name.
+
+The namespace-prefixed string will have the format C<basename($filepath)."_".$name>.
+
+
+=item C<replace($graph, $name)>
+
+Replaces one C<$name> inside the given C<$graph>. The name doesn't have to be
+registered and it won't be after this method is called. Most likely
+C<replaceAll()> is what you want.
+
+
+=item C<replaceAll($graph)>
+
+Replaces all occurrences of all registered parameter names in all filters of
+the C<$graph>.
+
+=back
