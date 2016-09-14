@@ -156,6 +156,91 @@ processes it in its work code. Then the data gets distributed over its outputs.
 This class is mainly a data structure and holds all properties required to
 generate the filter.
 
+=head2 Properties
+
+=over
+
+=item C<initCode> (String)
+
+The StreamIt code of the init function written in the filter from the user.
+
+=item C<workCode> (String)
+
+The StreamIt code of the work function written in the filter from the user.
+
+
+=item C<globalVariables> (String)
+
+The global variables text written in the filter from the user. 
+
+
+=item C<timesPush> (Var)
+
+The number of times data packets are pushed to the output in one cycle. May be 
+a String or an Integer.
+
+
+=item C<timesPop> (Var)
+
+The number of times data packets are popped from the input in one cycle. May be 
+a String or an Integer.
+
+
+=item C<timesPeek> (Var)
+
+The highest number which is peeked in one cycle. May be a String or an Integer.
+
+
+=item C<joinType> (String)
+
+The (StreamIt) description of the join. May be void or round robin.
+
+
+=item C<splitType> (String)
+
+The (StreamIt) description of the split. May be void, round robin or duplicate.
+
+
+=item C<inputType> (String)
+
+The StreamIt type of the input.
+
+
+=item C<inputCount> (Integer)
+
+The number of incomming data connections.
+
+
+=item C<outputType> (String)
+
+The StreamIt type of the output.
+
+
+=item C<outputCount> (Integer)
+
+The number of outgoing data connections.
+
+
+=item C<saveMembers> (String)
+
+The properties which are saved when the graph is saved to a file.
+
+=back
+
+
+=head3 Inherited from StreamGraph::Model::Node
+
+See the documentation of StreamGraph::Model::Node for descriptions.
+
+=over
+
+=item C<name> (String)
+
+=back
+
+
+=head2 Methods
+
 =over
 
 =item C<StreamGraph::Model::Node::Filter-E<gt>new($initCode, $workCode, $globalVariables, $timesPush, $timesPop, $timesPeek, $joinType, $splitType, $inputType, $inputCount, $outputType, $outputCount)>
