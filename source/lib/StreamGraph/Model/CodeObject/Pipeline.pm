@@ -185,6 +185,7 @@ The type(a type in StreamIt) in which the input of the codeObject is given.
 
 The graph in which the pipeline is located.
 
+=back
 
 =head3 Inherited from StreamGraph::Model::CodeObject
 
@@ -198,9 +199,6 @@ See the documentation of StreamGraph::Model::CodeObject for descriptions.
 
 =back
 
-
-
-=back
 
 =head2 Methods
 

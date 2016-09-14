@@ -207,6 +207,7 @@ The type(a type in StreamIt) in which the input of the codeObject is given.
 
 The graph in which the split-join is located.
 
+=back
 
 =head3 Inherited from StreamGraph::Model::CodeObject
 
@@ -218,9 +219,6 @@ See the documentation of StreamGraph::Model::CodeObject for descriptions.
 
 
 =item C<outputType> (String)
-
-
-=back
 
 
 =back
