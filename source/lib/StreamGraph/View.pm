@@ -363,31 +363,31 @@ value. You should not call this subroutine directly. Leave it alone.
 
 =item C<add_item ($item)>
 
-Add the root item to the mind map. This is the node off of which
+Add the root item to the stream graph. This is the node off of which
 all other nodes are attached. The item must be a StreamGraph::View::Item.
 
 
 =item C<add_item ($predecessor_item, $item)>
 
-Add an item to the mind map. The item is linked to its predecessor
+Add an item to the stream graph. The item is linked to its predecessor
 item. The item must be a StreamGraph::View::Item.
 
 
 =item C<clear()>
 
-Clear the items from the mind map.
+Clear the items from the stream graph.
 
 
 =item C<layout()>
 
-Layout the mind map. The map is redrawn on the canvas.
+Layout the stream graph. The map is redrawn on the canvas.
 
 
 =item C<predecessors ($item)>
 
 Returns an array of StreamGraph::View::Items that are the items
 that link to the item argument you have specified. Each item in the
-mind map may have zero or more predecessors.
+stream graph may have zero or more predecessors.
 
 
 =item C<remove_item ($item)>
@@ -401,7 +401,7 @@ Remove the connection from the graph.
 =item C<set_root ($item)>
 
 Change the root StreamGraph::View::Item in the underlying graph,
-and revise the visible connections in the mind map.
+and revise the visible connections in the stream graph.
 
 =item C<println($str,$type)>
 
