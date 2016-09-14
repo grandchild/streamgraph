@@ -281,9 +281,10 @@ The split-join part however is reversed and a StreamGraph filter includes a
 join before and a split after. This way the multiple inputs of a filter in
 StreamGraph are joined to form the required single input for a StreamIt
 filter. Similarly the data packages coming from the single output of the
-filter code are spread among the outputs of the StreamGraph filter node. The
-join and split is configured through the filter's property window, along with
-the filter code.
+filter code are spread among the outputs of the StreamGraph filter node. 
+A depiction of a filter in StreamGraph can be seen in \ref{fig_filter_node}.
+The join and split is configured through the filter's property window, along 
+with the filter code.
 
 \subsubsection{Subgraph}
 
@@ -472,6 +473,7 @@ pipeline in every case should not increase the execution time significantly and
 does not change the order of execution. Because of these reasons it was decided
 to not include the feature to only create pipelines in split-join constructs
 when strictly necessary.\\
+A simple example of a split join is shown in fig. \ref{fig_Split_Join}.\\
 \\
 The generation of split-joins is relatively easy as long as the graph is compatible
 (for StreamIt compatibility see \ref{StreamItTopology}). As soon as the graph is not 
@@ -487,7 +489,6 @@ construct. That means, that at the time of the first processing of the paths a s
 but random order is established. This order is then the order in which these paths will 
 be processed for the whole code generation but it may be different between different
 executions of the code generation.\\
-A simple example of a split join is shown in fig. \ref{fig_Split_Join}.\\
 
 
 \subsection{Code generation}
@@ -530,6 +531,7 @@ features not in the original scope of the project. To be specific these
 would be the FeedbackLoop, Message passing and the re-initialization feature.\\
 
 \item Further automatic compatibility\\
+\label{feature:automatic_compatability}
 StreamGraph builds StreamIt code from its graph. This graph is before the 
 code generation is started made compatible with the StreamIt topology. At 
 the moment only minor adjustments can be made as described in 
@@ -552,6 +554,7 @@ bugs and the need for minor additions which would be necessary for a finished pr
 \begin{itemize}
 
 \item No incorrect graphs\\
+\label{bug:incorrect_graphs}
 At the moment it is possible to build non-correct graphs in the view. Optimally the 
 user interface would correct any attempts to build an incorrect graph. The StreamGraph 
 project already prohibits easy to detect errors while connecting nodes.
@@ -611,16 +614,32 @@ majority of the Perl modules of the StreamGraph project.
 %\end{table}
 
 \section{Conclusion}
-\noindent The conclusion goes here.
+\noindent The StreamGraph project aimed to simplify the usage of StreamIt. Specificly to alleviate the 
+need for deep understanding of the syntax for topological constructs. Since StreamGraph is partly a 
+graphical programming language it inherits some of the advantages of a graphical programming language. 
+Namely having a better overwiev over the over all structure of most programms. While this is no longer 
+the case for large programs the alternative (the large program in textual form) has the same problem.\\
+Additionaly since StreamGraph uses StreamIt code in the description of the filters it also gains the 
+benefit of having a clear, structured and detailed descriptions of the inner workings of each filter.
+Especially the detailedness is sometimes a problem for pure graphical programming languages.\\
+\\
+Through the abstraction of topological constructs in the graph StreamGraph succeds in simplifying the 
+connecting of the filters and through that nearly removes the need to know the syntax of topolo0gical
+constructs in StreamIt.\\
+The abstraction of split-join constructs into the nodes and with that the creation of a directional 
+graph instead of a pipeline based topology simplifies the connecting of nodes but gives at the same 
+time rise to the necessety to enforce the rules of a pipeline based topology in the graph or to make 
+sure that every graph can be converted into such a pipeline based structure. Both of these posibilities 
+are not easy to accomplish. StreamGraph tries and struggles to convert specific cases in the graph to a 
+pipeline based structure and to prohibit the creation of every other case. As mentioned in 
+\ref{feature:automatic_compatability} and \ref{bug:incorrect_graphs} StreamGraph still has some problems 
+with both cases.\\
+All in all it is possible to depict a pipeline based structure through a graph in a meaningfull manner.
+StreamGraph is in that regard to be viewed as a proof of concept. With further work it is possible to 
+expand on the existing StreamGraph project to bring it to its full potential.
 
 \appendices
 
-
-% use section* for acknowledgment
-\section*{Acknowledgment}
-
-
-\noindent The authors would like to thank...
 
 \ifCLASSOPTIONcaptionsoff
   \newpage
