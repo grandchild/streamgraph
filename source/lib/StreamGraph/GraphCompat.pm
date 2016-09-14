@@ -344,7 +344,7 @@ description
 =item C<_copyData($graph)>
 
 Copies the important data(nodes, connections and connection-attributes) 
-from the $graph to the StreamGraph::GraphCompat.
+from the C<$graph> to the StreamGraph::GraphCompat.
 
 
 =item C<_loadFile(parameters)>

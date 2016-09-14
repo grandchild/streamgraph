@@ -216,8 +216,8 @@ The graph in which the split-join is located.
 
 =item C<StreamGraph::Model::CodeObject::SplitJoin-E<gt>new($first, $graph)>
 
-Create a StreamGraph::Model::CodeObject::SplitJoin starting on $first(a StreamGraph::Model::Node::Filter) 
-in the $graph (a StreamGraph::GraphCompat). While creating the split-join it is necessary to create all nested
+Create a StreamGraph::Model::CodeObject::SplitJoin starting on C<$first>(a StreamGraph::Model::Node::Filter) 
+in the C<$graph> (a StreamGraph::GraphCompat). While creating the split-join it is necessary to create all nested
 CodeObjects within it. Therefore these are also created which assures the StreamIt typical hierarchical structure,
 as well as the complete generation of all necessary codeObjects.
 

@@ -282,34 +282,34 @@ Wrapper file for the code generation into StreamIt
 C<return> Generated code or Error message if the generation failed.
 
 This is a wrapper function for the code generation which gets the $view to print error messages, 
-the $graph for which the code should be generated, the $configFile to write into the tmp directory
-and optionally the $fileName. If the $fileName is not given the name main is assumed.
+the C<$graph> for which the code should be generated, the $configFile to write into the tmp directory
+and optionally the C<$fileName>. If the $fileName is not given the name main is assumed.
 
 
-=item C<generateCommentary($commentaryText)>
+=item C<generateCommentary($commentText)>
 
 C<return> comment text
 
-Generates a comment in StreamIt code with the given text.
+Generates a comment in StreamIt code with the given C<$commentText>.
 
 
 =item C<generateMultiLineCommentary($commentaryText)>
 
 C<return> comment text
 
-Generates a multiline commentary in StreamIt code with the given (multiline) text.
+Generates a multiline commentary in StreamIt code with the given (multiline) C<$commentText>.
 
 
 =item C<generateSectionCommentary($commentText)>
 
 C<return> comment text
 
-Generates a Section heading as a StreamIt commentary with the given text.
+Generates a Section heading as a StreamIt commentary with the given C<$commentText>.
 
 
 =item C<generateWork($data)>
 
-C<return> code for the work function of the given filter
+C<return> code for the work function of the given filter(C<$data>)
 
 Expects a StreamGraph::Model::Node::Filter as input. 
 Generates the code for the work function of the given filter.
@@ -328,11 +328,11 @@ Generates the code for the init function of a filter
 C<return> string or list of parameter names, types and values as specified through parameters 
 
 Expects a pointer to a list of StreamGraph::Model::Node::Parameter as first parameter.
-The $listFlag specifies if the returned value should be a list if the flag is true or a complete string. 
-If the $typeFlag is true then the type of the parameters in the list of parameters($parameterListPointer)
-is included in the returned value. The $bracketFlag enables brackets in the begin and the end of the 
-returned string when the listFlag is false, otherwise it is irrelevant. The $valueFlag if true adds 
-the value of the parameters of the list($parameterListPointer) to the returned value. 
+The C<$listFlag> specifies if the returned value should be a list if the flag is true or a complete string. 
+If the C<$typeFlag> is true then the type of the parameters in the list of parameters(C<$parameterListPointer>)
+is included in the returned value. The C<$bracketFlag> enables brackets in the begin and the end of the 
+returned string when the C<$listFlag> is false, otherwise it is irrelevant. The C<$valueFlag> if true adds 
+the value of the parameters of the list(C<$parameterListPointer>) to the returned value. 
 
 
 
@@ -357,9 +357,9 @@ through adding a '_gen_name' field with the updated name.
 
 C<return> name of the topological construct.
 
-Generates the name of a construct. If $mainFlag is true returns name of the file, since StreamIt 
-expects a construct with the name of the file as the main construct. The $splitJoinText is optional, 
-but the function assumes that without an input of it ($splitJoinText) the construct for which the 
-name should be generated is a pipeline. Otherwise the function assumes it is a split-join .
+Generates the name of a construct. If C<$mainFlag> is true returns name of the file, since StreamIt 
+expects a construct with the name of the file as the main construct. The C<$splitJoinText> is optional, 
+but the function assumes that without an input of it (C<$splitJoinText>) the construct for which the 
+name should be generated is a pipeline. Otherwise the function assumes it is a split-join.
 
 =back
