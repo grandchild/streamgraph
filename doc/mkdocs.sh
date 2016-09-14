@@ -7,5 +7,5 @@ echo ::: Generating Perl module documentation
 $dir/pod/mkpodmod.sh
 
 echo ::: Generating streamgraph.pl documentation
-echo TODO
+pdflatex -synctex=1 -interaction=nonstopmode $dir/Documentation.tex
 
