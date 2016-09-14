@@ -234,7 +234,21 @@ See the documentation of StreamGraph::Model::Node for descriptions.
 
 =over
 
-=item C<name> (String)
+=item C<$name> (String)
+
+=item C<$id> (String)
+
+=item C<$x> (Integer)
+
+=item C<$y> (Integer)
+
+=back
+
+=head3 Inherited from StreamGraph::Model::Saveable
+
+=over
+
+=item C<saveMembers>
 
 =back
 
@@ -290,5 +304,35 @@ multiplicities for the connection.
 
 Set the data for the edge from the C<$source>. Requires input and output
 multiplicities for the connection.
+
+=back
+
+=head3 Inherited from StreamGraph::Model::Node
+
+=over
+
+=item C<isFilter()>
+
+=item C<isSubgraph()>
+
+=item C<isDataNode()>
+
+=item C<isParameter()>
+
+=item C<isComment()>
+
+=item C<is_split()>
+
+=item C<is_join()>
+
+=item C<resetId()>
+
+=back
+
+=head3 Inherited from StreamGraph::Model::Saveable
+
+=over
+
+=item C<yaml_dump>
 
 =back

@@ -79,11 +79,7 @@ down.
 
 =head3 Inherited from StreamGraph::Model::Saveable
 
-=over
-
-=item C<saveMembers>
-
-=back
+None.
 
 =head2 Methods
 

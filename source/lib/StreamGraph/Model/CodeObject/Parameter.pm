@@ -84,3 +84,7 @@ Create a StreamGraph::Model::CodeObject::Parameter.
 Updates the values of the codeObject with those of the associated parameter.
 
 =back
+
+=head3 Inherited from StreamGraph::Model::CodeObject
+
+None.

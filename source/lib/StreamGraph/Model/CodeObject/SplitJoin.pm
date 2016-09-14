@@ -265,3 +265,7 @@ C<return> The complete code for the codeObject and all nested codeObjects as a t
 Gets all the code necessary for a StreamIt program out of the codeObject and all nested codeObjects.
 
 =back
+
+=head3 Inherited from StreamGraph::Model::CodeObject
+
+None.

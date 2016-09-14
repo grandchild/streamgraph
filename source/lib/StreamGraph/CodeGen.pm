@@ -348,3 +348,4 @@ but the function assumes that without an input of it (C<$splitJoinText>) the con
 name should be generated is a pipeline. Otherwise the function assumes it is a split-join.
 
 =back
+
