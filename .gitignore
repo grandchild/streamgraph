@@ -1,6 +1,10 @@
 streamgraph.conf
 *.str
 
+# Tex intermediate files
+*.aux
+*.log
+*.toc
 
 # Created by https://www.gitignore.io/api/perl,java,linux,windows,osx,c++,eclipse,intellij
 
