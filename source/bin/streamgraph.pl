@@ -46,11 +46,10 @@ sub create_window {
 		$main_gui{parents} = $parents;
 		$main_gui{parent_item} = $parent_item;
 		$parent_item->{gui} = \%main_gui;
-		$main_gui{window}->signal_connect('delete-event'=>sub { _closewindow(\%main_gui); });
 	} else {
 		$main_gui{parents} = ();
-		$main_gui{window}->signal_connect('destroy'=>sub { _closeapp($main_gui{view}); });
 	}
+	$main_gui{window}->signal_connect('destroy'=>sub { _closewindow(\%main_gui); });
 	$main_gui{window}->set_type_hint('dialog');
 	$main_gui{window}->add($main_gui{menus});
 	$main_gui{menus}->pack_start($main_gui{scroller},TRUE,TRUE,0);
@@ -99,12 +98,15 @@ sub _nameFromFilename {
 sub _closewindow {
 	my ($main_gui) = @_;
 	$main_gui->{view}->destroy();
-	$main_gui->{parent_item}->{data}->visible(0);
+	if ($main_gui->{parents}) {
+		$main_gui->{parent_item}->{data}->visible(0);
+	} else {
+		_closeapp($main_gui->{view});
+	}
 	return 0;
 }
 sub _closeapp {
 	my ($view) = @_;
-	$view->destroy();
 	Gtk2->main_quit();
 	return 0;
 }
@@ -522,13 +524,13 @@ sub create_menu {
 	my ($main_gui,$isSubgraph) = @_;
 	my $vbox = Gtk2::VBox->new(FALSE,5);
 	my @entries = (
-		[ "FileMenu",undef,"_Datei"],
+		[ "FileMenu",'gtk-file',"_File"],
 		[ "New", 'gtk-new', undef,  "<control>N", undef, sub { newFile($main_gui); } ],
 		[ "Open", 'gtk-open', undef,  "<control>O", undef, sub { openFile($main_gui); } ],
 		[ "Save", 'gtk-save', undef,  "<control>S", undef, sub { saveFile($main_gui); } ],
 		[ "SaveAs", 'gtk-save-as', undef,  "<shift><control>S", undef, sub { saveAsFile($main_gui); } ],
-		[ "Quit", 'gtk-quit', undef,  "<control>Q", undef, undef ],
-		[ "Close", 'gtk-close', undef,  "<shift>W", undef, undef ],
+		[ "Quit", 'gtk-quit', undef,  "<control>Q", undef, sub { _closewindow($main_gui) } ],
+		[ "Close", 'gtk-close', undef,  "<shift>W", undef, sub { _closewindow($main_gui) } ],
 		[ "EditMenu",'gtk-edit'],
 		[ "NewF", undef, 'New Filter', undef, undef, sub { addNewFilter($main_gui); } ],
 		[ "NewS", undef, 'New Subgraph', undef, undef, sub { addNewSubgraph($main_gui); } ],
@@ -568,12 +570,13 @@ sub create_menu {
 				<menuitem action='NewSF'/>
 				<menuitem action='NewP'/>
 				<menuitem action='NewC'/>
-			</menu>" .
-			($isSubgraph ? '' :
-			"<menu action='RunMenu'>
+			</menu>
+			" . ($isSubgraph ? '' : "
+			<menu action='RunMenu'>
 				<menuitem action='RunShow'/>
-			</menu>") .
-			"<menu action='DebugMenu'>
+			</menu>
+			" ) . "
+			<menu action='DebugMenu'>
 				<menuitem action='GraphViz'/>
 				<menuitem action='CodeGenShow'/>
 			</menu>
