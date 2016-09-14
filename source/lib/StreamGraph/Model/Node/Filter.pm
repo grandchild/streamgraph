@@ -174,21 +174,19 @@ The StreamIt code of the work function written in the filter from the user.
 The global variables text written in the filter from the user. 
 
 
-=item C<timesPush> (Var)
+=item C<timesPush> (Integer)
 
-The number of times data packets are pushed to the output in one cycle. May be 
-a String or an Integer.
-
-
-=item C<timesPop> (Var)
-
-The number of times data packets are popped from the input in one cycle. May be 
-a String or an Integer.
+The number of times data packets are pushed to the output in one cycle.
 
 
-=item C<timesPeek> (Var)
+=item C<timesPop> (Integer)
 
-The highest number which is peeked in one cycle. May be a String or an Integer.
+The number of times data packets are popped from the input in one cycle.
+
+
+=item C<timesPeek> (Integer)
+
+The highest number which is peeked in one cycle.
 
 
 =item C<joinType> (String)
@@ -253,17 +251,32 @@ None.
 
 =over
 
-=item C<StreamGraph::Model::Node::Filter-E<gt>new(initCode=>$initCode, workCode=>$workCode, globalVariables=>$globalVariables, timesPush=>$timesPush, timesPop=>$timesPop, timesPeek=>$timesPeek, joinType=>$joinType, splitType=>$splitType, inputType=>$inputType, inputCount=>$inputCount, outputType=>$outputType, outputCount=>$outputCount)>
+=item C<StreamGraph::Model::Node::Filter-E<gt>new(>
+
+	initCode=>$initCode,
+	workCode=>$workCode,
+	globalVariables=>$globalVariables,
+	timesPush=>$timesPush,
+	timesPop=>$timesPop,
+	timesPeek=>$timesPeek,
+	joinType=>$joinType,
+	splitType=>$splitType,
+	inputType=>$inputType,
+	inputCount=>$inputCount,
+	outputType=>$outputType,
+	outputCount=>$outputCount)
 
 Create a StreamGraph::Model::Node::Filter.
 
 =item C<get_parameters($graph, $parameterTypeFlag)>
 
-C<return> list[StreamGraphModel::Node::Parameter] or list[StreamGraph::Model::CodeObject::Parameter] as specified.
+C<return> list[StreamGraphModel::Node::Parameter] or E<0x0a>
+list[StreamGraph::Model::CodeObject::Parameter] as specified.
 
-If the C<$parameterTypeFlag> is not given or true a list[StreamGraphModel::CodeObject::Parameter] is returned. 
-Otherwise a list[StreamGraphModel::Node::Parameter] is returned. The returned list has all parameters that are 
-connected to the filter in the C<$graph>. 
+If the C<$parameterTypeFlag> is not given or true a E<0x0a>
+list[StreamGraphModel::CodeObject::Parameter] is returned. Otherwise a
+list[StreamGraphModel::Node::Parameter] is returned. The returned list has all
+parameters that are  connected to the filter in the C<$graph>.
 
 
 =item C<get_edge_data_to($target, $graph)>
