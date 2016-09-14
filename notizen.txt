@@ -2,11 +2,8 @@
 
 TODO 14.09.2016
 	Docs:
-		Graph
-		CodeRunner
+		SubGraph
 		StreamGraph.pm
-	mkpodmod.sh for all *.pm
-	Include pdfs in Documentation
 	improvements/bugs section
 	pdf hochladen in repo
 
