@@ -91,7 +91,7 @@ C<register($name)> for adding parameters.
 
 =over
 
-=item C<StreamGraph::Model::Namespace-E<gt>new($filepath)>
+=item C<StreamGraph::Model::Namespace-E<gt>new($filepath=E<gt>$filepath)>
 
 Create a StreamGraph::Model::Namespace.
 

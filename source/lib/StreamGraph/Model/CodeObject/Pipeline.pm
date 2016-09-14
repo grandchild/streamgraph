@@ -204,7 +204,7 @@ See the documentation of StreamGraph::Model::CodeObject for descriptions.
 
 =over
 
-=item C<StreamGraph::Model::CodeObject::Pipeline-E<gt>new(first=>$first, graph=>$graph)>
+=item C<StreamGraph::Model::CodeObject::Pipeline-E<gt>new(first=E<gt>$first, graph=E<gt>$graph)>
 
 Create a StreamGraph::Model::CodeObject::Pipeline starting on C<$first> (a StreamGraph::Model::Node::Filter)
 in the C<$graph> (a StramGraph::GraphCompat). While creating a pipeline a node with multiple outputs may be detected.

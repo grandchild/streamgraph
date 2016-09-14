@@ -90,7 +90,7 @@ file exists.
 
 =over
 
-=item C<StreamGraph::Util::Config-E<gt>new(configFile=>$configFile, config=>$config, default=>$default)>
+=item C<StreamGraph::Util::Config-E<gt>new(configFile=E<gt>$configFile, config=E<gt>$config, default=E<gt>$default)>
 
 Create a StreamGraph::Util::Config. Should be used without 
 any parameters.

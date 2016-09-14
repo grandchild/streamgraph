@@ -89,7 +89,7 @@ None.
 
 =over
 
-=item C<StreamGraph::Model::Node-E<gt>new($name, $id, $x, $y)>
+=item C<StreamGraph::Model::Node-E<gt>new($name=E<gt>$name, $id=E<gt>$id, $x=E<gt>$x, $y=E<gt>$y)>
 
 Create a StreamGraph::Model::Node.
 

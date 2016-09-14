@@ -122,7 +122,18 @@ None.
 
 =over
 
-=item C<StreamGraph::Model::Node::Subgraph-E<gt>new(fields)>
+=item C<StreamGraph::Model::Node::Subgraph-E<gt>new(>
+
+	filepath=>$filepath
+	unsaved=>$unsaved
+	visible=>$visible
+	joinType=>$joinType
+	splitType=>$splitType
+	inputType=>$inputType
+	inputCount=>$inputCount
+	outputType=>$outputType
+	outputCount=>$outputCount
+	saveMembers=>$saveMembers)
 
 Create a StreamGraph::Model::Node::Subgraph.
 

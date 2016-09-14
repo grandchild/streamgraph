@@ -59,7 +59,7 @@ None.
 
 =over
 
-=item C<StreamGraph::Model::ConnectionData-E<gt>new(inputMult=>$inputMult, outputMult=>$outputMult)>
+=item C<StreamGraph::Model::ConnectionData-E<gt>new(inputMult=E<gt>$inputMult, outputMult=E<gt>$outputMult)>
 
 Create a StreamGraph::Model::ConnectionData.
 

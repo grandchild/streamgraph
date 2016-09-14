@@ -37,7 +37,7 @@ The type of the output of the topological construct.
 
 =over 
 
-=item C<StreamGraph::Model::CodeObject-E<gt>new(name=>$name, outputType=>$outputType)>
+=item C<StreamGraph::Model::CodeObject-E<gt>new(name=E<gt>$name, outputType=E<gt>$outputType)>
 
 Create a StreamGraph::Model::CodoeObject. Do not use CodeObject is an abstract class.
 
