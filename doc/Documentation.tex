@@ -469,6 +469,7 @@ pipeline in every case should not increase the execution time significantly and
 does not change the order of execution. Because of these reasons it was decided
 to not include the feature to only create pipelines in split-join constructs
 when strictly necessary.\\
+\\
 The generation of split-joines is relatively easy as long as the graph is compatible
 (for StreamIt compatibility see \ref{StreamItTopology}). As soon as the graph is not 
 StreamIt compatible it becomes increasingly difficult to detect and mend. Simple 
@@ -477,6 +478,12 @@ split-join is only possible if the nodes or filters are stateless. Since
 statelessness and requirements of other mending methods can only be ascertained 
 through parsing and checking of the code from the respective constructs and is beyond 
 the scope of this project, mending is not included in the current version of StreamGraph.\\
+\\
+StreamGraph does not support specific orders of execution for paths in a split-join 
+construct. That means, that at the time of the first processing of the paths a specific
+but random order is established. This order is then the order in which these paths will 
+be processed for the whole code generation but it may be different between different
+executions of the code generation.\\
 A simple example of a split join is shown in fig. \ref{fig_Split_Join}.\\
 
 
