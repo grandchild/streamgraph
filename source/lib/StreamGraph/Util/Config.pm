@@ -57,3 +57,68 @@ sub createDefault {
 }
 
 1;
+
+__END__
+
+=head1 StreamGraph::Util::Config
+
+A utility class that implements the config file and its usage. 
+The configuration file is needed for the temporary dumps of the 
+program, as well as and perhaps more importantly for the 
+execution of the generated StreamIt program.
+
+=head2 Properties
+
+=over
+
+=item C<configFile> (String)
+
+The Name of the configuration file.
+
+=item C<config> (Hash)
+
+The Hash with the necessary information, like directorites.
+
+=item C<default> (Hash)
+
+The default entries for the config hash if no configuration 
+file exists.
+
+=back
+
+=head2 Methods
+
+=over
+
+=item C<StreamGraph::Util::Config-E<gt>new(configFile=>$configFile, config=>$config, default=>$default)>
+
+Create a StreamGraph::Util::Config. Should be used without 
+any parameters.
+
+
+=item C<load()>
+
+Loads the configuration file specified in the C<configFile> 
+field into the C<config> field. 
+
+
+=item C<write()>
+
+Writes the configuration file specified in the C<config> 
+field to the file specified in the C<configFile> field. 
+
+
+=item C<get($key)>
+
+C<return> returns the Value to the given C<$key>.
+
+A simple accessor method for access to singular values in 
+the hash of the C<config> field.
+
+
+=item C<createDefault()>
+
+Sets the default config values and writes them. Is normally 
+called at the first start of StreamGraph.
+
+=back
