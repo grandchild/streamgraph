@@ -457,27 +457,27 @@ Property Window functions for graph nodes.
 
 =item C<show($item,$window)>
 
-Creates a dialog window, with $window as a parent window.
-Based on $item type a custom function is called.
+Creates a dialog window, with C<$window> as the parent window.
+Based on C<$item>'s type a custom function is called.
 
 =item C<show_connection($con)>
 
-Creates a dialog window and Customizes it for the properties of the connection $con.
+Creates a dialog window and customizes it for the properties of the connection C<$con>.
 
-=item C<show_comment($item,$dialog)>
+=item C<show_comment($item, $dialog)>
 
-Customizes the dialog window $dialog for the properties of the comment $item.
+Customizes the dialog window C<$dialog> for the properties of the comment C<$item>.
 
-=item C<show_parameter($item,$dialog)>
+=item C<show_parameter($item, $dialog)>
 
-Customizes the dialog window $dialog for the properties of the parameter $item.
+Customizes the dialog window C<$dialog> for the properties of the parameter C<$item>.
 
-=item C<show_filter($item,$dialog)>
+=item C<show_filter($item, $dialog)>
 
-Customizes the dialog window $dialog for the properties of the filter $item.
+Customizes the dialog window C<$dialog> for the properties of the filter C<$item>.
 
-=item C<show_subgraph($item,$dialog)>
+=item C<show_subgraph($item, $dialog)>
 
-Customizes the dialog window $dialog for the properties of the subgraph $item.
+Customizes the dialog window C<$dialog> for the properties of the subgraph C<$item>.
 
 =back
