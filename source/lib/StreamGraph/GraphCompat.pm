@@ -253,9 +253,17 @@ It inherits from the StreamGraph::View::Graph class.
 
 =head2 Properties
 
-The StreamGraph::GraphCompat class inherits all properties of the 
-StreamGraph::View::Graph and adds none of itself. Therefore all Properties can be
-looked up at the StreamGraph::View::Graph documentation.
+None.
+
+=head3 Inherited from StreamGraph::View::Graph
+
+=over
+
+=item C<$graph>
+
+=item C<$root>
+
+=back
 
 =head2 Methods
 
@@ -263,94 +271,182 @@ looked up at the StreamGraph::View::Graph documentation.
 
 =item C<StreamGraph::GraphCompat-E<gt>new($graph)>
 
-Create a StreamGraph::GraphCompat out of the given StreamGraph::View::Graph. 
-Essentially a copy of the given $graph only with the necessary data is created.
+Create a StreamGraph::GraphCompat from the given StreamGraph::View::Graph.
+This is essentially a deep copy of the given C<$graph> with its
+StreamGraph::View::Items unpacked into plain StreamGraph::Model::Nodes.
 
 =item C<graph()>
 
-C<return> Graph property of the StreamGraph::GraphCompat
-
-Simple accessor for the graph property
+C<return> graph (Graph::Directed)
 
 
 =item C<source()>
 
-C<return> source property of the StreamGraph::GraphCompat 
-
-Simple accessor for the source property
+C<return> source (StreamGraph::Model::Node::Filter)
 
 
 =item C<sink()>
 
-C<return> sink property of the StreamGraph::GraphCompat
-
-Simple accessor for the sink property
+C<return> sink (StreamGraph::Model::Node::Filter)
 
 
 =item C<factory()>
 
-C<return> factory property of the StreamGraph::GraphCompat
-
-Simple accessor for the factory property
+C<return> factory (StreamGraph::Model::NodeFactory)
 
 
 =item C<success()>
 
-C<return> success property of the StreamGraph::GraphCompat
-
-Simple accessor for the success property
+C<return> success (Boolean)
 
 
 =item C<_addIdentities()>
 
-Adds identity nodes on all connections between a spilt and a join node.
+Adds identities throughout the graph for all connections whose two nodes have
+other paths between them as well.
 
 
-=item C<_addVoidSource(parameters)>
+=item C<_addVoidSource()>
 
-C<return> returnvalue
+C<return> the graph's source (StreamGraph::Model::Node::Filter) or 0 on error.
 
-description
+If there are multiple sources in the graph, adds a new filter with a void-
+typed input joining all sources.
 
-
-=item C<_addVoidSink(parameters)>
-
-C<return> returnvalue
-
-description
+If there is only one source, then return this source filter unchanged.
 
 
-=item C<_addVoidEnd(parameters)>
+=item C<_addVoidSink()>
 
-C<return> returnvalue
+C<return> the graph's sink (StreamGraph::Model::Node::Filter) or 0 on error. 
 
-description
+If there are multiple sinks in the graph, adds a new filter with a void-typed
+output joining all sinks.
 
-
-=item C<_subgraphs(parameters)>
-
-C<return> returnvalue
-
-description
+If there is only one sink, then return this sink filter unchanged.
 
 
-=item C<_subgraph(parameters)>
+=item C<_addVoidEnd($type, $getEndNodes, $getIOType)>
 
-C<return> returnvalue
+C<return> the created end node(StreamGraph::Model::Node::Filter)
 
-description
+Takes a C<$type>(String), either C<"source> or C<"sink"> and two functions,
+C<$getEndNodes> to filter the relevant end nodes, and C<$getIOType> to get the
+type of the relevant pins. It then checks whether there are multiple sources
+or sinks and if there are creates a void end, connects it and returns it.
 
+
+=item C<_subgraphs()>
+
+Flatten all subgraph nodes (and their children recursively) into the parent graph
+structure. See C<_subgraph()> for details.
+
+
+=item C<_subgraph($n)>
+
+Flatten a subgraph node C<$n> (StreamGraph::Model::Node) into the parent graph
+structure.
+
+The subgraph is loaded, parsed and checked for errors. If there are errors in
+the subgraph, it is skipped and this parent graph is also marked as failed.
+
+The loaded subgraph's nodes and connections are inserted into the parent graph
+and connected inline.
 
 =item C<_copyData($graph)>
 
-Copies the important data(nodes, connections and connection-attributes) 
-from the C<$graph> to the StreamGraph::GraphCompat.
+Copies nodes, connections and connection-attributes from the constructor
+argument C<$graph> to this $graph.
 
 
-=item C<_loadFile(parameters)>
+=item C<_loadFile($filepath)>
 
-C<return> returnvalue
+C<return> a graph (StreamGraph::GraphCompat) loaded from C<$filepath>.
 
-description
+Static method that loads and parses a file into a temporary
+StreamGraph::GraphCompat instance and namespaces all it's parameters (See
+StreamGraph::Model::Namespace for details).
+
+=back
+
+=head3 Inherited from StreamGraph::View::Graph
+
+=over
+
+=item C<add_vertex()>
+
+=item C<add_edge()>
+
+=item C<get_edge_attribute()>
+
+=item C<set_edge_attribute()>
+
+=item C<is_connectable()>
+
+=item C<get_root()>
+
+=item C<has_item()>
+
+=item C<get_items()>
+
+=item C<get_connections()>
+
+=item C<num_items()>
+
+=item C<predecessors()>
+
+=item C<remove_vertex()>
+
+=item C<remove_edge()>
+
+=item C<successors()>
+
+=item C<all_successors()>
+
+=item C<topological_sort()>
+
+=item C<all_non_predecessors()>
+
+=item C<is_predecessor()>
+
+=item C<is_successor()>
+
+=item C<successorless_filters()>
+
+=item C<predecessorless_filters()>
+
+=item C<set_root()>
+
+=item C<traverse_BFS()>
+
+=item C<traverse_DFS()>
+
+=item C<traverse_postorder_edge()>
+
+=item C<traverse_preorder_edge()>
+
+=item C<same()>
+
+=item C<sameErr()>
+
+=item C<connected()>
+
+=item C<circle()>
+
+=item C<typeCompatible()>
+
+=item C<directlyConnected()>
+
+=item C<nextSplitJoin()>
+
+=item C<crossConnection()>
+
+=item C<lca()>
+
+=item C<connectable()>
+
+=item C<connectableErr()>
+
+=item C<connectableQuiet()>
 
 =back
