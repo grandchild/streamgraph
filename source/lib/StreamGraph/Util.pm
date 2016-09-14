@@ -79,8 +79,8 @@ C<return> an item (StreamGraph::View::Item) with the given C<$id> or C<undef>.
 C<return> unique items in C<$list> (list[Var]).
 
 
-=item C<filterNodesForType($nodes, $id)>
+=item C<filterNodesForType($listPointer, $type)>
 
-C<return> nodes having type C<type> (list[StreamGraph::Model::Node]).
+C<return> nodes in C<$listPointer> (list[StreamGraph::Model::Node]) having type C<$type> (String).
 
 =back
