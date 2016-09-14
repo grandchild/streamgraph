@@ -48,3 +48,113 @@ sub resetId {
 
 
 1;
+__END__
+
+=head1 StreamGraph::Model::Node
+
+Base class for Streamgraph graph objects
+
+=head2 Properties
+
+=over
+
+=item C<$name> (String)
+
+The display name of the node
+
+=item C<$id> (String)
+
+The random unique ID for this node.
+
+=item C<$x> (Integer)
+
+The horizontal position of this node in the editing area.
+
+=item C<$y> (Integer)
+
+The vertical position of this node in the editing area. Higher is further
+down.
+
+=back
+
+=head3 Inherited from StreamGraph::Model::Saveable
+
+=over
+
+=item C<saveMembers>
+
+=back
+
+=head2 Methods
+
+=over
+
+=item C<StreamGraph::Model::Node-E<gt>new($name, $id, $x, $y)>
+
+Create a StreamGraph::Model::Node.
+
+=item C<isFilter()>
+
+C<return> Boolean
+
+Check if node is instance of subclass StreamGraph::Model::Node::Filter.
+
+
+=item C<isSubgraph()>
+
+C<return> Boolean
+
+Check if node is instance of subclass StreamGraph::Model::Node::Subgraph.
+
+
+=item C<isDataNode()>
+
+C<return> Boolean
+
+Check if node is instance of subclass StreamGraph::Model::Node::Filter or
+StreamGraph::Model::Node::Subgraph.
+
+
+=item C<isParameter()>
+
+C<return> Boolean
+
+Check if node is instance of subclass StreamGraph::Model::Node::Parameter.
+
+
+=item C<isComment()>
+
+C<return> Boolean
+
+Check if node is instance of subclass StreamGraph::Model::Node::Comment.
+
+
+=item C<is_split()>
+
+C<return> Boolean
+
+Check if node has more than one successor.
+
+
+=item C<is_join()>
+
+C<return> returnvalue
+
+Check if node has more than one predecessor (only filters are considered).
+
+
+=item C<resetId()>
+
+C<return> new ID (String)
+
+Set a new random ID for this node.
+
+=back
+
+=head3 Inherited from StreamGraph::Model::Saveable
+
+=over
+
+=item C<yaml_dump>
+
+=back
