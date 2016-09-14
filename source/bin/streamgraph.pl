@@ -599,7 +599,8 @@ __END__
 
 =head1 streamgraph.pl
 
-B<StreamGraph> main program. Usage:
+This is the main executable of B<StreamGraph> which contains most of the UI
+control and the necessary boilerplate. Usage:
 
 	$ perl path/to/streamgraph.pl path/to/graph.sigraph
 
