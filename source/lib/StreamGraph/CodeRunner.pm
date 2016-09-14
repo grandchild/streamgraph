@@ -163,3 +163,177 @@ sub _killIfNecessary {
 }
 
 1;
+__END__
+
+=head1 StreamGraph::CodeRunner
+
+Compile and run the generated StreamIt code.
+
+All results are written to files, including status codes etc., because the
+compilation and execution is run asynchronously.
+
+=head2 Properties
+
+=over
+
+=item C<config> (StreamGraph::Util::Config)
+
+The StreamGraph config file.
+
+=item C<source> (String)
+
+The source code file.
+
+=item C<ccPid> (Integer)
+
+The compiler process' PID.
+
+=item C<ccResult> (list[String])
+
+The compiler output, line by line.
+
+=item C<ccResultFile> (String)
+
+The compiler log filename.
+
+=item C<ccSuccess> (Integer)
+
+The compiler process' exit code.
+
+=item C<ccSuccessFile> (String)
+
+The filename for storing the compiler process' exit code.
+
+=item C<binary> (String)
+
+The binary file.
+
+=item C<rPid> (Integer)
+
+The runner process' PID.
+
+=item C<rResult> (list[String])
+
+The runner output, line by line.
+
+=item C<rResultFile> (String)
+
+The runner log filename. 
+
+=item C<rSuccess> (Integer)
+
+The runner process' exit code.
+
+=item C<rSuccessFile> (String)
+
+The filename for storing the runner process' exit code.
+
+
+=back
+
+=head2 Methods
+
+=over
+
+=item C<StreamGraph::CodeRunner-E<gt>new(config=>$config)>
+
+Create a StreamGraph::CodeRunner. The C<config> parameter is required.
+
+
+=item C<setStreamitEnv()>
+
+Set the environment from the StreamGraph config.
+
+
+=item C<compileAndRun($filename, $callback)>
+
+Compile the StreamIt code and then execute it. When finished run C<$callback>.
+Returns immediately.
+
+
+=item C<compile($filename, $callback)>
+
+Compile the StreamIt code. When finished run C<$callback>.
+Returns immediately.
+
+
+=item C<run($callback)>
+
+Run the StreamIt binary produced by the compiler. When finished run
+C<$callback>. Returns immediately.
+
+
+=item C<isCompiling()>
+
+C<return> Boolean
+
+Check if compiler is still running.
+
+
+=item C<isRunning()>
+
+C<return> Boolean
+
+Check if runner is still running.
+
+
+=item C<compileResult($lines)>
+
+C<return> the result of the compiler (list[String])
+
+If C<$lines> (Integer) is given, return only the first C<$lines> result lines.
+
+
+=item C<compileSuccess()>
+
+C<return> the compiler exit code (Integer)
+
+
+=item C<runResult($lines)>
+
+C<return> the result of the runner (list[String])
+
+If C<$lines> (Integer) is given, return only the first C<$lines> result lines.
+
+
+=item C<runSuccess()>
+
+C<return> the runner exit code (Integer)
+
+
+=item C<_compile()>
+
+Fork and execute the compilation process.
+
+
+=item C<_updateCC()>
+
+Update all compiler relevant fields (C<$self-E<gt>cc*>).
+
+
+=item C<_run()>
+
+Fork and execute the runner process.
+
+=item C<_updateRun()>
+
+Update all runner relevant fields (C<$self-E<gt>r*>).
+
+
+=item C<_getResult($result, $lines)>
+
+C<return> the first C<$lines> (Integer) lines from the C<$result> (list[String]).
+
+
+=item C<_after($pid, $callback)>
+
+Wait for the forked process with C<$pid> (Integer) and then call C<$callback> (Function).
+
+
+=item C<_killIfNecessary($process)>
+
+Kill the process if the PID returned by C<$process->($self)> exists.
+
+C<$process> has to be a code ref to either C<ccPid()> or C<rPid()>.
+
+=back
