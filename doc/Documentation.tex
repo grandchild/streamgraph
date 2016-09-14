@@ -71,6 +71,8 @@
 \usepackage{url}
 % Basically, \url{my_url_here}.
 
+\usepackage{pdfpages}
+
 % correct bad hyphenation here
 
 
@@ -547,21 +549,51 @@ bugs and the need for minor additions which would be necessary for a finished pr
 
 
 \section{Developer documentation}
-\noindent In this section you can find in depth documentation to the different
-parts of the StreamGraph project.
-\subsection{View}
+
+\noindent The rest of the document contains the code documentation for the
+majority of the Perl modules of the StreamGraph project.
+
+\newpage
 
 
+%\includepdf[pages=-]{pod/StreamGraph.pdf}
 
-\subsection{Model}
+%\subsection{Model}
+\includepdf[pages=-]{pod/StreamGraph/Model/Saveable.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/Node.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/NodeFactory.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/Node/Filter.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/Node/Parameter.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/Node/Comment.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/Node/Subgraph.pdf}
 
+\includepdf[pages=-]{pod/StreamGraph/Model/CodeObject.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/CodeObject/SplitJoin.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/CodeObject/Parameter.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/CodeObject/Pipeline.pdf}
 
+\includepdf[pages=-]{pod/StreamGraph/Model/Namespace.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/ConnectionData.pdf}
 
-\subsection{GraphCompat}
+%\subsection{Code Generation \& Runtime}
+\includepdf[pages=-]{pod/StreamGraph/GraphCompat.pdf}
+\includepdf[pages=-]{pod/StreamGraph/CodeGen.pdf}
+\includepdf[pages=-]{pod/StreamGraph/CodeRunner.pdf}
 
+%\subsection{View}
+\includepdf[pages=-]{pod/StreamGraph/View.pdf}
+\includepdf[pages=-]{pod/StreamGraph/View/HotSpot.pdf}
+\includepdf[pages=-]{pod/StreamGraph/View/Graph.pdf}
+\includepdf[pages=-]{pod/StreamGraph/View/Item.pdf}
 
+%\subsection{Util}
+\includepdf[pages=-]{pod/StreamGraph/Util.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Util/DebugCode.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Util/Config.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Util/DebugGraph.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Util/File.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Util/PropertyWindow.pdf}
 
-\subsection{Code generation}
 
 % An example of a floating figure using the graphicx package.
 %\begin{figure}[!t]
