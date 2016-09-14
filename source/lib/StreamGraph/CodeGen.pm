@@ -14,8 +14,6 @@ my $dividingLine = "---------------------------------------------------";
 my $fileName;
 my $view;
 
-# function which generates Code out of Graph from root Node
-# gets View as 1. input parameter, GraphCompat as 2. input parameter, configFile as 3.parameter and filename as 4.parameter
 sub generateCode {
 	$view = shift;
 	if(!defined($view)){
@@ -90,8 +88,6 @@ sub generateSectionCommentary {
 	return $commentaryText;
 }
 
-# gets filter for which the work function is to be generated
-# returns String of Work function
 sub generateWork {
 	my $data = shift;
 	my $workText = "\twork";
@@ -114,7 +110,6 @@ sub generateWork {
 	return $workText;
 }
 
-# gets NodeData object for which the init function is to be generated
 sub generateInit {
 	my $data = shift;
 	my $initText = $data->{initCode};
@@ -127,12 +122,7 @@ sub generateInit {
 	return $workText;
 }
 
-# gets list of parameters(type is item), flag if types should be included, flag if brackets should be included in case listFlag is not set,
-# flag if parameter value is added;
-# and flag if a List should be returned; 
-# if flags are not given or not 1 or 0 it is assumed: typeFlag = 1; bracketflag = 1; valueFlag = 0; listFlag = 0; 
-# returns parameter string or List if flag is set
-# list/string generateParameters(item* parameterPointer, bool typeFlag, bool bracketFlag, bool valueFlag, bool listFlag);
+
 sub generateParameters {
 	# initialization
 	my $parameterPointer = shift;
@@ -191,8 +181,6 @@ sub generateParameters {
 }
 
 
-# gets Node as 1.parameter
-# returns "ERROR" if filter is not defined and Filtertext if defined
 sub generateFilter {
 	my $filterNode = shift;
 	my $graph = shift;
@@ -231,7 +219,6 @@ sub generateFilter {
 }
 
 
-# gets a filterNode and updates it to have a Number at end of name.
 sub updateNodeName {
 	my $filterNode = shift;
 	if(!defined($filterNode)){
@@ -242,8 +229,6 @@ sub updateNodeName {
 	$boxNumber++;
 }
 
-# gets a Flag if the Pipeline is the first/main pipeline
-# returns Name as String
 sub getTopologicalConstructName {
 	my $mainFlag = shift;
 	if(!defined($mainFlag) || $mainFlag != 1){
@@ -320,14 +305,14 @@ Generates the code for the work function of the given filter.
 C<return> code for the init function of a filter
 
 Expects a StreamGraph::Model::Node::Filter as input. 
-Generates the code for the init function of a filter
+Generates the code for the init function of a filter.
 
 
 =item C<generateParameters($parameterListPointer, $typeFlag, $bracketFlag, $valueFlag, $listFlag)>
 
 C<return> string or list of parameter names, types and values as specified through parameters 
 
-Expects a pointer to a list of StreamGraph::Model::Node::Parameter as first parameter.
+Expects a pointer to a list[StreamGraphModel::Node::Parameter] as first parameter.
 The C<$listFlag> specifies if the returned value should be a list if the flag is true or a complete string. 
 If the C<$typeFlag> is true then the type of the parameters in the list of parameters(C<$parameterListPointer>)
 is included in the returned value. The C<$bracketFlag> enables brackets in the begin and the end of the 

@@ -164,10 +164,10 @@ Create a StreamGraph::Model::Node::Filter.
 
 =item C<get_parameters($graph, $parameterTypeFlag)>
 
-C<return> List of StreamGraph::Model::Node::Parameter or StreamGraph::Model::CodeObject::Parameter as specified.
+C<return> list[StreamGraphModel::Node::Parameter] or StreamGraph::Model::CodeObject::Parameter as specified.
 
-If the C<$parameterTypeFlag> is not given or true a list of StreamGraph::Model::CodeObject::Parameter is returned. 
-Otherwise a list of StreamGraph::Model::Node::Parameter is returned. The returned list has all parameters that are 
+If the C<$parameterTypeFlag> is not given or true a list[StreamGraphModel::CodeObject::Parameter] is returned. 
+Otherwise a list[StreamGraphModel::Node::Parameter] is returned. The returned list has all parameters that are 
 connected to the filter in the C<$graph>. 
 
 

@@ -168,9 +168,9 @@ The StreamGraph::Model:CodeObject::SplitJoin class implements the split-joines o
 
 =over
 
-=item C<codeObjects> (List of StreamGraph::Model::CodeObject)
+=item C<codeObjects> (list[StreamGraphModel::CodeObject])
 
-List of StreamGraph::Model::CodeObject's which are directly nested in the split-join construct.
+list[StreamGraphModel::CodeObject] which are directly nested in the split-join construct.
 
 
 =item C<split> (StreamGraph::Model::Node::Filter)
@@ -193,7 +193,7 @@ The filter which is the next to be processed after completely building the codeO
 The StreamIt code for the codeObject.
 
 
-=item C<parameters> (List of StreamGraph::Model::CodeObject::Parameter)
+=item C<parameters> (list[StreamGraphModel::CodeObject::Parameter])
 
 The Parameters of all filters nested in the codeObject.
 
