@@ -430,18 +430,7 @@ sub all_successors {
 	my @items = $self->{graph}->all_successors($self);
 	return () if (scalar @items == 0);
 
-	return @items if (!defined $side);
-
-	my $column = $self->get('column');
-	return () if (!defined $column);
-
-	my $column_no = $column->get('column_no');
-	if ($side eq 'down') {
-		return grep {$_->get_column_no() >= $column_no } @items;
-	}
-
-	# $side eq 'top'
-	return grep {$_->get_column_no() <= $column_no } @items;
+	return @items;
 }
 
 sub all_predecessors {
@@ -725,5 +714,122 @@ This method sets the $view. This is necessary, because items can access view fun
 
 This method changes the background color of the item based on the switch value
 (0 -> white or 1 -> blue).
+
+=item C<get_edge_data_to($target)>
+
+C<return> StreamGraph::Model::ConnectionData
+
+Get the data attribute of the connection to the C<$target>
+
+
+=item C<get_edge_data_from($source)>
+
+C<return> StreamGraph::Model::ConnectionData
+
+Get the data attribute of the connection from the C<$source>
+
+
+=item C<set_edge_attribute_to($target, $key, $value)>
+
+Set the generic attribute with C<$key> and C<$value> for the edge to the C<$target>.
+
+
+=item C<set_edge_attribute_from($source, $key, $value)>
+
+Set the generic attribute with C<$key> and C<$value> for the edge from the C<$source>.
+
+
+=item C<set_edge_data_to($target, $graph, $inMult, $outMult)>
+
+Set the data for the edge to the C<$target>. Requires input and output
+multiplicities for the connection.
+
+
+=item C<set_edge_data_from($source, $graph, $inMult, $outMult)>
+
+Set the data for the edge from the C<$source>. Requires input and output
+multiplicities for the connection.
+
+
+=item C<get_parameters()>
+
+C<return> list[StreamGraphModel::Node::Parameter] or list[StreamGraph::Model::CodeObject::Parameter] as specified.
+
+If the C<$parameterTypeFlag> is not given or true a 
+list[StreamGraphModel::CodeObject::Parameter] is returned. 
+Otherwise a list[StreamGraphModel::Node::Parameter] is returned. The 
+returned list has all parameters that are connected to the filter in the 
+C<$graph>. 
+
+
+=item C<connections($direction)>
+
+C<return> list[StreamGraph::View::Item]
+
+Returns predecessors if C<$direction> equals "up", successors otherwise.
+
+
+=item C<all_successors()>
+
+C<return> list[StreamGraph::View::Item]
+
+returns successors and all their successors.
+
+
+=item C<all_predecessors()>
+
+C<return> list[StreamGraph::View::Item]
+
+returns predecessors and all their predecessors.
+
+
+=item C<is_split()>
+
+C<return> Boolean
+
+Checks if item has more than one predecessor that is not a parameter.
+
+
+=item C<is_join()>
+
+C<return> Boolean
+
+Checks if the item has more than one successor.
+
+
+=item C<isFilter()>
+
+C<return> Boolean
+
+Checks if the items data field is of the StreamGraph::Model::Node::Filter class.
+
+
+=item C<isSubgraph()>
+
+C<return> Boolean
+
+Checks if the items data field is of the StreamGraph::Model::Node::Subgraph class.
+
+
+=item C<isDataNode()>
+
+C<return> Boolean
+
+Checks if the items data field is either of the StreamGraph::Model::Node::Filter 
+class or of the StreamGraph::Model::Node::Subgraph class.
+
+
+=item C<isParameter()>
+
+C<return> Boolean
+
+Checks if the items data field is of the StreamGraph::Model::Node::Parameter class.
+
+
+=item C<isComment()>
+
+C<return> Boolean
+
+Checks if the items data field is of the StreamGraph::Model::Node::Comment class.
 
 =back

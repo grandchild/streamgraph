@@ -5,6 +5,12 @@ streamgraph.conf
 *.aux
 *.log
 *.toc
+*.cp
+*.fn
+*.ky
+*.pg
+*.tp
+*.vr
 
 # Created by https://www.gitignore.io/api/perl,java,linux,windows,osx,c++,eclipse,intellij
 
