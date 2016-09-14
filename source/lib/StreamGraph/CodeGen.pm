@@ -260,6 +260,8 @@ __END__
 
 Wrapper file for the code generation into StreamIt
 
+=head2 Functions
+
 =over
 
 =item C<generateCode($view, $graph, $configFile, $fileName)>

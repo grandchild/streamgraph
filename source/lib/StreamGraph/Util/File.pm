@@ -141,11 +141,8 @@ __END__
 File serialization for StreamGraph. Write and read operations for the .sigraph
 YAML file format and generic file I/O.
 
-=head2 Properties
 
-None.
-
-=head2 Methods
+=head2 Functions
 
 =over
 

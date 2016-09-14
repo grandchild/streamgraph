@@ -38,12 +38,12 @@ sub show_code {
 
 This modul shows the Streamit code in a dialog window.
 
-=head2 Methods
+=head2 Functions
 
 =over
 
 =item C<show_code> ($window,$view,$graph,$dir)
 
-This method gets a String with the Streamit code and shows it in a dialog window.
+Gets a String with the Streamit code and shows it in a dialog window.
 
 =back

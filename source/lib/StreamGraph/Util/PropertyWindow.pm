@@ -451,6 +451,8 @@ __END__
 
 Property Window functions for graph nodes.
 
+=head2 Functions
+
 =over
 
 =item C<show($item,$window)>

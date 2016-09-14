@@ -48,18 +48,18 @@ __END__
 
 =head1 StreamGraph::Util::DebugGraph
 
-This modul crates a GrphViz image of a graph and shows it in a dialog window.
+This module crates a GraphViz image of a graph and shows it in a dialog window.
 
-=head2 Methods
+=head2 Functions
 
 =over
 
 =item C<export_graph> ($window,$view,$graph,$dir)
 
-This method crates a GrphViz image of a graph and shows it in a dialog window.
+Creates a GraphViz image of a graph and shows it in a dialog window.
 
 =item C<name_id> ($data)
 
-This method crates an unique name from item name and id.
+Creates an unique name from C<$data-E<gt>name> and C<$data-E<gt>id>.
 
 =back

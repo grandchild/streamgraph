@@ -59,11 +59,8 @@ __END__
 
 Package for various low level utility functions.
 
-=head2 Properties
 
-None.
-
-=head2 Methods
+=head2 Functions
 
 =over
 
