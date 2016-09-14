@@ -704,4 +704,26 @@ time stamp to decide how much of the tree to expand.
 
 Sets height and width based on the content size.
 
+=item C<add_connection($self, $side, $connection)>
+
+This method adds a connection to the list of top or down connections.
+Evry items has complete list of all top or down connections.
+
+=item C<remove_connection($self, $side, $connection)>
+
+This method removes a connection from the list of top or down connections.
+
+=item C<set_data($data)>
+
+This method sets the data node.
+
+=item C<set_view($view)>
+
+This method sets the $view. This important, because items can acces view functions.
+
+=item C<select($switch)>
+
+This method changes the background color based on the switch value (0 -> white
+or 1 -> blue).
+
 =back
