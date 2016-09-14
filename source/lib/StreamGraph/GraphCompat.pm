@@ -381,8 +381,6 @@ StreamGraph::Model::Namespace for details).
 
 =item C<set_edge_attribute()>
 
-=item C<is_connectable()>
-
 =item C<get_root()>
 
 =item C<has_item()>

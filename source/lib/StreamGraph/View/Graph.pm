@@ -57,30 +57,9 @@ sub get_edge_attribute{
 
 sub set_edge_attribute{
 	my ($self, $item1, $item2, $key, $value) = @_;
-	return $self->{graph}->set_edge_attribute($item1, $item2, $key, $value);
+	$self->{graph}->set_edge_attribute($item1, $item2, $key, $value);
 }
 
-
-sub is_connectable {
-	my ($self, $item1, $item2) = @_;
-	if ($item1->isDataNode and $item2->isDataNode) {
-		if ($item1->{data}->outputType ne $item2->{data}->inputType) {
-			print "Output type " . $item1->{data}->outputType .
-					" does not match input type " . $item2->{data}->inputType . ".\n";
-			return 0;
-		}
-	} elsif ($item1->isParameter and $item2->isDataNode) {
-	} else {
-		print "You cannot connect these types of items: " .
-			ref($item1->{data}) . " and " . ref($item2->{data}) . ".\n";
-		return 0;
-	}
-	if ($self->is_predecessor($item1, $item2) || $item1 eq $item2) {
-		$item1->{view}->println("Trying to form a cicle.",'dialog-error');
-		return 0;
-	}
-	return 1;
-}
 
 # $root = $graph->get_root();
 sub get_root {
@@ -558,15 +537,15 @@ StreamGraph::View.
 
 Create a StreamGraph::View::Graph.
 
-=item C<add ($item)>
+=item C<add_vertex($item)>
 
-Add a root StreamGraph::View::Item to the graph. Only one of these
+Add a vertex to the graph. Only one of these
 may be added, or you will get an error.
 
-=item C<add ($predecessor_item, $item)>
+=item C<add_edge($predecessor_item, $item)>
 
-Add a StreamGraph::View::Item to the graph. Attach the item to the
-predecessor item.
+Add an edge between C<$predecessor_item> and C<$item> to the graph. 
+If one or both do not exist in the graph they will be added.
 
 =item C<get_root()>
 
@@ -631,5 +610,192 @@ traversal routines.
 Perform a depth first traversal and pass back the predecessor item as
 well as the item to the callback. Need to do something about all these
 traversal routines.
+
+=item C<get_edge_attribute($source, $target, $key)>
+
+C<return> Var
+
+Returns the edge attribute of the edge from C<$source> to C<$target> 
+with the C<$key>. 
+
+
+=item C<set_edge_attribute($source, $target, $key, $value)>
+
+Set the edge attribute of the edge from C<$source> to C<$target> 
+with the C<$key> to C<$value>.
+
+
+=item C<get_items()>
+
+C<return> list[StreamGraph::View::Item]
+
+Returns all items of the graph in non particular order.
+
+
+=item C<get_connections()>
+
+C<return> list[tuple[StreamGraph::View::Item, StreamGraph::View::Item]]
+
+Returns all connections of the graph.
+
+
+=item C<remove_vertex($item)>
+
+Removes the C<$item> and all connections to and from it.
+
+
+=item C<remove_edge($source, $target)>
+
+Removes the edge between C<$source> and C<$target>.
+
+
+=item C<all_successors($item)>
+
+C<return> list[StreamGraph::View::Item]
+
+Returns successors of the C<$item> and all of their successors.
+
+
+=item C<topological_sort()>
+
+C<return> list[StreamGraph::View::Item]
+
+Returns all items of the graph sorted in topological order.
+
+
+=item C<all_non_predecessors($item)>
+
+C<return> list[StreamGraph::View::Item]
+
+Returns all nodes which are not predecessors. Includes unconnected nodes.
+
+
+=item C<is_predecessor($item, $potential_predecessor)>
+
+C<return> Boolean
+
+Checks if C<$potential_predecessor> is a predecessor of C<$item>. Returns true if it is.
+
+
+=item C<is_successor($item, $potential_successor)>
+
+C<return> Boolean
+
+Checks if C<$potential_successor> is a successor of C<$item>. Returns true if it is.
+
+
+=item C<successorless_filters()>
+
+C<return> list[Var]
+
+Returns all filters with no successor.
+
+
+=item C<predecessorless_filters()>
+
+C<return> list[Var]
+
+Returns all filters with no predecessors. Parameters as predecessors are allowed.
+
+
+=item C<same($node1, $node2)>
+
+C<return> Boolean
+
+Checks if C<$node1> and C<$node2> are the same.
+
+
+=item C<sameErr($node1, $node2)>
+
+C<return> tuple[Boolean, String]
+
+Helper for same. Checks if C<node1> and C<$node2> are the same. Returns true if 
+they are. false otherwise, as well as an error message.
+
+
+=item C<connected($node1, $node2)>
+
+C<return> tuple[Boolean, String]
+
+Checks if C<$node1> and C<$node2> are already connected. Returns boolean and 
+error message as a tuple. 
+
+
+=item C<circle($node1, $node2)>
+
+C<return> tuple[Boolean, String]
+
+Checks if a connection from C<$node1> to C<$node2> would result in a circle in 
+the graph. Returns boolean and error message.
+
+
+=item C<typeCompatible($node1, $node2, $direction)>
+
+C<return> tuple[Boolean, String]
+
+Checks if the types of the connection in the C<$direction> between C<$node1> and 
+C<$node2> are matching. That means it checks if the output type from the source 
+equals the input type of the target.
+
+
+=item C<directlyConnected($node1, $node2, $direction)>
+
+C<return> Boolean
+
+Checks if C<$node1> and C<$node2> are successors of one another in the C<$direction>.
+
+
+=item C<nextSplitJoin($node, $direction)>
+
+C<return> Var
+
+Tries to find the split for the join (C<$node>) if C<$direction> equal "up". 
+othwerwise tries to find the join for the split (C<$node>). Returns the Split 
+or join respectivly
+
+
+=item C<crossConnection($node1, $node2, $direction)>
+
+C<return> tuple[Boolean, String]
+
+Given two nodes, return true iff there exists any path between a successor of
+the would-be predecessor node and a predecessor of the would-be successor
+node.
+
+
+=item C<lca($node1, $node2, $direction)>
+
+C<return> Var
+
+Determine the "lowest common ancestor" between two nodes. The LCA is the
+first node in the specified direction that is a predecessor/successor of
+the two and returns it.
+It's possible that one of the given nodes is the LCA itself (if there is a
+straight path between them).
+If no LCA can be determined (unconnected in the specified direction) 'undef'
+will be returned.
+
+
+=item C<connectable($node1, $node2, $direction)>
+
+C<return> tuple[Boolean, String]
+
+Checks if C<$node1> and C<$node2> can be connected in the C<$direction>.
+
+
+=item C<connectableErr($node1, $node2, $direction)>
+
+C<return> Boolean
+
+Wrapper for connectable. Prints connectables error message if connectable returned 
+false. Returns boolean given by connectable.
+
+
+=item C<connectableQuiet($node1, $node2, $direction)>
+
+C<return> Boolean
+
+Wrapper for connectable. Does not print connectables error message. Returns boolean 
+given by connectable.
 
 =back
