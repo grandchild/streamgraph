@@ -415,10 +415,10 @@ for parameters reference to other CodeObjects or filters. As such a single
 CodeObject can have an entire graph ready for code generation stored in a manner
 that already has the necessary order and hierarchical structure of a StreamIt
 program.\\
-Since StreamGraph does not use the concepts of pipelines and split-joines in 
+Since StreamGraph does not use the concepts of pipelines and split-joins in 
 the way StreamIt expects these constructs the codeObjects rebuild the graph 
-with pipeplines and split-joines in a indirect recursive fashion, that 
-resembles StreamIt's own way of nesting split-joines and pipelines into 
+with pipeplines and split-joins in a indirect recursive fashion, that 
+resembles StreamIt's own way of nesting split-joins and pipelines into 
 each other. At the same time this is the reason for creating the 
 codeObjects in this way, since it automaticly generates the needed 
 and desired hierarchical structure of a StreamIt program. This 
@@ -473,7 +473,7 @@ does not change the order of execution. Because of these reasons it was decided
 to not include the feature to only create pipelines in split-join constructs
 when strictly necessary.\\
 \\
-The generation of split-joines is relatively easy as long as the graph is compatible
+The generation of split-joins is relatively easy as long as the graph is compatible
 (for StreamIt compatibility see \ref{StreamItTopology}). As soon as the graph is not 
 StreamIt compatible it becomes increasingly difficult to detect and mend. Simple 
 mending methods like copying the node of a cross-connection between paths of a 
@@ -534,7 +534,7 @@ StreamGraph builds StreamIt code from its graph. This graph is before the
 code generation is started made compatible with the StreamIt topology. At 
 the moment only minor adjustments can be made as described in 
 \ref{sec:GraphCompat}. It is possible to make further adjustments to the 
-graph like the automatic adding of splits or joines when necessary. An 
+graph like the automatic adding of splits or joins when necessary. An 
 example of a possibility for that can be seen in fig. 
 \ref{fig_StreamIt_topology_missing_join}.
 
@@ -546,7 +546,7 @@ to dynamicly update subgraphs in the main graph without the need to save the
 subgraph.
 \end{itemize}
 
-\subsubsection{Known Bugs}
+\subsubsection{Known bugs}
 The implementation of the StramGraph project is not perfect and as such includes
 bugs and the need for minor additions which would be necessary for a finished product.
 \begin{itemize}
@@ -560,54 +560,14 @@ project already prohibits easy to detect errors while connecting nodes.
 
 \newpage
 
-\includepdf[pages=-]{Installation.pdf}
+\includepdf[pages=-]{Install.pdf}
 
 
 \section{Developer documentation}
 
-\noindent The rest of the document contains the code documentation for the
+\noindent The Appendix contains the code documentation for the
 majority of the Perl modules of the StreamGraph project.
 
-\newpage
-
-
-%\includepdf[pages=-]{pod/StreamGraph.pdf}
-
-%\subsection{Model}
-\includepdf[pages=-]{pod/StreamGraph/Model/Saveable.pdf}
-\includepdf[pages=-]{pod/StreamGraph/Model/Node.pdf}
-\includepdf[pages=-]{pod/StreamGraph/Model/NodeFactory.pdf}
-\includepdf[pages=-]{pod/StreamGraph/Model/Node/Filter.pdf}
-\includepdf[pages=-]{pod/StreamGraph/Model/Node/Parameter.pdf}
-\includepdf[pages=-]{pod/StreamGraph/Model/Node/Comment.pdf}
-\includepdf[pages=-]{pod/StreamGraph/Model/Node/Subgraph.pdf}
-
-\includepdf[pages=-]{pod/StreamGraph/Model/CodeObject.pdf}
-\includepdf[pages=-]{pod/StreamGraph/Model/CodeObject/SplitJoin.pdf}
-\includepdf[pages=-]{pod/StreamGraph/Model/CodeObject/Parameter.pdf}
-\includepdf[pages=-]{pod/StreamGraph/Model/CodeObject/Pipeline.pdf}
-
-\includepdf[pages=-]{pod/StreamGraph/Model/Namespace.pdf}
-\includepdf[pages=-]{pod/StreamGraph/Model/ConnectionData.pdf}
-
-%\subsection{Code Generation \& Runtime}
-\includepdf[pages=-]{pod/StreamGraph/GraphCompat.pdf}
-\includepdf[pages=-]{pod/StreamGraph/CodeGen.pdf}
-\includepdf[pages=-]{pod/StreamGraph/CodeRunner.pdf}
-
-%\subsection{View}
-\includepdf[pages=-]{pod/StreamGraph/View.pdf}
-\includepdf[pages=-]{pod/StreamGraph/View/Graph.pdf}
-\includepdf[pages=-]{pod/StreamGraph/View/Item.pdf}
-\includepdf[pages=-]{pod/StreamGraph/View/HotSpot.pdf}
-
-%\subsection{Util}
-\includepdf[pages=-]{pod/StreamGraph/Util.pdf}
-\includepdf[pages=-]{pod/StreamGraph/Util/Config.pdf}
-\includepdf[pages=-]{pod/StreamGraph/Util/File.pdf}
-\includepdf[pages=-]{pod/StreamGraph/Util/PropertyWindow.pdf}
-\includepdf[pages=-]{pod/StreamGraph/Util/DebugGraph.pdf}
-\includepdf[pages=-]{pod/StreamGraph/Util/DebugCode.pdf}
 
 % An example of a floating figure using the graphicx package.
 %\begin{figure}[!t]
@@ -675,5 +635,43 @@ William~Thies, Michael~Karczmarek, and Saman~Amarasinghe, \emph{StreamIt: A Lang
 \url{http://search.cpan.org/~hemlock/Gtk2-Ex-MindMapView-0.000001/lib/Gtk2/Ex/MindMapView.pm}
 \end{thebibliography}
 
+%\subsection{Model}
+\includepdf[pages=-]{pod/StreamGraph/Model/Saveable.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/Node.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/NodeFactory.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/Node/Filter.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/Node/Parameter.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/Node/Comment.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/Node/Subgraph.pdf}
+
+\includepdf[pages=-]{pod/StreamGraph/Model/CodeObject.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/CodeObject/SplitJoin.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/CodeObject/Parameter.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/CodeObject/Pipeline.pdf}
+
+\includepdf[pages=-]{pod/StreamGraph/Model/Namespace.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Model/ConnectionData.pdf}
+
+%\subsection{Code Generation \& Runtime}
+\includepdf[pages=-]{pod/StreamGraph/GraphCompat.pdf}
+\includepdf[pages=-]{pod/StreamGraph/CodeGen.pdf}
+\includepdf[pages=-]{pod/StreamGraph/CodeRunner.pdf}
+
+%\subsection{View}
+\includepdf[pages=-]{pod/StreamGraph/View.pdf}
+\includepdf[pages=-]{pod/StreamGraph/View/Graph.pdf}
+\includepdf[pages=-]{pod/StreamGraph/View/Item.pdf}
+\includepdf[pages=-]{pod/StreamGraph/View/HotSpot.pdf}
+
+%\subsection{Util}
+\includepdf[pages=-]{pod/StreamGraph/Util.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Util/Config.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Util/File.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Util/PropertyWindow.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Util/DebugGraph.pdf}
+\includepdf[pages=-]{pod/StreamGraph/Util/DebugCode.pdf}
 % that's all folks
 \end{document}
+
+%\includepdf[pages=-]{pod/StreamGraph.pdf}
+
