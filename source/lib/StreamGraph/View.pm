@@ -392,21 +392,28 @@ mind map may have zero or more predecessors.
 
 =item C<remove_item ($item)>
 
-Remove the root StreamGraph::View::Item from the mind map. This
-item should not have any successors or predecessors.
+Remove the item from the graph including all connections.
 
+=item C<remove_connection($connection)>
 
-=item C<remove_item ($predecessor_item, $item)>
-
-Remove an item from the mind map. The StreamGraph::View::Item must
-be a successor of predecessor StreamGraph::View::Item. You can
-think of this as removing an edge from the graph underlying the mind
-map. This routine makes sure that the visible connection on the canvas
-is removed and that the item is removed from the underlying graph.
+Remove the connection from the graph.
 
 =item C<set_root ($item)>
 
 Change the root StreamGraph::View::Item in the underlying graph,
 and revise the visible connections in the mind map.
+
+=item C<println($str,$type)>
+
+This methid prints a String on the terminal and if type is defined also shows a
+image. Type is a string and has a format from Gtk2::Stock without gtk-.
+
+=item C<connect($predecessor_item, $item, $connection_data)>
+
+This method creates a new connection between two items.
+
+=item C<deselect()>
+
+This method deselects all items.
 
 =back
