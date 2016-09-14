@@ -195,7 +195,7 @@ The StreamIt code for the codeObject.
 
 =item C<parameters> (list[StreamGraphModel::CodeObject::Parameter])
 
-The Parameters of all filters nested in the codeObject.
+The parameters of all filters nested in the codeObject.
 
 
 =item C<inputType> (String)
@@ -206,6 +206,21 @@ The type(a type in StreamIt) in which the input of the codeObject is given.
 =item C<graph> (StreamGraph::GraphCompat)
 
 The graph in which the split-join is located.
+
+
+=head3 Inherited from StreamGraph::Model::CodeObject
+
+See the documentation of StreamGraph::Model::CodeObject for descriptions.
+
+=over
+
+=item C<name> (String)
+
+
+=item C<outputType> (String)
+
+
+=back
 
 
 =back
@@ -245,7 +260,7 @@ Generates the code for the split-join, as well as all nested CodeObjects and fil
 
 =item C<buildCode($pipelinesCode, $splitJoinesCode)>
 
-C<return> The complete code for the codeObject and all nested codeObjects as a tuple of code for pipelines and splitJoines.
+C<return> The complete code for the codeObject and all nested codeObjects as a tuple of code for pipelines and split-joines.
 
 Gets all the code necessary for a StreamIt program out of the codeObject and all nested codeObjects.
 
