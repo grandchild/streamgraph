@@ -53,3 +53,37 @@ sub filterNodesForType {
 
 
 1;
+__END__
+
+=head1 StreamGraph::Util
+
+Package for various low level utility functions.
+
+=head2 Properties
+
+None.
+
+=head2 Methods
+
+=over
+
+=item C<getNodeWithId($nodes, $id)>
+
+C<return> a node ($treamGraph::Model::Node) with the given C<$id> or C<undef>.
+
+
+=item C<getItemWithId($items, $id)>
+
+C<return> an item (StreamGraph::View::Item) with the given C<$id> or C<undef>.
+
+
+=item C<unique($list)>
+
+C<return> unique items in C<$list> (list[Var]).
+
+
+=item C<filterNodesForType($nodes, $id)>
+
+C<return> nodes having type C<type> (list[StreamGraph::Model::Node]).
+
+=back
