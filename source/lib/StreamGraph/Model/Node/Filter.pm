@@ -253,13 +253,13 @@ None.
 
 =over
 
-=item C<StreamGraph::Model::Node::Filter-E<gt>new($initCode, $workCode, $globalVariables, $timesPush, $timesPop, $timesPeek, $joinType, $splitType, $inputType, $inputCount, $outputType, $outputCount)>
+=item C<StreamGraph::Model::Node::Filter-E<gt>new(initCode=>$initCode, workCode=>$workCode, globalVariables=>$globalVariables, timesPush=>$timesPush, timesPop=>$timesPop, timesPeek=>$timesPeek, joinType=>$joinType, splitType=>$splitType, inputType=>$inputType, inputCount=>$inputCount, outputType=>$outputType, outputCount=>$outputCount)>
 
 Create a StreamGraph::Model::Node::Filter.
 
 =item C<get_parameters($graph, $parameterTypeFlag)>
 
-C<return> list[StreamGraphModel::Node::Parameter] or StreamGraph::Model::CodeObject::Parameter as specified.
+C<return> list[StreamGraphModel::Node::Parameter] or list[StreamGraph::Model::CodeObject::Parameter] as specified.
 
 If the C<$parameterTypeFlag> is not given or true a list[StreamGraphModel::CodeObject::Parameter] is returned. 
 Otherwise a list[StreamGraphModel::Node::Parameter] is returned. The returned list has all parameters that are 

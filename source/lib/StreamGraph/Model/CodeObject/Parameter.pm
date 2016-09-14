@@ -75,9 +75,10 @@ See the documentation of StreamGraph::Model::CodeObject for descriptions.
 
 =over
 
-=item C<StreamGraph::Model::CodeObject::Parameter-E<gt>new($node)>
+=item C<StreamGraph::Model::CodeObject::Parameter-E<gt>new(first=>$node)>
 
-Create a StreamGraph::Model::CodeObject::Parameter.
+Create a StreamGraph::Model::CodeObject::Parameter. Expects a 
+StreamGraph::Model::Node::Filter as C<$node>.
 
 =item C<updateValues()>
 

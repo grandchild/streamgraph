@@ -229,7 +229,7 @@ See the documentation of StreamGraph::Model::CodeObject for descriptions.
 
 =over
 
-=item C<StreamGraph::Model::CodeObject::SplitJoin-E<gt>new($first, $graph)>
+=item C<StreamGraph::Model::CodeObject::SplitJoin-E<gt>new(first=>$first, graph=>$graph)>
 
 Create a StreamGraph::Model::CodeObject::SplitJoin starting on C<$first>(a StreamGraph::Model::Node::Filter) 
 in the C<$graph> (a StreamGraph::GraphCompat). While creating the split-join it is necessary to create all nested

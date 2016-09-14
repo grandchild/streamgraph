@@ -59,7 +59,7 @@ None.
 
 =over
 
-=item C<StreamGraph::Model::Node::Comment-E<gt>new($string)>
+=item C<StreamGraph::Model::Node::Comment-E<gt>new(string=>$string)>
 
 Create a StreamGraph::Model::Node::Comment.
 

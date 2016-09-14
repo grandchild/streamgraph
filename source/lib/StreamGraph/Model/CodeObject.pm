@@ -35,4 +35,6 @@ The type of the output of the topological construct.
 
 =head2 Methods
 
-None.
+=item C<StreamGraph::Model::CodeObject-E<gt>new(name=>$name, outputType=>$outputType)>
+
+Create a StreamGraph::Model::CodoeObject. Do not use CodeObject is an abstract class.

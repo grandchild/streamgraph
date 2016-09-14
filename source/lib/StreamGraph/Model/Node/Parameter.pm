@@ -61,7 +61,7 @@ None.
  
 =over
  
-=item C<StreamGraph::Model::Node::Parameter-E<gt>new($outputType, $value)>
+=item C<StreamGraph::Model::Node::Parameter-E<gt>new(outputType=>$outputType, value=>$value)>
  
 Create a StreamGraph::Model::Node::Parameter.
 
