@@ -171,19 +171,19 @@ Defaults to C<"a.str"> if C<$filename> is not given.
 
 =item C<save($filename, $graph, $window)>
 
-Serializes and saves a streamit C<$graph> and its C<$window>'s properties to
-C<$filename>.
+Serializes and saves a StreamGraph C<$graph> and its C<$window>'s properties
+to C<$filename>.
 
 
 =item C<load($filename)>
 
-C<return> a tuple (%windowdata, @nodes, @connections) representing the graph.
+C<return> a tuple C<(%windowdata, @nodes, @connections)> representing the graph.
 
-Loads a .sigraph file into a list of nodes, a list of connections and some
-window properties that can be easily added to a graph.
+Loads a StreamGraph C<.sigraph> file into a list of nodes, a list of
+connections and some window properties that can be easily added to a graph.
 
 It detects the file format version and dispatches to a version-specific
-C<load_*()>.
+C<load_*()> (see below).
 
 
 =item C<load_v0_2($obj)>
