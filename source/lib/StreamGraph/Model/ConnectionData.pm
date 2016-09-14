@@ -45,12 +45,15 @@ The number of packages inputted from the split in one cycle.
 The number of packages inputted into the join in one cycle.
 
 
-=item C<saveMembers> (Hash)
+=item C<saveMembers> (list[String])
 
 The properties which are saved, when a graph is saved to a file.
 
-
 =back
+
+=head3 Inherited from StreamGraph::Model::Saveable
+
+None.
 
 =head2 Methods
 
@@ -65,5 +68,13 @@ Create a StreamGraph::Model::ConnectionData.
 C<return> A new StreamGraph::Model::ConnectionData with the exact same entries.
 
 Copy the entries of the StreamGraph::Model::ConnectionData to a new  StreamGraph::Model::ConnectionData. 
+
+=back
+
+=head3 Inherited from StreamGraph::Model::Saveable
+
+=over
+
+=item C<yaml_dump>
 
 =back
