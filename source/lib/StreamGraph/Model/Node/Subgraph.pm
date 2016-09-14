@@ -37,3 +37,28 @@ has saveMembers         => ( is=>"ro", default=>sub{[qw(
 
 
 1;
+__END__
+
+=head1 StreamGraph::Model::Node::Subgraph
+
+A node containing another graph.
+
+=head2 Properties
+
+=over
+
+=item C<Name> (Type)
+
+Description
+
+=back
+
+=head2 Methods
+
+=over
+
+=item C<StreamGraph::Model::Node::Subgraph-E<gt>new(fields)>
+
+Create a StreamGraph::Model::Node::Subgraph.
+
+=back
