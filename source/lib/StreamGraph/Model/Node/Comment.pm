@@ -15,7 +15,7 @@ has saveMembers => ( is=>"ro", default=>sub{[qw(name id x y string)]});
 
 __END__
 
-=head1 StreamGraph:.Model::Node::Comment
+=head1 StreamGraph::Model::Node::Comment
 
 The Implementation of comments in the StreamGraph view 
 (a pretty uninteresting one if you ask me)
