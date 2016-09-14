@@ -19,7 +19,7 @@ else
 		pod2texi --unnumbered-sections "$modpath" > "$1.texi" || echo "Error creating TexInfo"
 		sed -i"" '/@node Top/d' "$1.texi"
 		sed -i"" '/@top StreamGraph::.*/d' "$1.texi"
-		texi2pdf "$1.texi" -o "$1.pdf" &> /dev/null || echo "Error creating PDF"
+		texi2pdf -b "$1.texi" -o "$1.pdf" &> /dev/null || echo "Error creating PDF"
 		echo "$1.pdf"
 	else
 		echo No module $modpath!
