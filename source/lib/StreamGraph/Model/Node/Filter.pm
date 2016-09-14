@@ -164,23 +164,25 @@ Create a StreamGraph::Model::Node::Filter.
 
 =item C<get_parameters($graph, $parameterTypeFlag)>
 
-C<return> returnvalue
+C<return> List of StreamGraph::Model::Node::Parameter or StreamGraph::Model::CodeObject::Parameter as specified.
 
-description
+If the C<$parameterTypeFlag> is not given or true a list of StreamGraph::Model::CodeObject::Parameter is returned. 
+Otherwise a list of StreamGraph::Model::Node::Parameter is returned. The returned list has all parameters that are 
+connected to the filter in the C<$graph>. 
 
 
 =item C<get_edge_data_to($target, $graph)>
 
-C<return> returnvalue
+C<return> StreamGraph::Model::ConnectionData
 
-description
+Get the data attribute of the connection to the C<$target>
 
 
 =item C<get_edge_data_from($source, $graph)>
 
-C<return> returnvalue
+C<return> StreamGraph::Model::ConnectionData
 
-description
+Get the data attribute of the connection from the C<$source>
 
 
 =item C<set_edge_attribute_to($target, $graph, $key, $value)>
