@@ -591,3 +591,63 @@ sub create_menu {
 
 
 1;
+
+__END__
+
+=head1 streamgraph.pl
+
+Main programm.
+
+=head2 Methods
+
+=over
+
+=item C<create_window($file, $isSubgraph, $parents, $parent_item)>
+
+This method creates the main window and all other GUI elements.
+All elements are included in the %main_gui hash:
+
+Main window
+	$main_gui{window} = (Gtk2::Window)
+
+Scroller window which includes the view. Allows to scroll the view.
+	$main_gui{scroller} = (Gtk2::ScrolledWindow)
+
+View shows the graph items.
+	$main_gui{view} = StreamGraph::View->new(aa=>1);
+
+Main box inside the main window which includes menu bar, scroller and terminal box.
+	$main_gui{menus} = (Gtk2::VBox)
+
+Item Factory allows to create new graph items.
+	$main_gui{factory} = (StreamGraph::View::ItemFactory)
+
+Node Factory allows to create StreamGraph::Model::Node objects.
+	$main_gui{nodeFactory} = (StreamGraph::Model::NodeFactory)
+
+Config parameters.
+	$main_gui{config} = StreamGraph::Util::Config->new();
+
+Save file dir.
+	$main_gui{saveFile} = (String)
+
+=item C<scroll_to_center($main_gui)>
+
+This method sets the (x,y)=(0,0) position to the center of the window.
+
+=item C<_test_handler($main_gui, $item, $event)>
+
+This method handles mouse events on graph items. Actions which are realised:
+Open property window, mark or drag the item, open new main window for Subgraphs.
+
+=item C<_window_handler($main_gui, $item, $event)>
+
+This method handles mouse events on the main window. Actions which are realised:
+Open pop up menu, scroll the view, close a temporal connection by lieving the window,
+draw a select rectangle.
+
+=item C<create_menu($main_gui,$isSubgraph)>
+
+This method creates a Gtk2::VBox with included menu bar.
+
+=back
