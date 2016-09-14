@@ -596,7 +596,10 @@ __END__
 
 =head1 streamgraph.pl
 
-Main programm.
+B<StreamGraph> main program. Usage:
+
+	$ perl path/to/streamgraph.pl path/to/graph.sigraph
+
 
 =head2 Methods
 
