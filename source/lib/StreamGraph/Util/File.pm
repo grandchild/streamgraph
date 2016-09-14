@@ -134,3 +134,83 @@ sub _read {
 }
 
 1;
+__END__
+
+=head1 StreamGraph::Util::File
+
+File serialization for StreamGraph. Write and read operations for the .sigraph
+YAML file format and generic file I/O.
+
+=head2 Properties
+
+None.
+
+=head2 Methods
+
+=over
+
+=item C<writeFile($string, $filename)>
+
+Writes C<$string> to C<$filename>.
+
+
+=item C<readFile($filename)>
+
+C<return> contents of C<$filename> (String).
+
+
+=item C<readFileAsList($filename)>
+
+C<return> contents of C<$filename> (list[String]) line by line.
+
+
+=item C<writeStreamitSource($writeString, $filename)>
+
+Writes C<$writeString> to C<$filename>, appending ".str" suffix if
+C<$filename> doesn't already have it.
+
+Defaults to C<"a.str"> if C<$filename> is not given.
+
+
+=item C<save($filename, $graph, $window)>
+
+Serializes and saves a streamit C<$graph> and its C<$window>'s properties to
+C<$filename>.
+
+
+=item C<load($filename)>
+
+C<return> a tuple (%windowdata, @nodes, @connections) representing the graph.
+
+Loads a .sigraph file into a list of nodes, a list of connections and some
+window properties that can be easily added to a graph.
+
+It detects the file format version and dispatches to a version-specific
+C<load_*()>.
+
+
+=item C<load_v0_2($obj)>
+
+C<return> I<same as> C<load()>
+
+Loads the .sigraph YAML file format version 0.2.
+
+
+=item C<load_v0_1($obj)>
+
+C<return> I<same as> C<load()>
+
+Loads the .sigraph YAML file format version 0.1 and older.
+
+
+=item C<_write($writeString, $filename)>
+
+Write a string to a file.
+
+
+=item C<_read($filename)>
+
+C<return> a list of lines (list[String]) from a file.
+
+
+=back
