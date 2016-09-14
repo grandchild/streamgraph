@@ -63,7 +63,7 @@ __END__
 =head1 StreamGraph::Util::Config
 
 A utility class that implements the config file and its usage. 
-The configuration file is needed for the temporary dumps of the 
+The configuration file is needed for temporary dumps of the 
 program, as well as and perhaps more importantly for the 
 execution of the generated StreamIt program.
 
@@ -73,11 +73,11 @@ execution of the generated StreamIt program.
 
 =item C<configFile> (String)
 
-The Name of the configuration file.
+The filename of the configuration file.
 
 =item C<config> (Hash)
 
-The Hash with the necessary information, like directorites.
+The hash with the necessary information, like directories.
 
 =item C<default> (Hash)
 
@@ -92,8 +92,9 @@ file exists.
 
 =item C<StreamGraph::Util::Config-E<gt>new(configFile=E<gt>$configFile, config=E<gt>$config, default=E<gt>$default)>
 
-Create a StreamGraph::Util::Config. Should be used without 
-any parameters.
+Create a StreamGraph::Util::Config. Set the config file location or use
+without parameters to use the default location of C<"streamit.conf">, i.e. in
+the working directory.
 
 
 =item C<load()>
@@ -104,21 +105,18 @@ field into the C<config> field.
 
 =item C<write()>
 
-Writes the configuration file specified in the C<config> 
-field to the file specified in the C<configFile> field. 
+Writes the configuration file specified in C<config> to the file specified in
+C<configFile>.
 
 
 =item C<get($key)>
 
-C<return> returns the Value to the given C<$key>.
-
-A simple accessor method for access to singular values in 
-the hash of the C<config> field.
+C<return> the value for a given C<$key>.
 
 
 =item C<createDefault()>
 
-Sets the default config values and writes them. Is normally 
-called at the first start of StreamGraph.
+Sets the default config values and writes them. It is used if the given config
+file does not exist.
 
 =back
