@@ -415,10 +415,6 @@ StreamGraph::Model::Namespace for details).
 
 =item C<set_root()>
 
-=item C<traverse_BFS()>
-
-=item C<traverse_DFS()>
-
 =item C<traverse_postorder_edge()>
 
 =item C<traverse_preorder_edge()>

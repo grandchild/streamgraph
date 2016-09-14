@@ -495,22 +495,6 @@ sub _resize {
 }
 
 
-sub toggle {
-	my ($self, @items) = @_;
-	my $number_visible = grep {$_->is_visible()} @items;
-	foreach my $item (@items) {
-		if ($number_visible == 0) {
-			my $date_time = $item->{hide_date_time};
-			$self->{graph}->traverse_DFS($item, sub { _set_visible($_[0], $date_time); });
-		} else {
-			my $date_time = time();
-			$self->{graph}->traverse_DFS($item, sub { _set_invisible($_[0], $date_time); });
-		}
-	}
-	$self->signal_emit('layout');
-}
-
-
 sub toggle_available {
 	my ($self, $available) = @_;
 	# foreach my $hotspot ($self->{hotspots}{'toggle_left'}) {
@@ -683,11 +667,6 @@ Return an array of successor items of this item.
 
 Return an array of items that are on one side of this item. The side
 may be 'top' or 'down'.
-
-=item C<toggle ()>
-
-Either expand or collapse a subtree of the mind map. Toggle uses a
-time stamp to decide how much of the tree to expand.
 
 =item C<update ()>
 

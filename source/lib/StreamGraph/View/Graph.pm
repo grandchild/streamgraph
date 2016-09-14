@@ -213,30 +213,6 @@ sub set_root {
 }
 
 
-# $graph->traverse_BFS($item, $callack);
-sub traverse_BFS {
-	my ($self, $item, $callback) = @_;
-	my @pairs = ();
-	_traverse_pairs($self, \@pairs, 0, $item);
-	my @sorted_pairs = sort { ($a->[0] <=> $b->[0]) ||
-					($a->[1] <=> $b->[1]) } @pairs;
-	foreach my $pair_ref (@sorted_pairs) {
-		&$callback($pair_ref->[1]);
-	}
-}
-
-
-# $graph->traverse_DFS($item, $callback)
-sub traverse_DFS {
-	my ($self, $item, $callback) = @_;
-	&$callback($item);
-	my @successors = $self->{graph}->successors($item);
-	foreach my $successor_item (@successors) {
-		$self->traverse_DFS($successor_item, $callback);
-	}
-}
-
-
 # $graph->traverse_postorder_edge($predecessor_item, $item, $callback);
 sub traverse_postorder_edge {
 	my ($self, $predecessor_item, $item, $callback) = @_;
@@ -533,7 +509,7 @@ StreamGraph::View.
 
 =over
 
-=item C<StreamGraph::View::Graph-<gt>new()>
+=item C<StreamGraph::View::Graph-E<gt>new()>
 
 Create a StreamGraph::View::Graph.
 
@@ -563,41 +539,19 @@ Return the number of items in the graph.
 
 Return the predecessor items of a given StreamGraph::View::Item.
 
-=item C<remove ($item)>
+=item C<remove_vertex($item)>
 
-Remove a StreamGraph::View::Item from the graph. Attach any
-successor items that the item may have had to the items predecessor.
+Remove a StreamGraph::View::Item from the graph. Remove any
+connections that the item may have had.
 
-=item C<set_root ($item)>
+=item C<set_root($item)>
 
 Change the root item in the graph. An new graph is created with the
 new root.
 
-=item C<successors ($item)>
+=item C<successors($item)>
 
 Return the successor items of a given StreamGraph::View::Item.
-
-=item C<traverse_DFS ($item, $callback)>
-
-Perform a depth-first traversal of the graph, repeatedly calling the
-callback.
-
-The traversal algorithm given in Graph.pm returns items in an
-unpredictable order which causes the items in the mind map to be
-placed differently each time the map is redrawn. So we use our own
-method that returns items in the same order. Need to do something
-about all these traversal routines.
-
-=item C<traverse_BFS ($item, $callback)>
-
-Perform a breadth-first traversal of the graph, repeatedly calling the
-callback.
-
-The traversal algorithm given in Graph.pm returns items in an
-unpredictable order which causes the items in the mind map to be
-placed differently each time the map is redrawn. So we use our own
-method that returns items in the same order. Need to do something
-about all these traversal routines.
 
 =item C<traverse_preorder_edge($predecessor_item, $item, $callback)>
 
