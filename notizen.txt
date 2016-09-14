@@ -2,7 +2,6 @@
 
 TODO 14.09.2016
 	Docs:
-		SubGraph
 		StreamGraph.pm
 	improvements/bugs section
 	pdf hochladen in repo
