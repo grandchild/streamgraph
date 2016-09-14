@@ -537,6 +537,13 @@ the moment only minor adjustments can be made as described in
 graph like the automatic adding of splits or joines when necessary. An 
 example of a possibility for that can be seen in fig. 
 \ref{fig_StreamIt_topology_missing_join}.
+
+\item Dynamic subgraphs\\
+At the moment StreamGraph loads subgraphs of a graph from their file. As such 
+changes in a subgraph are only recognized in the main graph if the subgraph 
+is saved before generating the code. A desirable feature would be to be able 
+to dynamicly update subgraphs in the main graph without the need to save the 
+subgraph.
 \end{itemize}
 
 \subsubsection{Known Bugs}
