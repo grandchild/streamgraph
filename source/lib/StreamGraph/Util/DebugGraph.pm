@@ -54,11 +54,11 @@ This module crates a GraphViz image of a graph and shows it in a dialog window.
 
 =over
 
-=item C<export_graph> ($window,$view,$graph,$dir)
+=item C<export_graph($window,$view,$graph,$dir)>
 
 Creates a GraphViz image of a graph and shows it in a dialog window.
 
-=item C<name_id> ($data)
+=item C<name_id($data)>
 
 Creates an unique name from C<$data-E<gt>name> and C<$data-E<gt>id>.
 

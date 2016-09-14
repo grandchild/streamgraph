@@ -42,7 +42,7 @@ This modul shows the Streamit code in a dialog window.
 
 =over
 
-=item C<show_code> ($window,$view,$graph,$dir)
+=item C<show_code($window,$view,$graph,$dir)>
 
 Gets a String with the Streamit code and shows it in a dialog window.
 
