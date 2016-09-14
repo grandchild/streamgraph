@@ -32,9 +32,18 @@ sub show_code {
 	$dialog->show();
 }
 
-sub name_id {
-	my ($data) = @_;
-	return $data->{name} . "\n" . $data->{id};
-}
-
 1;
+
+=head1 StreamGraph::Util::DebugCode
+
+This modul shows the Streamit code in a dialog window.
+
+=head2 Methods
+
+=over
+
+=item C<show_code> ($window,$view,$graph,$dir)
+
+This method gets a String with the Streamit code and shows it in a dialog window.
+
+=back

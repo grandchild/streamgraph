@@ -58,7 +58,7 @@ This modul crates a GrphViz image of a graph and shows it in a dialog window.
 
 This method crates a GrphViz image of a graph and shows it in a dialog window.
 
-=item C<name_id> ($window,$view,$graph,$dir)
+=item C<name_id> ($data)
 
 This method crates an unique name from item name and id.
 
