@@ -336,6 +336,7 @@ parameters being passed in from the parent graph.
 
 
 \subsection{GraphCompat}
+\label{sec:GraphCompat}
 
 \noindent The StreamIt topology, as discussed in \ref{StreamItTopology}, is not
 only a directed Graph but has additional restrictions. Some of these are not
@@ -526,7 +527,14 @@ of StreamIt. In the future it would be possible to implement the StreamIt
 features not in the original scope of the project. To be specific these 
 would be the FeedbackLoop, Message passing and the re-initialization feature.\\
 
-\item 
+\item Further automatic compatibility\\
+StreamGraph builds StreamIt code from its graph. This graph is before the 
+code generation is started made compatible with the StreamIt topology. At 
+the moment only minor adjustments can be made as described in 
+\ref{sec:GraphCompat}. It is possible to make further adjustments to the 
+graph like the automatic adding of splits or joines when necessary. An 
+example of a possibility for that can be seen in fig. 
+\ref{fig_StreamIt_topology_missing_join}.
 \end{itemize}
 
 \subsubsection{Known Bugs}
