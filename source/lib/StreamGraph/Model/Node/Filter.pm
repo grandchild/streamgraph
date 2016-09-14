@@ -221,7 +221,7 @@ The StreamIt type of the output.
 The number of outgoing data connections.
 
 
-=item C<saveMembers> (String)
+=item C<saveMembers> (list[String])
 
 The properties which are saved when the graph is saved to a file.
 
@@ -246,11 +246,7 @@ See the documentation of StreamGraph::Model::Node for descriptions.
 
 =head3 Inherited from StreamGraph::Model::Saveable
 
-=over
-
-=item C<saveMembers>
-
-=back
+None.
 
 
 =head2 Methods

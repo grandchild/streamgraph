@@ -58,22 +58,26 @@ Base class for Streamgraph graph objects
 
 =over
 
-=item C<$name> (String)
+=item C<name> (String)
 
 The display name of the node
 
-=item C<$id> (String)
+=item C<id> (String)
 
 The random unique ID for this node.
 
-=item C<$x> (Integer)
+=item C<x> (Integer)
 
 The horizontal position of this node in the editing area.
 
-=item C<$y> (Integer)
+=item C<y> (Integer)
 
 The vertical position of this node in the editing area. Higher is further
 down.
+
+=item C<saveMembers> (list[String])
+
+The properties which are saved when the graph is saved to a file.
 
 =back
 
