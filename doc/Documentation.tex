@@ -290,9 +290,10 @@ The split-join part however is reversed and a StreamGraph filter includes a
 join before and a split after. This way the multiple inputs of a filter in
 StreamGraph are joined to form the required single input for a StreamIt
 filter. Similarly the data packages coming from the single output of the
-filter code are spread among the outputs of the StreamGraph filter node. The
-join and split is configured through the filter's property window, along with
-the filter code.
+filter code are spread among the outputs of the StreamGraph filter node. 
+A depiction of a filter in StreamGraph can be seen in \ref{fig_filter_node}.
+The join and split is configured through the filter's property window, along 
+with the filter code.
 
 \subsubsection{Subgraph}
 
@@ -481,6 +482,7 @@ pipeline in every case should not increase the execution time significantly and
 does not change the order of execution. Because of these reasons it was decided
 to not include the feature to only create pipelines in split-join constructs
 when strictly necessary.\\
+A simple example of a split join is shown in fig. \ref{fig_Split_Join}.\\
 \\
 The generation of split-joins is relatively easy as long as the graph is compatible
 (for StreamIt compatibility see \ref{StreamItTopology}). As soon as the graph is not 
@@ -496,7 +498,6 @@ construct. That means, that at the time of the first processing of the paths a s
 but random order is established. This order is then the order in which these paths will 
 be processed for the whole code generation but it may be different between different
 executions of the code generation.\\
-A simple example of a split join is shown in fig. \ref{fig_Split_Join}.\\
 
 
 \subsection{Code generation}
@@ -539,6 +540,7 @@ features that weren't in the original scope of the project. To be specific these
 would be the FeedbackLoop, message-passing and the re-initialization feature.\\
 
 \item Further automatic compatibility\\
+\label{feature:automatic_compatability}
 StreamGraph builds StreamIt code from its graph. Before code generation is
 started made the graph is made compatible with the StreamIt topology. At the
 moment only minor adjustments can be made as described in
@@ -562,6 +564,7 @@ bugs and the need for minor additions which would be necessary for a finished pr
 \begin{itemize}
 
 \item No incorrect graphs\\
+\label{bug:incorrect_graphs}
 At the moment it is possible to build non-correct graphs in the view. Optimally the 
 user interface would correct any attempts to build an incorrect graph. The StreamGraph 
 project already prohibits easy to detect errors while connecting nodes.
@@ -615,12 +618,23 @@ project already prohibits easy to detect errors while connecting nodes.
 
 \section{Conclusion}
 
-At this point the StreamGraph project was quite successful in showing that a
-quite effective graphical representation and editing environment can be
-created for StreamIt. Many basic constructs could be realized and intuitively
-represented, and a complete toolchain was created. It is possible to start
-from an empty graph, add and edit graph constructs, combine several graphs and
-then create a fully running executable, all from within StreamGraph.
+\noindent StreamGraph aimed to simplify the use of StreamIt. Specifically to
+remove the need for deep understanding of the syntax needed to represent
+topological constructs. As a graph-based language it inherits some of the
+advantages of graphical programming, namely a better overview of overall
+structure of a program and more intuitive access for beginners. It also tried
+to translate a pipeline-centered to a directed-graph-based paradigm. Enforcing
+the symmetry required of a pipeline structure is daunting and was not
+completely realized (See \ref{feature:automatic_compatability} and
+\ref{bug:incorrect_graphs}).
+
+At this point the StreamGraph project was still quite successful in
+showing that a fairly effective graphical representation and editing
+environment can be created for StreamIt. Many basic constructs could be
+realized and intuitively represented and a complete toolchain was created. It
+is possible to start from an empty graph, add and edit graph constructs,
+combine several graphs and then create a fully running executable, all from
+within StreamGraph.
 
 From a practical standpoint, in the current state, StreamGraph is certainly
 limited though and its usefulness as an actual develpment tool is debatable.
@@ -634,7 +648,6 @@ written by 3 people, it seems like it certainly has value. As a learning
 experience and a study and possibly an inspiration for the development of
 future graph-based programming tools.
 
-\appendices
 
 
 % use section* for acknowledgment
@@ -649,6 +662,7 @@ throughout the process (and for telling us to cut some features).
 
 
 
+\appendices
 
 \section{Installation}
 \noindent Contains installation instructions on how to get StreamGraph up and
