@@ -91,9 +91,3 @@ streamgraph
 ├── README.md
 └── ...
 ```
-
-## Starting StreamGraph
-```bash
-cd streamgraph/source/
-perl bin/streamgraph.pl helloworld.siggraph
-```
