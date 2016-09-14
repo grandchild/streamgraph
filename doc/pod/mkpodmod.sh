@@ -25,7 +25,7 @@ else
 		mkdir -p $subdir
 		pod2texi --unnumbered-sections "$modpath" > "$1.texi" || echo "Error creating TexInfo $1.texi"
 		sed -i"" '/@node Top/d' "$1.texi"
-		sed -i"" '/@top StreamGraph::.*/d' "$1.texi"
+		sed -i"" '/@top StreamGraph.*/d' "$1.texi"
 		texi2pdf -b "$1.texi" -o "$1.pdf" &> /dev/null || echo "Error creating PDF $1.pdf"
 		# echo "$1.pdf"
 	else
