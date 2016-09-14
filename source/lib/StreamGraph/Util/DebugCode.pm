@@ -36,7 +36,7 @@ sub show_code {
 
 =head1 StreamGraph::Util::DebugCode
 
-This modul shows the Streamit code in a dialog window.
+This module shows the StreamIt code in a dialog window.
 
 =head2 Functions
 
@@ -44,6 +44,6 @@ This modul shows the Streamit code in a dialog window.
 
 =item C<show_code($window,$view,$graph,$dir)>
 
-Gets a String with the Streamit code and shows it in a dialog window.
+Gets a String with the StreamIt code and shows it in a dialog window.
 
 =back
