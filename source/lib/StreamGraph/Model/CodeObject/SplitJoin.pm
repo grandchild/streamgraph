@@ -162,7 +162,7 @@ __END__
 
 =head1 StreamGraph::Model::CodeObject::SplitJoin
 
-The StreamGraph::Model:CodeObject::SplitJoin class implements the split-joines of StreamIt.
+The StreamGraph::Model:CodeObject::SplitJoin class implements the split-joins of StreamIt.
 
 =head2 Properties
 

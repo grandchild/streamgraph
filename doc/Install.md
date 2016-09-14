@@ -65,7 +65,7 @@ You will need to install the following perl packages:
 
 ### Configuration
 * Create a file at `streamgraph/source/streamgraph.conf` and fill in the absolute paths to the locations you created above so the file looks like this (`---` must be included):
-  ```yaml
+```yaml
 ---
 java_5_dir: 'jdk1.5.0._22'
 streamit_home: 'streamit-2.1.1'
