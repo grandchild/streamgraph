@@ -719,11 +719,11 @@ This method sets the data node.
 
 =item C<set_view($view)>
 
-This method sets the $view. This important, because items can acces view functions.
+This method sets the $view. This is necessary, because items can access view functions.
 
 =item C<select($switch)>
 
-This method changes the background color based on the switch value (0 -> white
-or 1 -> blue).
+This method changes the background color of the item based on the switch value
+(0 -> white or 1 -> blue).
 
 =back

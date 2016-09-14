@@ -43,3 +43,23 @@ sub name_id {
 }
 
 1;
+
+__END__
+
+=head1 StreamGraph::Util::DebugGraph
+
+This modul crates a GrphViz image of a graph and shows it in a dialog window.
+
+=head2 Methods
+
+=over
+
+=item C<export_graph> ($window,$view,$graph,$dir)
+
+This method crates a GrphViz image of a graph and shows it in a dialog window.
+
+=item C<name_id> ($window,$view,$graph,$dir)
+
+This method crates an unique name from item name and id.
+
+=back
