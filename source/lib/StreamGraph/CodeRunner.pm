@@ -4,6 +4,7 @@ use strict;
 use Moo;
 use Env qw($STREAMIT_HOME @PATH @CLASSPATH $JAVA_5_DIR);
 use POSIX ":sys_wait_h";
+use Data::Dump qw(dump);
 
 use StreamGraph::Util::File;
 
@@ -37,7 +38,14 @@ sub setStreamitEnv {
 
 sub compileAndRun {
 	my ($self, $filename, $callback) = @_;
-	$self->compile($filename, sub{$self->run($callback)});
+	$self->compile($filename, sub{
+		if ($self->compileSuccess != 0) {
+			$self->rSuccess(-1);
+			$callback->();
+		} else {
+			$self->run($callback);
+		}
+	});
 }
 
 sub compile {
@@ -73,6 +81,13 @@ sub compileResult {
 	return $self->_getResult($self->ccResult, $lines);
 }
 
+sub compileErrors {
+	my ($self) = @_;
+	$self->_updateCC;
+	my @result = @{$self->ccResult};
+	return join("", grep(/^streamit.+/, @result));
+}
+
 sub compileSuccess {
 	my ($self) = @_;
 	$self->_updateCC;
@@ -94,7 +109,6 @@ sub runSuccess {
 sub _compile {
 	my ($self) = @_;
 	my $cmd = $self->config->get("base_dir") . "resources/sgstrc " . $self->config->get("streamgraph_tmp") . $self->source;
-	$SIG{CHLD} = "IGNORE";  # don't leave zombies of unwaited child processes, let them be reaped
 	$self->ccPid(fork);
 	unless($self->ccPid) {
 		# system("rm -r " . $self->config->get("streamgraph_tmp"));
@@ -109,13 +123,12 @@ sub _updateCC {
 	my ($self) = @_;
 	if ($self->ccSuccess == -1) {
 		$self->ccResult(StreamGraph::Util::File::readFileAsList($self->config->get("streamgraph_tmp") . $self->ccResultFile));
-		$self->ccSuccess(abs(StreamGraph::Util::File::readFileAsList($self->config->get("streamgraph_tmp") . $self->ccSuccessFile)));
+		$self->ccSuccess(int(StreamGraph::Util::File::readFile($self->config->get("streamgraph_tmp") . $self->ccSuccessFile)));
 	}
 }
 
 sub _run {
 	my ($self) = @_;
-	$SIG{CHLD} = "IGNORE";
 	$self->rPid(fork);
 	unless($self->rPid) {
 		my $binary = $self->binary;
@@ -129,7 +142,7 @@ sub _updateRun {
 	my ($self) = @_;
 	if ($self->rSuccess == -1) {
 		$self->rResult(StreamGraph::Util::File::readFileAsList($self->config->get("streamgraph_tmp") . $self->rResultFile));
-		$self->rSuccess(abs(StreamGraph::Util::File::readFileAsList($self->config->get("streamgraph_tmp") . $self->rSuccessFile)));
+		$self->rSuccess(int(StreamGraph::Util::File::readFile($self->config->get("streamgraph_tmp") . $self->rSuccessFile)));
 	}
 }
 
@@ -287,6 +300,15 @@ If C<$lines> (Integer) is given, return only the first C<$lines> result lines.
 =item C<compileSuccess()>
 
 C<return> the compiler exit code (Integer)
+
+
+=item C<compileErrors()>
+
+C<return> errors in the compiler output (list[String])
+
+Returns only the lines from the output that are actual error locations and not
+the java stacktrace.
+
 
 
 =item C<runResult($lines)>

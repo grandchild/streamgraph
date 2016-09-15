@@ -16,7 +16,7 @@ sub writeFile {
 }
 
 sub readFile {
-	return join("", _read(@_));
+	return join("", @{_read(@_)});
 }
 
 sub readFileAsList {

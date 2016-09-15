@@ -19,6 +19,7 @@ use StreamGraph::CodeGen;
 use StreamGraph::CodeRunner;
 use StreamGraph::Util qw (getItemWithId getNodeWithId);
 use StreamGraph::Util::PropertyWindow;
+use StreamGraph::Util::ResultWindow;
 use StreamGraph::Util::DebugGraph;
 use StreamGraph::Util::DebugCode;
 use StreamGraph::Util::Config;
@@ -248,9 +249,17 @@ sub codeGenShow {
 
 sub runShow {
 	my ($main_gui) = @_;
+	my $graphCompat = StreamGraph::GraphCompat->new($main_gui->{view}->{graph});
+	my $generatedCode = StreamGraph::CodeGen::generateCode($main_gui->{view}, $graphCompat, $main_gui->{config});
 	my $runner = StreamGraph::CodeRunner->new(config=>$main_gui->{config});
 	$runner->setStreamitEnv($main_gui->{config});
-	$runner->compileAndRun("main.str", sub{ print $runner->runResult(10); });
+	$runner->compileAndRun("main.str", sub{
+		if ($runner->compileSuccess != 0) {
+			$main_gui->{view}->println(($runner->compileErrors)[0] =~ s/^.*?: (.*)$/\1/r, "dialog-error");
+		} else {
+			StreamGraph::Util::ResultWindow::show_result($main_gui->{window}, $main_gui->{view}, $runner->runResult);
+		}
+	});
 }
 
 sub addItem {
