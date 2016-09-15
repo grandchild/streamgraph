@@ -29,14 +29,23 @@ sub replace {
 			my $vars = $node->globalVariables;
 			my $init = $node->initCode;
 			my $work = $node->workCode;
+			my $push = $node->timesPush;
+			my $pop  = $node->timesPop;
+			my $peek = $node->timesPeek;
 			my $old = $name;
 			my $new = $self->newname($name);
 			$vars =~ s/\b$old\b/$new/g;
 			$init =~ s/\b$old\b/$new/g;
 			$work =~ s/\b$old\b/$new/g;
+			$push =~ s/\b$old\b/$new/g;
+			$pop  =~ s/\b$old\b/$new/g;
+			$peek =~ s/\b$old\b/$new/g;
 			$node->globalVariables($vars);
 			$node->initCode($init);
 			$node->workCode($work);
+			$node->timesPush($push);
+			$node->timesPop($pop);
+			$node->timesPeek($peek);
 		}
 	}
 }
