@@ -113,26 +113,50 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 \subsection{SreamIt}
 \begin{frame}
 \frametitle{StreamIt}
+	\begin{itemize}
+		\item developed for streaming applications
+		\item pipeline-based structure
+	\end{itemize}
+	\begin{block}{Base constructs}
+		\begin{itemize}
+			\item Filter: \textit{work}, \textit{init}-functions, as well as in- and output channels
+			\item Pipeline: linear succession of StreamIt constructs
+			\item Split: split data-stream on to multiple data streams
+			\item Join: join previously splitted streams together
+			% \item FeedbackLoop		
+		\end{itemize}
+	\end{block}
+	for further information on StreamIt see \cite{streamIt}.
 \end{frame}
 
 %------------------------------------------------
 
-\section{StreamGraph}
-\subsection{GUI}
+\section{GUI}
 \begin{frame}
 \frametitle{GUI}
 \end{frame}
 
 %------------------------------------------------
-\subsection{Model}
+\section{Model}
 \begin{frame}
 \frametitle{Model}
 \end{frame}
 
 %------------------------------------------------
-\subsection{Code Genereation}
+\section{Code Genereation}
 \begin{frame}
 \frametitle{Code Generation}
+	\begin{block}{General procedure}
+		\begin{itemize}
+			\item generate code for all filters
+			\item build pipeline-based structure
+			\item generate code for topology in recursive manner
+		\end{itemize}
+	\end{block}
+%from GraphCompat to code:
+%first generate filters
+%then build pipeline based structure with StreamIt constructs
+
 \end{frame}
 
 %------------------------------------------------
