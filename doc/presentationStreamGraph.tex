@@ -119,7 +119,7 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 	\end{itemize}
 	\begin{block}{Base constructs}
 		\begin{itemize}
-			\item Filter: \textit{work}, \textit{init}-functions, as well as in- and output channels
+			\item Filter: \textit{work}, \textit{init}-functions, 'The Workhorse of StreamIt'
 			\item Pipeline: linear succession of StreamIt constructs
 			\item Split: split data-stream on to multiple data streams
 			\item Join: join previously splitted streams together
@@ -128,9 +128,22 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 	\end{block}
 	for further information on StreamIt see \cite{streamIt}.
 \end{frame}
-
 %------------------------------------------------
 
+\begin{frame}
+\frametitle{Parallelism in StreamIt}	
+	\begin{block}{Split-Join}	
+		%Data-parallelism
+		Obvious possibility for parallel processing:\\
+		Every path is independent between data splitting and joining.\\
+		Therefore every path may be processed parallel
+	\end{block}
+	\begin{block}{Pipeline}
+		
+	\end{block}
+\end{frame}
+
+%------------------------------------------------
 \section{GUI}
 \begin{frame}
 \frametitle{GUI}
