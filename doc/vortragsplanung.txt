@@ -1,0 +1,22 @@
+
+
+## ablauf
+-motivation (jakob)
+-streamit (florian)
+-streamgraph-gui (boris)
+
+-demo streamit (florian)
+-demo streamgraph (jakob)
+
+-gtk-framework (boris)
+-model/backend (jakob)
+-backend/codegen (florian)
+
+-rueckblick und ausblick (alle)
+
+
+
+## treffen
+do (o. florian)
+so
+mo
