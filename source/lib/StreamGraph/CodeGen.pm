@@ -19,9 +19,13 @@ sub generateCode {
 	if(!defined($view)){
 		return 0;
 	}
-	if(!defined($graph)){
+	if(!defined($graph)) {
 		$view->println("Graph is not valid ", 'dialog-error');
-		return 0;
+		return "ERROR";
+	}
+	if($graph->{success}==0){
+		$view->println("Graph is not valid ", 'dialog-error');
+		return "ERROR";
 	}
 	if(!$configFile){
 		$view->println("No config file found", 'dialog-error');
