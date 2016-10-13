@@ -15,21 +15,18 @@ my $fileName;
 my $view;
 
 sub generateCode {
-	$view = shift;
+	my ($view, $graph, $configFile, $fileName) = @_;
 	if(!defined($view)){
 		return 0;
 	}
-	my $graph = shift;
 	if(!defined($graph)){
 		$view->println("Graph is not valid ", 'dialog-error');
 		return 0;
 	}
-	my $configFile = shift;
 	if(!$configFile){
 		$view->println("No config file found", 'dialog-error');
 		return 0;
 	}
-	$fileName = shift;
 	if(!$fileName || !defined($fileName)){
 		$fileName = "main";
 		$view->println("No fileName given. Setting fileName to main", 'dialog-info');
