@@ -184,6 +184,7 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 \section{Demo}
 \begin{frame}
 \frametitle{Demo}
+\textbf{DEMO}
 \end{frame}
 
 
@@ -210,9 +211,23 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 % Jakob
 \begin{frame}
 \frametitle{Model}
+Program structures modeled in two ways:
+\begin{block}{Graphical: \textit{Node}}
+	\begin{itemize}
+		\item Node types (\textit{Filter, Subgraph, Parameter, Comment})
+		\item Factory
+	\end{itemize}
+\end{block}
+\begin{block}{Textual: \textit{CodeObject}}
+	\begin{itemize}
+		\item StreamIt types (\textit{Pipeline, Splitjoin, Parameter})
+		\item \textit{CodeObject}s derived from \textit{Node}s
+	\end{itemize}
+\end{block}
 \end{frame}
 
 \subsection{Graph Transformation}
+% TODO: pictures for every step
 \begin{frame}
 	\begin{itemize}
 		\item Load subgraphs
@@ -248,16 +263,38 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 \subsection{Results}
 \begin{frame}
 \frametitle{Results}
+\begin{itemize}
+	\item Working prototype
+	\item Complete toolchain from "empty" to "running"
+\end{itemize}
 \end{frame}
 
 %------------------------------------------------
 \subsection{Improvements \& Future}
 \begin{frame}
 \frametitle{Improvements}
+\begin{itemize}
+	\item More StreamIt constructs (e.g. message passing)
+	\item UI
+	\begin{itemize}
+		\item Group-to-subgraph
+		\item In-graph error highlighting
+		\item Data visualization
+		\item ...
+	\end{itemize}
+	\item Compatability
+	\item StreamIt+Java1.5+Perl-packages auto setup
+	\item Code quality \& style
+\end{itemize}
 \end{frame}
 
 \begin{frame}
 \frametitle{Future}
+Possible research and development directions
+\begin{itemize}
+	\item Different background language
+	\item More general graphical environment
+\end{itemize}
 \end{frame}
 
 
