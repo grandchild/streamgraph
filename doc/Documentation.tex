@@ -542,19 +542,19 @@ would be the FeedbackLoop, message-passing and the re-initialization feature.\\
 \item Further automatic compatibility\\
 \label{feature:automatic_compatability}
 StreamGraph builds StreamIt code from its graph. Before code generation is
-started made the graph is made compatible with the StreamIt topology. At the
+started the graph is made compatible with the StreamIt topology. At the
 moment only minor adjustments can be made as described in
 \ref{sec:GraphCompat}. It is possible to make more far-reaching
 transformations to the graph like the automatic adding of splits or joins in
-certain special cases. The main case for that can be seen in fig.
+certain special cases. The main use for that can be seen in fig.
 \ref{fig_StreamIt_topology_missing_join}.
 
 \item Dynamic subgraphs\\
 Currently when transforming the graph for code generation
-StreamGraph loads subgraphs of a graph from their file. As such 
+StreamGraph loads subgraphs of a graph from their files. As such 
 changes in a subgraph are only recognized in the main graph if the subgraph
 is saved before generating the code. A desirable feature would be to be able
-to dynamicly update subgraphs in the main graph without the need to save the
+to dynamically update subgraphs in the main graph without the need to save the
 subgraph.
 \end{itemize}
 
@@ -637,7 +637,7 @@ combine several graphs and then create a fully running executable, all from
 within StreamGraph.
 
 From a practical standpoint, in the current state, StreamGraph is certainly
-limited though and its usefulness as an actual develpment tool is debatable.
+limited though and its usefulness as an actual development tool is debatable.
 It does not have enough ease-of-use and completeness to be satisfying as a
 regular environment for coding. Add to this the StreamIt language itself,
 which, while fairly useful in it's area of expertise, is not being very
