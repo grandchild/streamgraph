@@ -78,6 +78,7 @@
 
 \usepackage{graphicx} % Allows including images
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage{url}
 
 %----------------------------------------------------------------------------------------
 %	TITLE PAGE
@@ -193,7 +194,14 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 \subsection{Framework}
 % Boris
 \begin{frame}
-\frametitle{GTK Mind Map View}
+\frametitle{StreamGraph View}
+ \begin{itemize}
+ 	\item based on Gtk2::Ex::MindMapView \cite{GTK2EXMindMapView}
+	\item Gnome Canvas used as engine
+	\item item $\rightarrow$ border $\rightarrow$ content
+	\item handle keyboard and mouse events
+	\item many other changes
+ \end{itemize}
 \end{frame}
 
 
@@ -263,6 +271,8 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 		William~Thies, Michael~Karczmarek, and Saman~Amarasinghe, \emph{StreamIt: A Language for Streaming Applications},
 		\hskip 1em plus
 		0.5em minus 0.4em\relax Laboratory for Computer Science, Massachusetts Institute of Technology, Cambridge, MA 02139.
+	\bibitem{GTK2EXMindMapView}
+		\url{http://search.cpan.org/~hemlock/Gtk2-Ex-MindMapView-0.000001/lib/Gtk2/Ex/MindMapView.pm}
 
 	\end{thebibliography}
 }
