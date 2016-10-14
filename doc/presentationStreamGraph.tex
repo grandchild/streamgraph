@@ -135,7 +135,7 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 	\end{itemize}
 	\begin{block}{Base constructs}
 		\begin{itemize}
-			\item Filter: \textit{work}, \textit{init}-functions, 'The Workhorse of StreamIt'
+			\item Filter: \textit{work}-, \textit{init}-functions, 'The Workhorse of StreamIt'
 			\item Pipeline: linear succession of StreamIt constructs
 			\item Split: split single data stream into multiple data streams
 			\item Join: join previously splitted streams together
@@ -172,16 +172,16 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 \begin{frame}
 \frametitle{StreamGraph GUI}
 	\begin{itemize}
-		\item minimalistic and clear design
-		\item mouse controll over pop-up menus
-		\item intuitive control
+		\item Minimalistic and clear design
+		\item Mouse controll over pop-up menus
+		\item Intuitive control
 	\end{itemize}
 	\begin{block}{Elements}
 		\begin{itemize}
-			\item menu bar
-			\item working surface
-			\item notification bar
-			\item property window
+			\item Menu bar
+			\item Working surface
+			\item Notification bar
+			\item Property window
 		\end{itemize}
 	\end{block}
 \end{frame}
@@ -204,11 +204,11 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 \begin{frame}
 \frametitle{StreamGraph View}
  \begin{itemize}
- 	\item based on Gtk2::Ex::MindMapView \cite{GTK2EXMindMapView}
+ 	\item Based on Gtk2::Ex::MindMapView \cite{GTK2EXMindMapView}
 	\item Gnome Canvas used as engine
-	\item item $\rightarrow$ border $\rightarrow$ content
-	\item handle keyboard and mouse events
-	\item many other changes
+	\item Item $\rightarrow$ border $\rightarrow$ content
+	\item andle keyboard and mouse events
+	\item Many other changes
  \end{itemize}
 \end{frame}
 
@@ -225,6 +225,8 @@ Program structures modeled in two ways:
 		\item Factory
 	\end{itemize}
 \end{block}
+% should that be here?
+% maybe add it to Code Generation Slides?
 \begin{block}{Textual: \textit{CodeObject}}
 	\begin{itemize}
 		\item StreamIt types (\textit{Pipeline, Splitjoin, Parameter})
@@ -236,6 +238,7 @@ Program structures modeled in two ways:
 \subsection{Graph Transformation}
 % TODO: pictures for every step
 \begin{frame}
+%missing title?
 	\begin{itemize}
 		\item Load subgraphs
 		\item Add void sources and -sinks
@@ -294,38 +297,39 @@ Program structures modeled in two ways:
 \subsection{Results}
 \begin{frame}
 \frametitle{Results}
-\begin{itemize}
-	\item Working prototype
-	\item Complete toolchain from "empty" to "running"
-\end{itemize}
+	\begin{itemize}
+		\item Working prototype
+		\item Complete toolchain from "empty" to "running"
+	\end{itemize}
 \end{frame}
 
 %------------------------------------------------
 \subsection{Improvements \& Future}
 \begin{frame}
 \frametitle{Improvements}
-\begin{itemize}
-	\item More StreamIt constructs (e.g. message passing)
-	\item UI
 	\begin{itemize}
-		\item Group-to-subgraph
-		\item In-graph error highlighting
-		\item Data visualization
-		\item ...
+		\item More StreamIt constructs (e.g. message passing, feedbak-loop)
+		\item UI
+		\begin{itemize}
+			\item Group-to-subgraph
+			\item In-graph error highlighting
+			\item Data visualization
+			\item ...
+		\end{itemize}
+		% does comattability mean the automati addition of spli joines?
+		\item Compatability
+		\item StreamIt+Java1.5+Perl-packages auto setup
+		\item Code quality \& style
 	\end{itemize}
-	\item Compatability
-	\item StreamIt+Java1.5+Perl-packages auto setup
-	\item Code quality \& style
-\end{itemize}
 \end{frame}
 
 \begin{frame}
 \frametitle{Future}
 Possible research and development directions
-\begin{itemize}
-	\item Different background language
-	\item More general graphical environment
-\end{itemize}
+	\begin{itemize}
+		\item Different background language
+		\item More general graphical environment
+	\end{itemize}
 \end{frame}
 
 
