@@ -251,15 +251,39 @@ Program structures modeled in two ways:
 \frametitle{Code Generation}
 	\begin{block}{General procedure}
 		\begin{itemize}
-			\item generate code for all filters
-			\item build pipeline-based structure
-			\item generate code for topology in recursive manner
+			\item Generate code for all filters
+			\item Build pipeline-based structure
+			\item Generate code for topology in recursive manner
 		\end{itemize}
 	\end{block}
-%from GraphCompat to code:
-%first generate filters
-%then build pipeline based structure with StreamIt constructs
+	\begin{block}{Filter generation}
+		\begin{itemize}
+			\item Make name unique
+			\item Get parameters
+			\item Build \textit{init}- and \textit{work}- function
+		\end{itemize}
+	\end{block}
+\end{frame}
+%------------------------------------------------
 
+% maybe here CodeObjects
+\begin{frame}
+\frametitle{Code Generation}
+	\begin{block}{Building the structure}
+		\begin{itemize}
+			\item Begin with pipeline (main)
+			\item If split is detected start building of split-join\\
+				\quad Build a pipeline for every Path.
+			\item Continue with generation of pipeline.
+		\end{itemize}
+		Indirect recursive method which guarantees StreamIt-type hierarchical topology structure
+	\end{block}
+	\begin{block}{Getting the code}
+		\begin{itemize}
+			\item Generate code of all nested objects
+			\item Generate code of nesting object
+		\end{itemize}
+	\end{block}
 \end{frame}
 
 %------------------------------------------------
