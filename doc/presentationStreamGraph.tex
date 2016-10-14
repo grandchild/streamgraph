@@ -150,15 +150,19 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 \frametitle{Parallelism in StreamIt}
 	\begin{block}{Split-Join}
 		%Data-parallelism
-		Obvious possibility for parallel processing:\\
-		Every path is independent between data splitting and joining.\\
-		Therefore every path may be processed parallel
+		Splitting (or duplicating) of data:\\
+		\begin{itemize}
+			\item Paths independent between \textit{split} and \textit{join}
+		\end{itemize}
+		As result paths may be processed parallel
 	\end{block}
 	\begin{block}{Pipeline}
-		Continuous stream of data travelles through stages/filters:\\
-		Filter work functions need to be constantly recalculated.\\
-		Each filter can be processed independently.\\
-		Therefore each filter in a pipeline may be processed parallel.
+		Continuous data stream through filters:\\
+		\begin{itemize}
+			\item \textit{Work}-functions are constantly recalculated.
+			\item Filters can be processed independently.
+		\end{itemize}
+		Therefore filters in pipelines can be parallely processed.
 	\end{block}
 \end{frame}
 
