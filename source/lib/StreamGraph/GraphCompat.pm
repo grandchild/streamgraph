@@ -192,9 +192,11 @@ sub _subgraph {
 		# If not throw an error, as this would leave them with empty pins.
 	} else {
 		print("Multiple sources (" . @sources . ") and/or sinks (" . @sinks . ") in subgraph. Only a single source and/or a single sink may be used.\n");
+		print("sources:\n");
 		foreach my $s (@sources) {
 			print $s->name, " (", $s->id, ")\n";
 		}
+		print("sinks:\n");
 		foreach my $s (@sinks) {
 			print $s->name, " (", $s->id, ")\n";
 		}

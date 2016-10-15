@@ -52,6 +52,9 @@ sub replace {
 
 sub replaceAll {
 	my ($self, $graph) = @_;
+	if (!defined($self->names)) {
+		return;
+	}
 	foreach my $name (@{$self->names}) {
 		$self->replace($graph, $name);
 	}
