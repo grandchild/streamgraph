@@ -1,4 +1,8 @@
-
+Bugs:
+	multiple sources error through bombx2, because join filter of bombx1 is viewed
+		 as a source propably because subgraphs of bombx1 are not loaded at the time 
+	cannot re-open once closed subgraph view
+	subgraph loading from file does not fill in in- and output-type
 
 TODO 14.09.2016
 	improvements/bugs section
