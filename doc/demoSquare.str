@@ -1,0 +1,43 @@
+
+void->int filter Generator {
+	int i;
+	init {
+		i = 0;
+	}
+	work push 1 {
+		push(i++);
+	}
+}
+
+int->int filter square {
+	int var;
+	init {}
+	work pop 1 push 1 {
+		var = pop();
+		push(var * var);
+	}
+}
+
+int->void filter Printer {
+	init {}
+	work pop 1 {
+		println(pop());
+	}
+}
+
+/* --------------------------------------------------- */
+
+void->void pipeline main{
+	add Generator;
+	add SplitJoin_Square;
+	add Printer;
+}
+
+/* --------------------------------------------------- */
+
+int->int splitjoin SplitJoin_Square{
+	split duplicate;
+	add square;
+	add square;
+	join roundrobin(1, 1);
+}
