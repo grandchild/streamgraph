@@ -27,7 +27,7 @@ int->void filter Printer {
 
 /* --------------------------------------------------- */
 
-void->void pipeline main{
+void->void pipeline demoSquare{
 	add Generator;
 	add SplitJoin_Square;
 	add Printer;
