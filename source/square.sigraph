@@ -1,0 +1,85 @@
+--- Streamit Graph File
+---
+formatversion: 0.2
+name: square
+author: jakob
+window:
+  h: 450
+  w: 700
+  x: 529
+  y: 27
+nodes:
+  - data:
+      name: Generator
+      id: KPnEJw
+      x: -96
+      y: -108
+      initCode: i = 0;
+      workCode: push(i++);
+      globalVariables: int i;
+      timesPush: 1
+      timesPop: 0
+      timesPeek: 0
+      joinType: roundrobin
+      splitType: duplicate
+      inputType: void
+      inputCount: 1
+      outputType: int
+      outputCount: 1
+    type: StreamGraph::Model::Node::Filter
+  - data:
+      name: Printer
+      id: V6gK3Q
+      x: -93
+      y: 33
+      initCode: ''
+      workCode: |-
+        print(pop());
+        print("^2 = ");
+        print(pop());
+        println();
+      globalVariables: ''
+      timesPush: 0
+      timesPop: 2
+      timesPeek: 0
+      joinType: roundrobin
+      splitType: duplicate
+      inputType: int
+      inputCount: 1
+      outputType: void
+      outputCount: 1
+    type: StreamGraph::Model::Node::Filter
+  - data:
+      name: square
+      id: CANM6Q
+      x: -42
+      y: -41
+      initCode: ''
+      workCode: "var = pop();\npush(var * var);"
+      globalVariables: int var;
+      timesPush: 1
+      timesPop: 1
+      timesPeek: 0
+      joinType: roundrobin
+      splitType: duplicate
+      inputType: int
+      inputCount: 1
+      outputType: int
+      outputCount: 1
+    type: StreamGraph::Model::Node::Filter
+connections:
+  - data:
+      inputMult: 1
+      outputMult: 1
+    from: KPnEJw
+    to: CANM6Q
+  - data:
+      inputMult: 1
+      outputMult: 1
+    from: CANM6Q
+    to: V6gK3Q
+  - data:
+      inputMult: 1
+      outputMult: 1
+    from: KPnEJw
+    to: V6gK3Q
