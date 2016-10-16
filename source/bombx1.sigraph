@@ -24,24 +24,6 @@ nodes:
       outputCount: 0
     type: StreamGraph::Model::Node::Subgraph
   - data:
-      name: Filter1
-      id: BdG4hg
-      x: -48
-      y: -170
-      initCode: x=0;
-      workCode: "push(pop());\nx++;"
-      globalVariables: int x;
-      timesPush: 1
-      timesPop: 1
-      timesPeek: 0
-      joinType: roundrobin
-      splitType: duplicate
-      inputType: int
-      inputCount: 1
-      outputType: int
-      outputCount: 1
-    type: StreamGraph::Model::Node::Filter
-  - data:
       name: Filter2
       id: wMHV3g
       x: -47
@@ -64,8 +46,7 @@ nodes:
       id: k7I/WQ
       x: 125
       y: -74
-      filepath: bombBase.sigraph
-      visible: 0
+      filepath: bombBase.sigraph      visible: 0
       joinType: roundrobin
       splitType: duplicate
       inputType: int
@@ -74,12 +55,29 @@ nodes:
       outputCount: 0
     type: StreamGraph::Model::Node::Subgraph
   - data:
+      name: Filter1
+      id: BdG4hg
+      x: -48
+      y: -170
+      initCode: x=0;
+      workCode: "push(pop());\nx++;"
+      globalVariables: int x;
+      timesPush: 1
+      timesPop: 1
+      timesPeek: 0
+      joinType: roundrobin
+      splitType: duplicate
+      inputType: int
+      inputCount: 1
+      outputType: int
+      outputCount: 1
+    type: StreamGraph::Model::Node::Filter
+  - data:
       name: item
       id: g92BjQ
       x: -172
       y: -61
-      filepath: bombBase.sigraph
-      visible: 0
+      filepath: bombBase.sigraph      visible: 0
       joinType: roundrobin
       splitType: duplicate
       inputType: int
@@ -105,17 +103,7 @@ connections:
   - data:
       inputMult: 1
       outputMult: 1
-    from: k7I/WQ
-    to: wMHV3g
-  - data:
-      inputMult: 1
-      outputMult: 1
-    from: eSlzcA
-    to: wMHV3g
-  - data:
-      inputMult: 1
-      outputMult: 1
-    from: BdG4hg
+    from: APPP2A
     to: wMHV3g
   - data:
       inputMult: 1
@@ -126,7 +114,7 @@ connections:
       inputMult: 1
       outputMult: 1
     from: BdG4hg
-    to: APPP2A
+    to: g92BjQ
   - data:
       inputMult: 1
       outputMult: 1
@@ -135,7 +123,7 @@ connections:
   - data:
       inputMult: 1
       outputMult: 1
-    from: APPP2A
+    from: k7I/WQ
     to: wMHV3g
   - data:
       inputMult: 1
@@ -145,5 +133,10 @@ connections:
   - data:
       inputMult: 1
       outputMult: 1
+    from: eSlzcA
+    to: wMHV3g
+  - data:
+      inputMult: 1
+      outputMult: 1
     from: BdG4hg
-    to: g92BjQ
+    to: APPP2A
