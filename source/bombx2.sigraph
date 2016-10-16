@@ -14,7 +14,7 @@ nodes:
       id: hjUGZw
       x: -88
       y: -135
-      filepath: /home/florian/Documents/Uni/KBS/streamgraph/source/bombx1.sigraph
+      filepath: bombx1.sigraph
       visible: 1
       joinType: roundrobin
       splitType: duplicate
@@ -28,7 +28,7 @@ nodes:
       id: l0iPHA
       x: 63
       y: -144
-      filepath: /home/florian/Documents/Uni/KBS/streamgraph/source/bombx1.sigraph
+      filepath: bombx1.sigraph
       visible: 1
       joinType: roundrobin
       splitType: duplicate
@@ -60,7 +60,7 @@ nodes:
       id: f/nq3Q
       x: -284
       y: -111
-      filepath: /home/florian/Documents/Uni/KBS/streamgraph/source/bombx1.sigraph
+      filepath: bombx1.sigraph
       visible: 1
       joinType: roundrobin
       splitType: duplicate
@@ -74,7 +74,7 @@ nodes:
       id: pMtsyQ
       x: -193
       y: -127
-      filepath: /home/florian/Documents/Uni/KBS/streamgraph/source/bombx1.sigraph
+      filepath: bombx1.sigraph
       visible: 1
       joinType: roundrobin
       splitType: duplicate
