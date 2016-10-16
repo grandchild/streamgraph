@@ -20,6 +20,7 @@ sub new {
 	}
 	my $self = {};
 	bless $self, $class;
+	$self->{success} = 1;
 	$self->{graph} = $graph->{graph}->new;
 	$self->{factory} = StreamGraph::Model::NodeFactory->new;
 	$self->_copyData($graph);
