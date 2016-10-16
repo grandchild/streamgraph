@@ -255,7 +255,7 @@ sub runShow {
 	$runner->setStreamitEnv($main_gui->{config});
 	$runner->compileAndRun("main.str", sub{
 		if ($runner->compileSuccess != 0) {
-			$main_gui->{view}->println(($runner->compileErrors)[0] =~ s/^.*?: (.*)$/\1/r, "dialog-error");
+			$main_gui->{view}->println(($runner->compileErrors)[0] =~ s/^.*?: (.*)$/$1/r, "dialog-error");
 		} else {
 			StreamGraph::Util::ResultWindow::show_result($main_gui->{window}, $main_gui->{view}, $runner->runResult);
 		}
