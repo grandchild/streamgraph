@@ -77,6 +77,8 @@
 }
 
 \usepackage{graphicx} % Allows including images
+	\graphicspath{{PDF/}}
+	\DeclareGraphicsExtensions{.pdf}
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
 \usepackage{url}
 
@@ -268,7 +270,17 @@ Program structures modeled in two ways:
 \end{frame}
 %------------------------------------------------
 
-% maybe here CodeObjects
+\begin{frame}
+\frametitle{StreamIt pipeline-based structure}
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=\textwidth]{StreamGraphToStreamIt}
+		\label{fig_StreamGraph_To_StreamIt}
+	\end{figure}
+\end{frame}
+
+
+%------------------------------------------------
 \begin{frame}
 \frametitle{Code Generation}
 	\begin{block}{Building the structure}
@@ -281,12 +293,6 @@ Program structures modeled in two ways:
 		Indirect recursive method guarantees StreamIt-type hierarchical structure
 	\end{block}
 	Get the code by generating from inside out.
-	%\begin{block}{Getting the code}
-		%\begin{itemize}
-		%	\item Generate code of all nested objects
-		%	\item Generate code of nesting object
-		%\end{itemize}
-	%\end{block}
 \end{frame}
 
 %------------------------------------------------
