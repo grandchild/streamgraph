@@ -134,7 +134,7 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 	\end{itemize}
 	\begin{block}{Base constructs}
 		\begin{itemize}
-			\item Filter: \textit{work}-, \textit{init}-functions, "The Workhorse of StreamIt"
+			\item Filter: "The Workhorse of StreamIt"; \textit{work}-, \textit{init}-functions 
 			\item Pipeline: linear succession of StreamIt constructs
 			\item Split: split single data stream into multiple data streams
 			\item Join: join previously splitted streams together
@@ -153,7 +153,7 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 		\begin{itemize}
 			\item Paths independent between \textit{split} and \textit{join}
 		\end{itemize}
-		As result paths may be processed parallel
+		As result paths may be processed in parallel
 	\end{block}
 	\begin{block}{Pipeline}
 		Continuous data stream through filters:\\
@@ -161,7 +161,7 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 			\item \textit{Work}-functions are constantly recalculated.
 			\item Filters can be processed independently.
 		\end{itemize}
-		Therefore filters in pipelines can be parallely processed.
+		Therefore filters in pipelines can be parallelised.
 	\end{block}
 \end{frame}
 
@@ -278,14 +278,15 @@ Program structures modeled in two ways:
 				\quad Build a pipeline for every Path.
 			\item Continue with generation of pipeline.
 		\end{itemize}
-		Indirect recursive method which guarantees StreamIt-type hierarchical topology structure
+		Indirect recursive method guarantees StreamIt-type hierarchical structure
 	\end{block}
-	\begin{block}{Getting the code}
-		\begin{itemize}
-			\item Generate code of all nested objects
-			\item Generate code of nesting object
-		\end{itemize}
-	\end{block}
+	Get the code by generating from inside out.
+	%\begin{block}{Getting the code}
+		%\begin{itemize}
+		%	\item Generate code of all nested objects
+		%	\item Generate code of nesting object
+		%\end{itemize}
+	%\end{block}
 \end{frame}
 
 %------------------------------------------------
