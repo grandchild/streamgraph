@@ -15,7 +15,7 @@ my $fileName;
 my $view;
 
 sub generateCode {
-	my ($view, $graph, $configFile, $fileName) = @_;
+	my ($view, $graph, $configFile, $givenFileName) = @_;
 	if(!defined($view)){
 		return 0;
 	}
@@ -31,9 +31,11 @@ sub generateCode {
 		$view->println("No config file found", 'dialog-error');
 		return 0;
 	}
-	if(!$fileName || !defined($fileName)){
+	if(!$givenFileName || !defined($givenFileName)){
 		$fileName = "main";
 		$view->println("No fileName given. Setting fileName to main", 'dialog-info');
+	} else {
+		$fileName = $givenFileName;
 	}
 	$boxNumber = 0;
 	my $programText = generateMultiLineCommentary("Generated code from project $fileName");
