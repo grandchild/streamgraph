@@ -1,6 +1,7 @@
 
-void->int filter Generator {
-	int i;
+/* Generate Numbers */
+void->float filter Generator {
+	float i;
 	init {
 		i = 0;
 	}
@@ -9,15 +10,14 @@ void->int filter Generator {
 	}
 }
 
-int->int filter square {
-	int var;
+int->float filter Power(float exp) {
 	init {}
 	work pop 1 push 1 {
-		var = pop();
-		push(var * var);
+		push(pow(pop(), exp));
 	}
 }
 
+/* Print Results */
 int->void filter Printer {
 	init {}
 	work pop 1 {
@@ -29,15 +29,16 @@ int->void filter Printer {
 
 void->void pipeline demoSquare{
 	add Generator;
-	add SplitJoin_Square;
+	/* Give splitjoin parameter */
+	add SplitJoin_Square(2);
 	add Printer;
 }
 
 /* --------------------------------------------------- */
 
-int->int splitjoin SplitJoin_Square{
+int->float splitjoin SplitJoin_Square(float exp){
 	split duplicate;
-	add square;
-	add square;
+	add Power(exp);
+	add Power(exp);
 	join roundrobin(1, 1);
 }
