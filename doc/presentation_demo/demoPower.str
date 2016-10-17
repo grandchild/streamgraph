@@ -37,7 +37,7 @@ void->void pipeline demoPower{
 /* --------------------------------------------------- */
 
 int->float splitjoin SplitJoin_Power(float exp){
-	split duplicate;
+	split roundrobin(1, 1);
 	add Power(exp);
 	add Power(exp);
 	join roundrobin(1, 1);
