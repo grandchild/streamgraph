@@ -27,16 +27,16 @@ int->void filter Printer {
 
 /* --------------------------------------------------- */
 
-void->void pipeline demoSquare{
+void->void pipeline demoPower{
 	add Generator;
 	/* Give splitjoin parameter */
-	add SplitJoin_Square(2);
+	add SplitJoin_Power(2);
 	add Printer;
 }
 
 /* --------------------------------------------------- */
 
-int->float splitjoin SplitJoin_Square(float exp){
+int->float splitjoin SplitJoin_Power(float exp){
 	split duplicate;
 	add Power(exp);
 	add Power(exp);

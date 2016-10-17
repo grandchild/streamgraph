@@ -1,0 +1,105 @@
+--- Streamit Graph File
+---
+formatversion: 0.2
+name: square
+author: jakob
+window:
+  h: 450
+  w: 700
+  x: 555
+  y: 101
+nodes:
+  - data:
+      name: Comment
+      id: kMY5OQ
+      x: 77
+      y: -140
+      string: '<- Generate numbers'
+    type: StreamGraph::Model::Node::Comment
+  - data:
+      name: Generator
+      id: KPnEJw
+      x: -9
+      y: -138
+      initCode: i = 0.0;
+      workCode: "push(i);\ni += 1.0;"
+      globalVariables: float i;
+      timesPush: 1
+      timesPop: 0
+      timesPeek: 0
+      joinType: roundrobin
+      splitType: duplicate
+      inputType: void
+      inputCount: 1
+      outputType: float
+      outputCount: 1
+    type: StreamGraph::Model::Node::Filter
+  - data:
+      name: Power
+      id: CANM6Q
+      x: 14
+      y: -58
+      initCode: ''
+      workCode: |-
+        var = pop();
+        push(pow(var, exp));
+      globalVariables: float var;
+      timesPush: 1
+      timesPop: 1
+      timesPeek: 0
+      joinType: roundrobin
+      splitType: duplicate
+      inputType: float
+      inputCount: 1
+      outputType: float
+      outputCount: 1
+    type: StreamGraph::Model::Node::Filter
+  - data:
+      name: exp
+      id: A3GE8g
+      x: -119
+      y: -161
+      outputType: double
+      value: 2
+    type: StreamGraph::Model::Node::Parameter
+  - data:
+      name: Printer
+      id: V6gK3Q
+      x: 11
+      y: 20
+      initCode: ''
+      workCode: println(pop());
+      globalVariables: ''
+      timesPush: 0
+      timesPop: 1
+      timesPeek: 0
+      joinType: roundrobin
+      splitType: duplicate
+      inputType: float
+      inputCount: 1
+      outputType: void
+      outputCount: 1
+    type: StreamGraph::Model::Node::Filter
+  - data:
+      name: Comment
+      id: WXo7ug
+      x: 73
+      y: 20
+      string: '<- Print results to output'
+    type: StreamGraph::Model::Node::Comment
+connections:
+  - data:
+      inputMult: 1
+      outputMult: 1
+    from: CANM6Q
+    to: V6gK3Q
+  - data:
+      inputMult: 1
+      outputMult: 1
+    from: A3GE8g
+    to: CANM6Q
+  - data:
+      inputMult: 1
+      outputMult: 1
+    from: KPnEJw
+    to: CANM6Q
