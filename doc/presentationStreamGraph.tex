@@ -263,12 +263,23 @@ Program structures modeled in two ways:
 % TODO: pictures for every step
 \begin{frame}
 \frametitle{Graph Transformation}
-	\begin{itemize}
-		\item Load subgraphs
-		\item Add void sources and -sinks
-		\item Add identities for empty pipelines
-		\item Test for graph errors %throughout the above and leave invalid partial graphs alone
-	\end{itemize}
+	\begin{columns}[c]
+		\begin{column}{0.48\textwidth}
+			\begin{itemize}
+				\item Load subgraphs
+				\item Add void sources and -sinks
+				\item Add identities for empty pipelines
+				\item Test for graph errors %throughout the above and leave invalid partial graphs alone
+			\end{itemize}
+		\end{column}
+		\hfill
+		\begin{column}{0.48\textwidth}
+			\includegraphics[width=1.035\textwidth]{subgraph_before_after}\\
+			\vspace{1.1mm}
+			\includegraphics[width=0.53\textwidth]{voidend_before_after} ~
+			\includegraphics[width=0.47\textwidth]{identity_before_after}
+		\end{column}
+	\end{columns}
 \end{frame}
 
 %------------------------------------------------
