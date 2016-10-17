@@ -232,7 +232,13 @@ sub get_column_no {
 
 sub select {
 	my ($self,$switch) = @_;
-	$self->{border}->select($switch);
+	if ($switch) {
+		$self->{border}->{border}->set('fill-color-gdk' =>  Gtk2::Gdk::Color->parse('lightblue'));
+	} else {
+		$self->{border}->{border}->set('fill-color-gdk' =>  Gtk2::Gdk::Color->parse('white'));
+		$self->{border}->{border}->set('fill-color-gdk' =>  Gtk2::Gdk::Color->parse('#eee')) if $self->isComment;
+	}
+	
 }
 
 # $item->get_connection_point('top');
