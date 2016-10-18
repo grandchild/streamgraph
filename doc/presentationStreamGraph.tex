@@ -115,7 +115,7 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 %----------------------------------------------------------------------------------------
 
 %------------------------------------------------
-\section{Introduction} % Sections can be created in order to organize your presentation into discrete blocks, all sections and subsections are automatically printed in the table of contents as an overview of the talk
+\section{Introduction}
 %------------------------------------------------
 \subsection{Idea \& Goals}
 % Jakob
@@ -157,7 +157,6 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 \begin{frame}
 \frametitle{Parallelism in StreamIt}
 	\begin{block}{Split-Join}
-		%Data-parallelism
 		Splitting (or duplicating) of data:\\
 		\begin{itemize}
 			\item Paths independent between \textit{split} and \textit{join}
@@ -177,22 +176,6 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 %------------------------------------------------
 \subsection{StreamGraph GUI}
 % Boris
-\begin{frame}
-\frametitle{StreamGraph GUI}
-	\begin{itemize}
-		\item Minimalistic and clear design
-		\item Mouse control via pop-up menus
-		\item Intuitive control
-	\end{itemize}
-	\begin{block}{Elements}
-		\begin{itemize}
-			\item Menu bar
-			\item Working surface
-			\item Notification bar
-			\item Property window
-		\end{itemize}
-	\end{block}
-\end{frame}
 
 \begin{frame}
 \frametitle{StreamGraph GUI}
@@ -212,6 +195,23 @@ Technische Universit\"at Berlin\\ % Your institution for the title page
 	\end{columns}		
 \end{frame}
 
+%------------------------------------------------
+\begin{frame}
+\frametitle{StreamGraph GUI}
+	\begin{itemize}
+		\item Minimalistic and clear design
+		\item Mouse control via pop-up menus
+		\item Intuitive control
+	\end{itemize}
+	\begin{block}{Elements}
+		\begin{itemize}
+			\item Menu bar
+			\item Working surface
+			\item Notification bar
+			\item Property window
+		\end{itemize}
+	\end{block}
+\end{frame}
 
 %------------------------------------------------
 \section{Demo}
@@ -256,8 +256,6 @@ Program structures modeled in two ways:
 		\item Factory
 	\end{itemize}
 \end{block}
-% should that be here?
-% maybe add it to Code Generation Slides?
 \begin{block}{Textual: \textit{CodeObject}}
 	\begin{itemize}
 		\item StreamIt types (\textit{Pipeline, Splitjoin, Parameter})
@@ -267,7 +265,6 @@ Program structures modeled in two ways:
 \end{frame}
 
 \subsection{Graph Transformation}
-% TODO: pictures for every step
 \begin{frame}
 \frametitle{Graph Transformation}
 	\begin{columns}[c]
@@ -338,16 +335,15 @@ Program structures modeled in two ways:
 
 %------------------------------------------------
 \section{Conclusion}
-% ???
 
 %------------------------------------------------
 \subsection{Results}
 \begin{frame}
 \frametitle{Results}
 	\begin{itemize}
-		\item Working prototype
-		\item Limited StreamIt representation
 		\item Complete toolchain from "empty" to "running"
+		\item Limited StreamIt representation
+		\item Working prototype
 	\end{itemize}
 \end{frame}
 
