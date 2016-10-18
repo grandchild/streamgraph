@@ -1,4 +1,3 @@
-
 /* Generate Numbers */
 void->float filter Generator {
 	float i;
@@ -26,16 +25,14 @@ int->void filter Printer {
 }
 
 /* --------------------------------------------------- */
-
 void->void pipeline demoPower{
 	add Generator;
 	/* Give splitjoin parameter */
-	add SplitJoin_Power(2);
+	add SplitJoin_Power(/*exp=*/2);
 	add Printer;
 }
 
 /* --------------------------------------------------- */
-
 int->float splitjoin SplitJoin_Power(float exp){
 	split roundrobin(1, 1);
 	add Power(exp);
