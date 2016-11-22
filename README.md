@@ -1,5 +1,7 @@
 # StreamGraph
 
+![Preview](https://raw.github.com/grandchild/streamgraph/master/doc/demoPower.png)
+
 **StreamGraph** is a graphical programming frontend to [**StreamIt**](http://groups.csail.mit.edu/cag/streamit/index.shtml), a streaming application programming language and compiler designed for
 
 > efficient and effective mapping to a wide variety of target architectures, including commercial-off-the-shelf uniprocessors, multicore architectures, and clusters of workstations
@@ -12,10 +14,11 @@ Notably it:
 * and makes the flow of the datastream more visible.
 
 ## Installation
-Refer to [Install.md](doc/Installation.md) in the `doc` directory for instructions on how to install StreamGraph.
+Refer to [Install.md](doc/Install.md) in the `doc` directory for instructions on how to install StreamGraph.
 
 ## Starting StreamGraph
 ```bash
 cd streamgraph/source/
 perl bin/streamgraph.pl helloworld.siggraph
 ```
+![Preview](https://raw.github.com/grandchild/streamgraph/master/doc/streamgraph.png)
